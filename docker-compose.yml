@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  invoice:
+    image: postgres
+    ports:
+      - 5433:5432
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USERNAME=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASS}
+      - POSTGRES_DB=postgres
