@@ -12,7 +12,7 @@ describe("Register new user service", () => {
     registerNewUserService = new RegisterNewUserServices(inMemoryUser)
   })
 
-  it("should be possible to register a new user", async () => {
+  it("should be possible to register a new user.", async () => {
     const { newUser } = await registerNewUserService.execute({
       email: "test@email.com",
       username: "test user",
@@ -29,7 +29,7 @@ describe("Register new user service", () => {
     )
   })
 
-  it("should not be possible to register a new user if email already exists", async () => {
+  it("should not be possible to register a new user if email already exists.", async () => {
     await registerNewUserService.execute({
       email: "test@email.com",
       username: "test user",
@@ -42,18 +42,38 @@ describe("Register new user service", () => {
         username: "test user",
         password: "123456",
       })
-    }).rejects.toThrowError("User is already registered.")
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "User is already registered.",
+      })
+    )
   })
 
-  it("should not be possible to register a new user if any parameter are not provided", async () => {
+  it("should not be possible to register a new user if any parameter are not provided.", async () => {
     await expect(() => {
       return registerNewUserService.execute({
         email: "",
         username: "test user",
         password: "123456",
       })
-    }).rejects.toThrowError(
-      "You must provide all informations. Username, email and password."
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "You must provide all informations. Username, email and password.",
+      })
+    )
+  })
+
+  it("should not be possible to register a new user if password has less than 6 characters.", async () => {
+    await expect(() => {
+      return registerNewUserService.execute({
+        email: "test@test.com.br",
+        username: "test user",
+        password: "12345",
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "Password must have at least 6 characters.",
+      })
     )
   })
 })

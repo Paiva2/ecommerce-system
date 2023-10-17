@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  invoice:
+  voucher-rest:
     image: postgres
     ports:
       - 5433:5432

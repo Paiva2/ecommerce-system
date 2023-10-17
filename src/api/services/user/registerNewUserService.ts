@@ -21,15 +21,24 @@ export default class RegisterNewUserServices {
     username,
   }: RegisterNewUserServiceRequest): Promise<RegisterNewUserServiceResponse> {
     if (!email || !password || !username) {
-      throw new Error(
-        "You must provide all informations. Username, email and password."
-      )
+      throw {
+        status: 409,
+        error: "You must provide all informations. Username, email and password.",
+      }
+    } else if (password.length < 6) {
+      throw {
+        status: 403,
+        error: "Password must have at least 6 characters.",
+      }
     }
 
     const isThisUserAlreadyRegistered = await this.userRepository.findByEmail(email)
 
     if (isThisUserAlreadyRegistered) {
-      throw new Error("User is already registered.")
+      throw {
+        status: 409,
+        error: "User is already registered.",
+      }
     }
 
     const hashedPassword = await hash(password, 6)
