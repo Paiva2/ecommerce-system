@@ -1,6 +1,8 @@
 import app from "./app"
 
-const server = app.listen(3000, () => {
+const definePort = process.env.NODE_ENV === "test" ? 0 : 3000
+
+const server = app.listen(definePort, () => {
   console.log("Server running")
 })
 
