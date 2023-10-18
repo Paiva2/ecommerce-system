@@ -39,6 +39,18 @@ export default class PgUser implements UserRepository {
   }
 
   async update(email: string, newPassword: string) {
-    return {} as User
+    const schema = process.env.DATABASE_SCHEMA
+
+    const [updatedUser] = await prisma.$queryRawUnsafe<User[]>(
+      `
+      UPDATE "${schema}".user
+      SET password = $1
+      WHERE email = $2
+    `,
+      newPassword,
+      email
+    )
+
+    return updatedUser
   }
 }
