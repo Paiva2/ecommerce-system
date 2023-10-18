@@ -5,13 +5,13 @@ import AuthenticateUserService from "../user/authenticateUserService"
 
 let inMemoryUser: InMemoryUser
 let registerNewUserService: RegisterNewUserServices
-let authenticateUserService: AuthenticateUserService
+let sut: AuthenticateUserService
 
 describe("Authenticate user service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     registerNewUserService = new RegisterNewUserServices(inMemoryUser)
-    authenticateUserService = new AuthenticateUserService(inMemoryUser)
+    sut = new AuthenticateUserService(inMemoryUser)
 
     await registerNewUserService.execute({
       email: "test@email.com",
@@ -21,7 +21,7 @@ describe("Authenticate user service", () => {
   })
 
   it("should be possible to authenticate an existing user.", async () => {
-    const { isThisUserRegistered } = await authenticateUserService.execute({
+    const { isThisUserRegistered } = await sut.execute({
       email: "test@email.com",
       password: "123456",
     })
@@ -38,7 +38,7 @@ describe("Authenticate user service", () => {
 
   it("should not be possible to authenticate an existing user if email or password are not provided.", async () => {
     await expect(() => {
-      return authenticateUserService.execute({
+      return sut.execute({
         email: "",
         password: "123456",
       })
@@ -51,7 +51,7 @@ describe("Authenticate user service", () => {
 
   it("should not be possible to authenticate if email doesnt exists on database.", async () => {
     await expect(() => {
-      return authenticateUserService.execute({
+      return sut.execute({
         email: "inexistent@any.com",
         password: "123456",
       })
@@ -64,7 +64,7 @@ describe("Authenticate user service", () => {
 
   it("should not be possible to authenticate if password does not match.", async () => {
     await expect(() => {
-      return authenticateUserService.execute({
+      return sut.execute({
         email: "test@email.com",
         password: "non matching password",
       })

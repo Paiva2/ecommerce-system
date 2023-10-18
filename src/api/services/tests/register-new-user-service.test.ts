@@ -4,16 +4,16 @@ import RegisterNewUserServices from "../user/registerNewUserService"
 import { compare } from "bcryptjs"
 
 let inMemoryUser: InMemoryUser
-let registerNewUserService: RegisterNewUserServices
+let sut: RegisterNewUserServices
 
 describe("Register new user service", () => {
   beforeEach(() => {
     inMemoryUser = new InMemoryUser()
-    registerNewUserService = new RegisterNewUserServices(inMemoryUser)
+    sut = new RegisterNewUserServices(inMemoryUser)
   })
 
   it("should be possible to register a new user.", async () => {
-    const { newUser } = await registerNewUserService.execute({
+    const { newUser } = await sut.execute({
       email: "test@email.com",
       username: "test user",
       password: "123456",
@@ -30,14 +30,14 @@ describe("Register new user service", () => {
   })
 
   it("should not be possible to register a new user if email already exists.", async () => {
-    await registerNewUserService.execute({
+    await sut.execute({
       email: "test@email.com",
       username: "test user",
       password: "123456",
     })
 
     await expect(() => {
-      return registerNewUserService.execute({
+      return sut.execute({
         email: "test@email.com",
         username: "test user",
         password: "123456",
@@ -51,7 +51,7 @@ describe("Register new user service", () => {
 
   it("should not be possible to register a new user if any parameter are not provided.", async () => {
     await expect(() => {
-      return registerNewUserService.execute({
+      return sut.execute({
         email: "",
         username: "test user",
         password: "123456",
@@ -65,7 +65,7 @@ describe("Register new user service", () => {
 
   it("should not be possible to register a new user if password has less than 6 characters.", async () => {
     await expect(() => {
-      return registerNewUserService.execute({
+      return sut.execute({
         email: "test@test.com.br",
         username: "test user",
         password: "12345",

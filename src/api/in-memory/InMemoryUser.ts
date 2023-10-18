@@ -25,4 +25,25 @@ export default class InMemoryUser implements UserRepository {
 
     return newUser
   }
+
+  async update(email: string, newPassword: string) {
+    let updatedUser = {} as User
+
+    const updatedUsers = this.users.map((user) => {
+      if (user.email === email) {
+        user = {
+          ...user,
+          password: newPassword,
+        }
+
+        updatedUser = user
+      }
+
+      return user
+    })
+
+    this.users = updatedUsers
+
+    return updatedUser
+  }
 }
