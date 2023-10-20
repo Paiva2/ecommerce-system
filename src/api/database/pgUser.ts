@@ -1,5 +1,5 @@
 import prisma from "../../lib/prisma"
-import { User } from "../@types/types"
+import { Store, User } from "../@types/types"
 import { UserRepository } from "../repositories/UserRepository"
 import { randomUUID } from "node:crypto"
 import "dotenv/config"

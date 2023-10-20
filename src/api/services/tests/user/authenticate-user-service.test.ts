@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import InMemoryUser from "../../in-memory/InMemoryUser"
-import RegisterNewUserServices from "../user/registerNewUserService"
-import AuthenticateUserService from "../user/authenticateUserService"
+import InMemoryUser from "../../../in-memory/InMemoryUser"
+import RegisterNewUserServices from "../../user/registerNewUserService"
+import AuthenticateUserService from "../../user/authenticateUserService"
 
 let inMemoryUser: InMemoryUser
 let registerNewUserService: RegisterNewUserServices

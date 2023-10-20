@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest"
-import InMemoryUser from "../../in-memory/InMemoryUser"
-import RegisterNewUserServices from "../user/registerNewUserService"
-import ChangePasswordUserService from "../user/changePasswordUserService"
+import InMemoryUser from "../../../in-memory/InMemoryUser"
+import RegisterNewUserServices from "../../user/registerNewUserService"
+import ChangePasswordUserService from "../../user/changePasswordUserService"
 import { compare } from "bcryptjs"
 
 let inMemoryUser: InMemoryUser

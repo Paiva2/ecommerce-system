@@ -13,6 +13,34 @@ model User {
   username   String?   @db.VarChar(50)
   password   String?   @db.VarChar(100)
   created_At DateTime? @default(now())
+  store      Store?
 
   @@map("user")
+}
+
+model Store {
+  id            String      @id @default(uuid())
+  name          String      @db.VarChar(50)
+  created_At    DateTime?   @default(now())
+  updated_At    DateTime?   @default(now())
+  fkstore_owner String      @unique @db.VarChar(50)
+  user          User        @relation(fields: [fkstore_owner], references: [email], onDelete: Cascade)
+  store_items   StoreItem[]
+
+  @@map("store")
+}
+
+model StoreItem {
+  id          String    @id @default(uuid())
+  item_name   String
+  value       Int       @default(0)
+  quantity    Int       @default(1)
+  item_image  String?
+  description String?   @db.VarChar(500)
+  fkstore_id  String
+  created_At  DateTime? @default(now())
+  updated_At  DateTime? @default(now())
+  Store       Store?    @relation(fields: [fkstore_id], references: [id], onDelete: Cascade)
+
+  @@map("storeItem")
 }

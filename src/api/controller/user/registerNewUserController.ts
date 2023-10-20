@@ -21,6 +21,8 @@ export default class RegisterNewUserController {
     } catch (e) {
       const err = e as ErrorService
 
+      console.log(e)
+
       return response.status(err.status).send({ message: err.error })
     }
   }
