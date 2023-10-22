@@ -53,4 +53,42 @@ export default class PgUser implements UserRepository {
 
     return updatedUser
   }
+
+  async updateUserProfile(
+    id: string,
+    email: string,
+    infosToUpdate: { username?: string; password?: string }
+  ) {
+    const schema = process.env.DATABASE_SCHEMA
+
+    const queryFields = [] as string[]
+    let newValues = []
+
+    const fieldsToNotUpdate = ["oldPassword", "email", "id", "store"]
+
+    const fieldsToUpdate = Object.keys(infosToUpdate).filter((field) => {
+      return !fieldsToNotUpdate.includes(field)
+    })
+
+    for (let field of fieldsToUpdate) {
+      queryFields.push(`${field} = '${infosToUpdate[field]}'`)
+
+      newValues.push(infosToUpdate[field])
+    }
+
+    const query = `
+    UPDATE "${schema}".user
+    SET ${queryFields.toString()}
+    WHERE email = $1 AND id = $2
+    RETURNING *
+    `
+
+    const [updatedUserProfile] = await prisma.$queryRawUnsafe<User[]>(
+      query,
+      email,
+      id
+    )
+
+    return updatedUserProfile
+  }
 }

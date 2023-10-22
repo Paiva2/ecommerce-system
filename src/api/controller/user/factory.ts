@@ -2,6 +2,7 @@ import PgStore from "../../database/pgStore"
 import PgUser from "../../database/pgUser"
 import AuthenticateUserService from "../../services/user/authenticateUserService"
 import ChangePasswordUserService from "../../services/user/changePasswordUserService"
+import ChangeUserProfileService from "../../services/user/changeUserProfileService"
 import GetUserProfileService from "../../services/user/getUserProfileService"
 import RegisterNewUserServices from "../../services/user/registerNewUserService"
 
@@ -10,6 +11,7 @@ export default class UserControllerFactory {
     const userRepository = new PgUser()
     const storeRepository = new PgStore()
 
+    const changeUserProfileService = new ChangeUserProfileService(userRepository)
     const getUserProfileService = new GetUserProfileService(
       userRepository,
       storeRepository
@@ -23,6 +25,7 @@ export default class UserControllerFactory {
       registerNewUserService,
       changePasswordUserService,
       authenticateUserService,
+      changeUserProfileService,
     }
   }
 }
