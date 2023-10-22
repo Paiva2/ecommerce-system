@@ -13,8 +13,6 @@ export default class CreateNewStoreController {
     const factory = new StoreControllerFactory()
     const createNewStoreService = factory.makeCreateNewStoreFactory()
 
-    //TODO: IMPEDIR DE CRIAR UMA STORE SE JA EXISTIR UMA
-
     try {
       await createNewStoreService.execute({
         storeName,

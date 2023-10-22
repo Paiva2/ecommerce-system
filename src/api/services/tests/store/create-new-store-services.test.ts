@@ -62,4 +62,22 @@ describe("Create new store service", () => {
       })
     )
   })
+
+  it("should not be possible to create a new store if user already has one store.", async () => {
+    await sut.execute({
+      storeName: "test user",
+      storeOwner: "test@test.com",
+    })
+
+    await expect(() => {
+      return sut.execute({
+        storeName: "test user",
+        storeOwner: "test@test.com",
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "User already has an store.",
+      })
+    )
+  })
 })

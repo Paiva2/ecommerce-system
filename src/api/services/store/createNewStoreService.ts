@@ -36,6 +36,17 @@ export default class CreateNewStoreService {
       }
     }
 
+    const doesUserAlreadyHasAnStore = await this.storeRepository.findUserStore(
+      storeOwner
+    )
+
+    if (doesUserAlreadyHasAnStore) {
+      throw {
+        status: 403,
+        error: "User already has an store.",
+      }
+    }
+
     const store = await this.storeRepository.create(storeOwner, storeName)
 
     return { store }
