@@ -1,9 +1,7 @@
 import { Request, Response } from "express"
-import PgUser from "../../database/pgUser"
-import CreateNewStoreService from "../../services/store/createNewStoreService"
-import PgStore from "../../database/pgStore"
 import retrieveJwt from "../../../utils/retrieveJwt"
 import { ErrorService, JwtSchema } from "../../@types/types"
+import StoreControllerFactory from "./factory"
 
 export default class CreateNewStoreController {
   async handle(req: Request, res: Response) {
@@ -12,12 +10,8 @@ export default class CreateNewStoreController {
     const token = req.cookies["voucher-token"]
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema
 
-    const userRepository = new PgUser()
-    const storeRepository = new PgStore()
-    const createNewStoreService = new CreateNewStoreService(
-      storeRepository,
-      userRepository
-    )
+    const factory = new StoreControllerFactory()
+    const createNewStoreService = factory.makeCreateNewStoreFactory()
 
     //TODO: IMPEDIR DE CRIAR UMA STORE SE JA EXISTIR UMA
 

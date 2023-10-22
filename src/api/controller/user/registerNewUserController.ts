@@ -1,14 +1,13 @@
 import { Request, Response } from "express"
-import RegisterNewUserServices from "../../services/user/registerNewUserService"
-import PgUser from "../../database/pgUser"
 import { ErrorService } from "../../@types/types"
+import UserControllerFactory from "./factory"
 
 export default class RegisterNewUserController {
   async handle(request: Request, response: Response) {
     const { username, password, email } = request.body
 
-    const userRepository = new PgUser()
-    const registerNewUserService = new RegisterNewUserServices(userRepository)
+    const factory = new UserControllerFactory()
+    const registerNewUserService = factory.makeRegisterNewUserFactory()
 
     try {
       await registerNewUserService.execute({

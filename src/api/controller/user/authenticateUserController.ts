@@ -1,16 +1,15 @@
 import { Request, Response } from "express"
-import AuthenticateUserService from "../../services/user/authenticateUserService"
-import PgUser from "../../database/pgUser"
 import { ErrorService } from "../../@types/types"
 import jwt from "jsonwebtoken"
 import "dotenv/config"
+import UserControllerFactory from "./factory"
 
 export default class AuthenticateUserController {
   async handle(req: Request, res: Response) {
     const { email, password } = req.body
 
-    const userRepository = new PgUser()
-    const authenticateUserService = new AuthenticateUserService(userRepository)
+    const factory = new UserControllerFactory()
+    const authenticateUserService = factory.makeAuthenticateUserFactory()
 
     try {
       const { isThisUserRegistered: userAuth } =

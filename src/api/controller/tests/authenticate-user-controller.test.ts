@@ -8,7 +8,7 @@ describe("Authenticate user controller", () => {
     server.close()
   })
 
-  it("should be possible to register a new user", async () => {
+  it("should be possible to authenticate a user", async () => {
     await request(app).post("/register").send({
       email: "admin@admin.com.br",
       password: "123456",
@@ -28,7 +28,7 @@ describe("Authenticate user controller", () => {
     expect(authUser.statusCode).toEqual(200)
   })
 
-  it("should not be possible to register a new user if any information are not provided", async () => {
+  it("should not be possible to authenticated if any information are not provided", async () => {
     const authUser = await request(app).post("/login").send({
       email: "admin@admin.com.br",
       password: "",
@@ -40,7 +40,7 @@ describe("Authenticate user controller", () => {
     )
   })
 
-  it("should not be possible to register a new user if user is not registered", async () => {
+  it("should not be possible to authenticate if user is not registered", async () => {
     const authUser = await request(app).post("/login").send({
       email: "inexistent@inexistent.com.br",
       password: "123456",
@@ -50,7 +50,7 @@ describe("Authenticate user controller", () => {
     expect(authUser.body.message).toEqual("User not found.")
   })
 
-  it("should not be possible to register a new user if password or email are incorrect", async () => {
+  it("should not be possible to authenticate if password or email are incorrect", async () => {
     await request(app).post("/register").send({
       email: "incorrect@incorrect.com.br",
       password: "123456",

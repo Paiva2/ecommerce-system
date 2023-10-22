@@ -21,4 +21,20 @@ export default class PgStore implements StoreRepository {
 
     return newStore
   }
+
+  async findUserStore(storeOwner: string) {
+    const schema = process.env.DATABASE_SCHEMA
+
+    const [store] = await prisma.$queryRawUnsafe<Store[]>(
+      `
+      SELECT * FROM "${schema}".store
+      WHERE fkstore_owner = $1
+     `,
+      storeOwner
+    )
+
+    if (!store) return null
+
+    return store
+  }
 }

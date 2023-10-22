@@ -35,6 +35,8 @@ export default class GetUserProfileService {
       }
     }
 
+    delete findUser.password
+
     const store = await this.storeRepository.findUserStore(userEmail)
 
     const user = {

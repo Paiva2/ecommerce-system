@@ -1,14 +1,13 @@
 import { Request, Response } from "express"
-import ChangePasswordUserService from "../../services/user/changePasswordUserService"
-import PgUser from "../../database/pgUser"
 import { ErrorService } from "../../@types/types"
+import UserControllerFactory from "./factory"
 
 export default class ChangePasswordUserController {
   async handle(request: Request, response: Response) {
     const { email, newPassword } = request.body
 
-    const userRepository = new PgUser()
-    const changePasswordUserService = new ChangePasswordUserService(userRepository)
+    const factory = new UserControllerFactory()
+    const changePasswordUserService = factory.makeChangePasswordFactory()
 
     try {
       await changePasswordUserService.execute({
