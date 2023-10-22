@@ -11,7 +11,7 @@ export default class GetUserProfileController {
 
     const factory = new UserControllerFactory()
 
-    const getUserProfileService = factory.makeUserProfileFactory()
+    const { getUserProfileService } = factory.handle()
 
     try {
       const { user } = await getUserProfileService.execute({

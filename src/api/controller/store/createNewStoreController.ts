@@ -11,7 +11,7 @@ export default class CreateNewStoreController {
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema
 
     const factory = new StoreControllerFactory()
-    const createNewStoreService = factory.makeCreateNewStoreFactory()
+    const { createNewStoreService } = factory.handle()
 
     try {
       await createNewStoreService.execute({

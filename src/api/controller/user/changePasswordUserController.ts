@@ -7,7 +7,7 @@ export default class ChangePasswordUserController {
     const { email, newPassword } = request.body
 
     const factory = new UserControllerFactory()
-    const changePasswordUserService = factory.makeChangePasswordFactory()
+    const { changePasswordUserService } = factory.handle()
 
     try {
       await changePasswordUserService.execute({

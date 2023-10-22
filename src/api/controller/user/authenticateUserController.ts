@@ -9,7 +9,7 @@ export default class AuthenticateUserController {
     const { email, password } = req.body
 
     const factory = new UserControllerFactory()
-    const authenticateUserService = factory.makeAuthenticateUserFactory()
+    const { authenticateUserService } = factory.handle()
 
     try {
       const { isThisUserRegistered: userAuth } =

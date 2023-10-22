@@ -7,7 +7,7 @@ export default class RegisterNewUserController {
     const { username, password, email } = request.body
 
     const factory = new UserControllerFactory()
-    const registerNewUserService = factory.makeRegisterNewUserFactory()
+    const { registerNewUserService } = factory.handle()
 
     try {
       await registerNewUserService.execute({

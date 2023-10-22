@@ -3,7 +3,7 @@ import PgUser from "../../database/pgUser"
 import CreateNewStoreService from "../../services/store/createNewStoreService"
 
 export default class StoreControllerFactory {
-  makeCreateNewStoreFactory() {
+  handle() {
     const userRepository = new PgUser()
     const storeRepository = new PgStore()
     const createNewStoreService = new CreateNewStoreService(
@@ -11,6 +11,6 @@ export default class StoreControllerFactory {
       userRepository
     )
 
-    return createNewStoreService
+    return { createNewStoreService }
   }
 }
