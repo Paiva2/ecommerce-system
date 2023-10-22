@@ -18,4 +18,12 @@ export default class InMemoryStore implements StoreRepository {
 
     return newStore
   }
+
+  async findUserStore(storeOwner: string) {
+    const findStore = this.store.find((store) => store.storeOwner === storeOwner)
+
+    if (!findStore) return null
+
+    return findStore
+  }
 }
