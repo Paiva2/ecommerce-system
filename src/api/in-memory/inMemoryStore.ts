@@ -3,7 +3,7 @@ import { StoreRepository } from "../repositories/StoreRepository"
 import { randomUUID } from "node:crypto"
 
 export default class InMemoryStore implements StoreRepository {
-  private store = [] as Store[]
+  private stores = [] as Store[]
 
   async create(storeOwner: string, storeName: string) {
     const newStore = {
@@ -14,16 +14,20 @@ export default class InMemoryStore implements StoreRepository {
       updatedAt: new Date(),
     }
 
-    this.store.push(newStore)
+    this.stores.push(newStore)
 
     return newStore
   }
 
   async findUserStore(storeOwner: string) {
-    const findStore = this.store.find((store) => store.storeOwner === storeOwner)
+    const findStore = this.stores.find((store) => store.storeOwner === storeOwner)
 
     if (!findStore) return null
 
     return findStore
+  }
+
+  async getAllStores() {
+    return this.stores
   }
 }
