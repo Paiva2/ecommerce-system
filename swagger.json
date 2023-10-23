@@ -314,6 +314,18 @@
             "description": "Invalid token, or You must provide all informations. Store name and store owner, or User already has an store."
           }
         }
+      },
+
+      "get": {
+        "tags": ["Store"],
+        "summary": "Get all stores.",
+        "description": "Get all created stores.",
+        "responses": {
+          "200": {},
+          "500": {
+            "description": "Internal server error."
+          }
+        }
       }
     }
   }

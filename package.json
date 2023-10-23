@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npx nodemon",
     "build": "npx tsc",
-    "test:watch": "vitest dev",
+    "test:watch": "vitest dev --dir src/api/services/tests",
     "test": "vitest run --dir src/api/services/tests",
     "test:create-prisma-environment": "npm link cd prisma cd vitest-environment-prisma",
     "test:install-prisma-environment": "npm link vitest-environment-prisma",

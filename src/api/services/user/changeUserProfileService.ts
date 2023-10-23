@@ -34,7 +34,9 @@ export default class ChangeUserProfileService {
       }
     }
 
-    if (!Object.keys(infosToUpdate).length) return doesUserExists
+    if (!infosToUpdate || (infosToUpdate && !Object.keys(infosToUpdate).length)) {
+      return doesUserExists
+    }
 
     if (infosToUpdate.password) {
       const checkIfOldPasswordMatches = await compare(

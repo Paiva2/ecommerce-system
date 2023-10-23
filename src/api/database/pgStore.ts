@@ -42,4 +42,27 @@ export default class PgStore implements StoreRepository {
       storeOwner,
     }
   }
+
+  async getAllStores() {
+    const schema = process.env.DATABASE_SCHEMA
+    let formattedStores = [] as Store[]
+
+    const stores = await prisma.$queryRawUnsafe<Store[]>(
+      `
+    SELECT * FROM "${schema}".store
+   `
+    )
+
+    for (let store of stores) {
+      formattedStores.push({
+        id: store.id,
+        name: store.name,
+        storeOwner: store.fkstore_owner,
+        created_At: store.created_At,
+        updated_At: store.updated_At,
+      })
+    }
+
+    return formattedStores
+  }
 }

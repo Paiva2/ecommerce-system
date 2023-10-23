@@ -15,8 +15,8 @@ export interface Store {
   id: string
   name: string
   storeOwner: string
-  updatedAt?: Date
-  createdAt?: Date
+  updated_At?: Date
+  created_At?: Date
   fkstore_owner?: string
 }
 
