@@ -5,12 +5,15 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import "dotenv/config"
 import storeRoutes from "./api/routes/storeRoutes"
+import swaggerUi from "swagger-ui-express"
+import swaggerDocument from "../swagger.json"
 
 const app: Express = express()
 
 app.use(cookieParser())
 app.use(cors())
 app.use(bodyParser.json())
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 userRoutes(app)
 storeRoutes(app)

@@ -35,6 +35,11 @@ export default class PgStore implements StoreRepository {
 
     if (!store) return null
 
-    return store
+    delete store.fkstore_owner
+
+    return {
+      ...store,
+      storeOwner,
+    }
   }
 }

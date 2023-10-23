@@ -1,0 +1,320 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Voucher API",
+    "description": "This is an voucher system API, based on shops. Users can have a little store, and put itens on this store, each item values an voucher, other users can have those vouchers and use them on stores.",
+    "contact": {
+      "email": "joaovitor.paiva145@hotmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "User",
+      "description": "User routes"
+    },
+    {
+      "name": "Store",
+      "description": "Store routes"
+    }
+  ],
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Create a new user",
+        "description": "Register a new user",
+        "requestBody": {
+          "description": "Register a new user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "description": "New user username",
+                    "type": "string",
+                    "example": "My Username"
+                  },
+                  "email": {
+                    "description": "New user e-mail",
+                    "type": "string",
+                    "example": "johndoe@email.com"
+                  },
+                  "password": {
+                    "description": "New user password",
+                    "type": "string",
+                    "example": "mynewpassword123"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful register."
+          },
+          "409": {
+            "description": "You must provide all information. Username, email, and password. Or User is already registered."
+          },
+          "403": {
+            "description": "Password must have at least 6 characters."
+          }
+        }
+      }
+    },
+
+    "/new-password": {
+      "patch": {
+        "tags": ["User"],
+        "summary": "Update an user password",
+        "description": "Update an existing user password.",
+        "requestBody": {
+          "description": "Update an user password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "description": "User email",
+                    "type": "string",
+                    "example": "johndoe@email.com"
+                  },
+                  "newPassword": {
+                    "description": "New user password",
+                    "type": "string",
+                    "example": "mynewpassword123"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully changed."
+          },
+          "409": {
+            "description": "You must provide all informations. Email and password."
+          },
+          "403": {
+            "description": "Password must have at least 6 characters."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+
+    "/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Login as an user",
+        "description": "Login as an existing user. After login, an cookie with an auth token will be setted on your browser, and from now on, you can access auth routes.",
+        "requestBody": {
+          "description": "Authenticate account user.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "description": "User e-mail",
+                    "type": "string",
+                    "example": "johndoe@email.com"
+                  },
+                  "password": {
+                    "description": "User password",
+                    "type": "string",
+                    "example": "mypassword123"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login success.",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Authentication token.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "You must provide all informations. Email and password."
+          },
+          "403": {
+            "description": "Invalid credentials."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+
+    "/profile": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get an user profile",
+        "description": "Get user profile. You must be logged-in before get your profile.",
+        "requestBody": {
+          "description": "Get an existing use profile informations.",
+          "content": {},
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "User profile informations, an Store will only return if user already has one created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "created_At": {
+                          "type": "string"
+                        },
+                        "store": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "created_At": {
+                              "type": "string"
+                            },
+                            "updated_At": {
+                              "type": "string"
+                            },
+                            "storeOwner": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "You must provide user an valid user email. Or you have an Invalid token."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      },
+      "patch": {
+        "tags": ["User"],
+        "summary": "Update user profile",
+        "description": "Update your profile. You must be logged-in before.",
+        "requestBody": {
+          "description": "Update an existing user profile informations (username or password). If you desire to update your password, you should send on the body request the old password value before changing to a new one.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "description": "New Username",
+                    "type": "string",
+                    "example": "my new username",
+                    "required": false
+                  },
+                  "password": {
+                    "description": "New password",
+                    "type": "string",
+                    "example": "mynewpass123",
+                    "required": false
+                  },
+                  "oldPassword": {
+                    "description": "Current password",
+                    "type": "string",
+                    "example": "mycurrentpass123",
+                    "required": false
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated"
+          },
+          "403": {
+            "description": "Invalid user informations, or you have an Invalid token, or Invalid old password when trying to update the password."
+          },
+          "404": {
+            "description": "User not found."
+          }
+        }
+      }
+    },
+
+    "/store": {
+      "post": {
+        "tags": ["Store"],
+        "summary": "Create a new store. You must be logged-in before creating a new store.",
+        "description": "Create a new store for an user.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "storeName": {
+                    "description": "New store name",
+                    "type": "string",
+                    "example": "My Random Shop"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Store created successfully."
+          },
+          "404": {
+            "description": "Store owner not found (e-mail)."
+          },
+          "403": {
+            "description": "Invalid token, or You must provide all informations. Store name and store owner, or User already has an store."
+          }
+        }
+      }
+    }
+  }
+}
