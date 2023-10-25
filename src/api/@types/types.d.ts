@@ -18,6 +18,7 @@ export interface Store {
   updated_At?: Date
   created_At?: Date
   fkstore_owner?: string
+  description?: string
 }
 
 export interface JwtSchema {

@@ -23,6 +23,7 @@ model Store {
   name          String      @db.VarChar(50)
   created_At    DateTime?   @default(now())
   updated_At    DateTime?   @default(now())
+  description   String?     @db.VarChar(500)
   fkstore_owner String      @unique @db.VarChar(50)
   user          User        @relation(fields: [fkstore_owner], references: [email], onDelete: Cascade)
   store_items   StoreItem[]

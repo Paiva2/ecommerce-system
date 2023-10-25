@@ -26,6 +26,7 @@ describe("Create new store service", () => {
     const { store } = await sut.execute({
       storeName: "test user",
       storeOwner: "test@test.com",
+      storeDescription: "this is my description",
     })
 
     expect(store).toEqual({
@@ -34,6 +35,7 @@ describe("Create new store service", () => {
       storeOwner: "test@test.com",
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
+      description: "this is my description",
     })
   })
 

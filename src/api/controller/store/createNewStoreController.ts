@@ -5,7 +5,7 @@ import StoreControllerFactory from "./factory"
 
 export default class CreateNewStoreController {
   async handle(req: Request, res: Response) {
-    const { storeName } = req.body
+    const { storeName, storeDescription } = req.body
 
     const token = req.cookies["voucher-token"]
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema
@@ -17,6 +17,7 @@ export default class CreateNewStoreController {
       await createNewStoreService.execute({
         storeName,
         storeOwner: decodedToken.email,
+        storeDescription,
       })
 
       return res.status(201).send({ message: "Store created successfully." })

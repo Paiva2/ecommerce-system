@@ -50,6 +50,7 @@ describe("Get user profile controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeDescription: "test store description",
       })
 
     const res = await request(app)
@@ -70,6 +71,7 @@ describe("Get user profile controller", () => {
           created_At: expect.any(String),
           updated_At: expect.any(String),
           storeOwner: "admin@admin.com.br",
+          description: "test store description",
         },
       })
     )

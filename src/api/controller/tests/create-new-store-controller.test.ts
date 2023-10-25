@@ -27,6 +27,7 @@ describe("Create new store controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeDescription: "test store description",
       })
 
     expect(storeCreation.statusCode).toBe(201)
@@ -44,6 +45,7 @@ describe("Create new store controller", () => {
           created_At: expect.any(String),
           updated_At: expect.any(String),
           storeOwner: "admin@admin.com.br",
+          description: "test store description",
         },
       })
     )

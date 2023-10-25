@@ -296,6 +296,11 @@
                     "description": "New store name",
                     "type": "string",
                     "example": "My Random Shop"
+                  },
+                  "storeDescription": {
+                    "description": "New store description (optional)",
+                    "type": "string",
+                    "example": "My random description"
                   }
                 }
               }

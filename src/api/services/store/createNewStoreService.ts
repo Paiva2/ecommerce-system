@@ -4,6 +4,7 @@ import { UserRepository } from "../../repositories/UserRepository"
 
 interface CreateNewStoreServiceRequest {
   storeName: string
+  storeDescription?: string
   storeOwner: string
 }
 interface CreateNewStoreServiceResponse {
@@ -19,6 +20,7 @@ export default class CreateNewStoreService {
   async execute({
     storeName,
     storeOwner,
+    storeDescription,
   }: CreateNewStoreServiceRequest): Promise<CreateNewStoreServiceResponse> {
     if (!storeName || !storeOwner) {
       throw {
@@ -47,7 +49,11 @@ export default class CreateNewStoreService {
       }
     }
 
-    const store = await this.storeRepository.create(storeOwner, storeName)
+    const store = await this.storeRepository.create(
+      storeOwner,
+      storeName,
+      storeDescription
+    )
 
     return { store }
   }
