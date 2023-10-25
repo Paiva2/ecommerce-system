@@ -47,7 +47,7 @@ export default class ChangeStoreInformationsService {
       }
     }
 
-    if (!storeUpdate.description || !storeUpdate.name) {
+    if (!storeUpdate.description && !storeUpdate.name) {
       return doesStoreExists
     }
 

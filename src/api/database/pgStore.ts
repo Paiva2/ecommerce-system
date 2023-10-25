@@ -4,12 +4,12 @@ import { StoreRepository } from "../repositories/StoreRepository"
 import { randomUUID } from "node:crypto"
 
 export default class PgStore implements StoreRepository {
-  async create(storeOwner: string, storeName: string, storeDescription?: string) {
-    const schema = process.env.DATABASE_SCHEMA
+  #schema = process.env.DATABASE_SCHEMA
 
+  async create(storeOwner: string, storeName: string, storeDescription?: string) {
     const [newStore] = await prisma.$queryRawUnsafe<Store[]>(
       `
-        INSERT INTO "${schema}".store
+        INSERT INTO "${this.#schema}".store
         ("id", "name", "fkstore_owner", "description")
         VALUES ($1, $2, $3, $4)
         RETURNING *
@@ -24,11 +24,9 @@ export default class PgStore implements StoreRepository {
   }
 
   async findUserStore(storeOwner: string) {
-    const schema = process.env.DATABASE_SCHEMA
-
     const [store] = await prisma.$queryRawUnsafe<Store[]>(
       `
-      SELECT * FROM "${schema}".store
+      SELECT * FROM "${this.#schema}".store
       WHERE fkstore_owner = $1
      `,
       storeOwner
@@ -45,12 +43,11 @@ export default class PgStore implements StoreRepository {
   }
 
   async getAllStores() {
-    const schema = process.env.DATABASE_SCHEMA
     let formattedStores = [] as Store[]
 
     const stores = await prisma.$queryRawUnsafe<Store[]>(
       `
-    SELECT * FROM "${schema}".store
+    SELECT * FROM "${this.#schema}".store
    `
     )
 
@@ -66,5 +63,56 @@ export default class PgStore implements StoreRepository {
     }
 
     return formattedStores
+  }
+
+  async findUnique(storeId: string) {
+    const [store] = await prisma.$queryRawUnsafe<Store[]>(
+      `
+      SELECT * FROM "${this.#schema}".store
+      WHERE id = $1
+     `,
+      storeId
+    )
+
+    if (!store) return null
+
+    const formattedStore = {
+      ...store,
+      storeOwner: store.fkstore_owner,
+    }
+
+    delete store.fkstore_owner
+
+    return formattedStore
+  }
+
+  async update(storeUpdate: {
+    storeId: string
+    name?: string
+    description?: string
+  }) {
+    const fieldsToUpdate = Object.keys(storeUpdate)
+
+    let querySet = []
+
+    for (let field of fieldsToUpdate) {
+      if (field !== "storeId") {
+        querySet.push(`${field} = '${storeUpdate[field]}'`)
+      }
+    }
+
+    const query = `
+    UPDATE "${this.#schema}".store
+    SET ${String(querySet)}, updated_at = to_timestamp($1 / 1000.0)
+    WHERE id = $2
+`
+
+    const [updatedStore] = await prisma.$queryRawUnsafe<Store[]>(
+      query,
+      Date.now(),
+      storeUpdate.storeId
+    )
+
+    return updatedStore
   }
 }

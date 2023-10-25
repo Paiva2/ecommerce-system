@@ -22,7 +22,7 @@ model Store {
   id            String      @id @default(uuid())
   name          String      @db.VarChar(50)
   created_At    DateTime?   @default(now())
-  updated_At    DateTime?   @default(now())
+  updated_at    DateTime?   @default(now())
   description   String?     @db.VarChar(500)
   fkstore_owner String      @unique @db.VarChar(50)
   user          User        @relation(fields: [fkstore_owner], references: [email], onDelete: Cascade)
@@ -40,7 +40,7 @@ model StoreItem {
   description String?   @db.VarChar(500)
   fkstore_id  String
   created_At  DateTime? @default(now())
-  updated_At  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
   Store       Store?    @relation(fields: [fkstore_id], references: [id], onDelete: Cascade)
 
   @@map("storeItem")

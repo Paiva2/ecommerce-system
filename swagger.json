@@ -209,7 +209,7 @@
                             "created_At": {
                               "type": "string"
                             },
-                            "updated_At": {
+                            "updated_at": {
                               "type": "string"
                             },
                             "storeOwner": {
@@ -329,6 +329,50 @@
           "200": {},
           "500": {
             "description": "Internal server error."
+          }
+        }
+      },
+
+      "patch": {
+        "tags": ["Store"],
+        "summary": "Update store informations. You must have one store on your account before.",
+        "description": "Update user store informations.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "storeUpdate": {
+                    "description": "Store informations to update. Description and name are optional.",
+                    "type": "object",
+                    "properties": {
+                      "storeId": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Store updated successfully."
+          },
+          "403": {
+            "description": "Invalid token or invalid user email, or invalid store id or invalid store owner."
+          },
+          "404": {
+            "description": "Store id not found."
           }
         }
       }

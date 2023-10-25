@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import StoreControllerFactory from "./factory"
+import { ErrorService } from "../../@types/types"
 
 export default class GetAllStoresController {
   async handle(_: Request, res: Response) {
@@ -12,7 +13,9 @@ export default class GetAllStoresController {
 
       return res.status(200).send({ data: stores })
     } catch (e) {
-      return res.status(500).send({ error: e })
+      const err = e as ErrorService
+
+      return res.status(err.status).send({ message: err.error })
     }
   }
 }

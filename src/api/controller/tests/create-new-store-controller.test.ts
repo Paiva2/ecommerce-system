@@ -43,7 +43,7 @@ describe("Create new store controller", () => {
           id: expect.any(String),
           name: "test store",
           created_At: expect.any(String),
-          updated_At: expect.any(String),
+          updated_at: expect.any(String),
           storeOwner: "admin@admin.com.br",
           description: "test store description",
         },
