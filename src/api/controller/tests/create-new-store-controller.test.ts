@@ -28,6 +28,7 @@ describe("Create new store controller", () => {
       .send({
         storeName: "test store",
         storeDescription: "test store description",
+        storeCoin: "mycoinname",
       })
 
     expect(storeCreation.statusCode).toBe(201)
@@ -46,6 +47,7 @@ describe("Create new store controller", () => {
           updated_at: expect.any(String),
           storeOwner: "admin@admin.com.br",
           description: "test store description",
+          store_coin: "mycoinname",
         },
       })
     )
@@ -71,6 +73,7 @@ describe("Create new store controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeCoin: "mycoinname",
       })
 
     const storeCreation = await request(app)
@@ -78,6 +81,7 @@ describe("Create new store controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "other store",
+        storeCoin: "mycoinname",
       })
 
     expect(storeCreation.statusCode).toBe(403)

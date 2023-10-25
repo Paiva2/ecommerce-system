@@ -41,11 +41,13 @@ describe("Get all stores service", () => {
     await createNewStoreService.execute({
       storeName: "First store",
       storeOwner: "test@test.com",
+      storeCoin: "mycointest",
     })
 
     await createNewStoreService.execute({
       storeName: "Second store",
       storeOwner: "test2@test2.com",
+      storeCoin: "mycointest2",
     })
 
     const { stores } = await sut.execute()
@@ -56,11 +58,13 @@ describe("Get all stores service", () => {
         expect.objectContaining({
           name: "First store",
           storeOwner: "test@test.com",
+          store_coin: "mycointest",
         }),
 
         expect.objectContaining({
           name: "Second store",
           storeOwner: "test2@test2.com",
+          store_coin: "mycointest2",
         }),
       ])
     )

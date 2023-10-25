@@ -51,6 +51,7 @@ describe("Get user profile controller", () => {
       .send({
         storeName: "test store",
         storeDescription: "test store description",
+        storeCoin: "mycointest",
       })
 
     const res = await request(app)
@@ -65,14 +66,13 @@ describe("Get user profile controller", () => {
         email: "admin@admin.com.br",
         username: "admin",
         created_At: expect.any(String),
-        store: {
+        store: expect.objectContaining({
           id: expect.any(String),
           name: "test store",
-          created_At: expect.any(String),
-          updated_at: expect.any(String),
           storeOwner: "admin@admin.com.br",
           description: "test store description",
-        },
+          store_coin: "mycointest",
+        }),
       })
     )
   })

@@ -26,6 +26,7 @@ describe("Create new store service", () => {
     const { store } = await sut.execute({
       storeName: "test user",
       storeOwner: "test@test.com",
+      storeCoin: "mycointest",
       storeDescription: "this is my description",
     })
 
@@ -36,6 +37,7 @@ describe("Create new store service", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       description: "this is my description",
+      store_coin: "mycointest",
     })
   })
 
@@ -44,6 +46,7 @@ describe("Create new store service", () => {
       return sut.execute({
         storeName: "",
         storeOwner: "",
+        storeCoin: "",
       })
     }).rejects.toEqual(
       expect.objectContaining({
@@ -57,6 +60,7 @@ describe("Create new store service", () => {
       return sut.execute({
         storeName: "inexistent",
         storeOwner: "inexistent@inexistent.com",
+        storeCoin: "mycointest",
       })
     }).rejects.toEqual(
       expect.objectContaining({
@@ -69,12 +73,14 @@ describe("Create new store service", () => {
     await sut.execute({
       storeName: "test user",
       storeOwner: "test@test.com",
+      storeCoin: "mycointest",
     })
 
     await expect(() => {
       return sut.execute({
         storeName: "test user",
         storeOwner: "test@test.com",
+        storeCoin: "mycointest",
       })
     }).rejects.toEqual(
       expect.objectContaining({

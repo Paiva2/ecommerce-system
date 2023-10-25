@@ -15,6 +15,7 @@ describe("Change store informations service", () => {
     const { id } = await inMemoryStore.create(
       "test@test.com",
       "test store name",
+      "mycoinname",
       "test description"
     )
 
@@ -39,6 +40,7 @@ describe("Change store informations service", () => {
     const { id } = await inMemoryStore.create(
       "test@test.com",
       "test store name",
+      "mycoinname",
       "test description"
     )
 
@@ -53,6 +55,7 @@ describe("Change store informations service", () => {
       expect.objectContaining({
         name: "test store name",
         description: "test description",
+        store_coin: "mycoinname",
       })
     )
   })

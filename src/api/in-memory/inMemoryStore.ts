@@ -5,7 +5,12 @@ import { randomUUID } from "node:crypto"
 export default class InMemoryStore implements StoreRepository {
   private stores = [] as Store[]
 
-  async create(storeOwner: string, storeName: string, storeDescription?: string) {
+  async create(
+    storeOwner: string,
+    storeName: string,
+    storeCoin?: string,
+    storeDescription?: string
+  ) {
     const newStore = {
       id: randomUUID(),
       name: storeName,
@@ -13,6 +18,7 @@ export default class InMemoryStore implements StoreRepository {
       createdAt: new Date(),
       updatedAt: new Date(),
       description: storeDescription,
+      store_coin: storeCoin,
     }
 
     this.stores.push(newStore)

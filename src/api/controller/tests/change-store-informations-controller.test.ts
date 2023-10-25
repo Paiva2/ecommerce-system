@@ -1,4 +1,4 @@
-import { describe, it, expect, afterAll, beforeAll } from "vitest"
+import { describe, it, expect, afterAll } from "vitest"
 import request from "supertest"
 import app from "../../../app"
 import server from "../../../server"
@@ -25,6 +25,7 @@ describe("Change store informations controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeCoin: "mycoinname",
         storeDescription: "test store description",
       })
 
@@ -56,6 +57,7 @@ describe("Change store informations controller", () => {
           name: "update name",
           description: "update description",
           storeOwner: "admin@admin.com.br",
+          store_coin: "mycoinname",
         }),
       })
     )
@@ -78,6 +80,7 @@ describe("Change store informations controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeCoin: "mycointest",
         storeDescription: "test store description",
       })
 
@@ -108,6 +111,7 @@ describe("Change store informations controller", () => {
           name: "store name update",
           description: "test store description",
           storeOwner: "admin2@admin2.com.br",
+          store_coin: "mycointest",
         }),
       })
     )
@@ -130,6 +134,7 @@ describe("Change store informations controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeCoin: "mycointestalternative",
         storeDescription: "test store description",
       })
 
@@ -160,6 +165,7 @@ describe("Change store informations controller", () => {
           name: "test store",
           description: "update store description",
           storeOwner: "admin3@admin3.com.br",
+          store_coin: "mycointestalternative",
         }),
       })
     )
@@ -182,6 +188,7 @@ describe("Change store informations controller", () => {
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
         storeName: "test store",
+        storeCoin: "mycoinfortest",
         storeDescription: "test store description",
       })
 
@@ -211,6 +218,7 @@ describe("Change store informations controller", () => {
           name: "test store",
           description: "test store description",
           storeOwner: "admin4@admin4.com.br",
+          store_coin: "mycoinfortest",
         }),
       })
     )

@@ -33,6 +33,8 @@ describe("Get all Stores Controller", () => {
       .set("Cookie", loginOnFirstAcc.headers["set-cookie"][0])
       .send({
         storeName: "first store",
+        storeCoin: "mycoinname",
+        storeDescription: "test",
       })
 
     const loginOnSecondAcc = await request(app).post("/login").send({
@@ -45,6 +47,8 @@ describe("Get all Stores Controller", () => {
       .set("Cookie", loginOnSecondAcc.headers["set-cookie"][0])
       .send({
         storeName: "second store",
+        storeCoin: "mycoinname2",
+        storeDescription: "test",
       })
 
     const getStores = await request(app).get("/store").send()
@@ -56,10 +60,14 @@ describe("Get all Stores Controller", () => {
           expect.objectContaining({
             name: "first store",
             storeOwner: "firstacc@firstacc.com.br",
+            store_coin: "mycoinname",
+            description: "test",
           }),
           expect.objectContaining({
             name: "second store",
             storeOwner: "secondacc@secondacc.com.br",
+            store_coin: "mycoinname2",
+            description: "test",
           }),
         ]),
       })

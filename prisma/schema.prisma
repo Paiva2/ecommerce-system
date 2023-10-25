@@ -26,8 +26,10 @@ model Store {
   description   String?     @db.VarChar(500)
   fkstore_owner String      @unique @db.VarChar(50)
   user          User        @relation(fields: [fkstore_owner], references: [email], onDelete: Cascade)
+  store_coin    String?     @unique @db.VarChar(50)
   store_items   StoreItem[]
 
+  @@unique([id, store_coin])
   @@map("store")
 }
 
@@ -41,7 +43,8 @@ model StoreItem {
   fkstore_id  String
   created_At  DateTime? @default(now())
   updated_at  DateTime? @default(now())
-  Store       Store?    @relation(fields: [fkstore_id], references: [id], onDelete: Cascade)
+  fkitem_coin String    @db.VarChar(50)
+  Store       Store?    @relation(fields: [fkstore_id, fkitem_coin], references: [id, store_coin], onDelete: Cascade)
 
   @@map("storeItem")
 }

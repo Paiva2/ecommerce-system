@@ -19,6 +19,7 @@ export interface Store {
   created_At?: Date
   fkstore_owner?: string
   description?: string
+  store_coin?: string
 }
 
 export interface JwtSchema {

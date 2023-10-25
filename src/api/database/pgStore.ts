@@ -6,18 +6,24 @@ import { randomUUID } from "node:crypto"
 export default class PgStore implements StoreRepository {
   #schema = process.env.DATABASE_SCHEMA
 
-  async create(storeOwner: string, storeName: string, storeDescription?: string) {
+  async create(
+    storeOwner: string,
+    storeName: string,
+    storeCoin: string,
+    storeDescription?: string
+  ) {
     const [newStore] = await prisma.$queryRawUnsafe<Store[]>(
       `
         INSERT INTO "${this.#schema}".store
-        ("id", "name", "fkstore_owner", "description")
-        VALUES ($1, $2, $3, $4)
+        ("id", "name", "fkstore_owner", "description", "store_coin")
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *
        `,
       randomUUID(),
       storeName,
       storeOwner,
-      storeDescription
+      storeDescription,
+      storeCoin
     )
 
     return newStore
@@ -58,6 +64,7 @@ export default class PgStore implements StoreRepository {
         storeOwner: store.fkstore_owner,
         created_At: store.created_At,
         updated_At: store.updated_At,
+        store_coin: store.store_coin,
         description: store.description,
       })
     }

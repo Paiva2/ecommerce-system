@@ -6,6 +6,7 @@ interface CreateNewStoreServiceRequest {
   storeName: string
   storeDescription?: string
   storeOwner: string
+  storeCoin: string
 }
 interface CreateNewStoreServiceResponse {
   store: Store
@@ -21,8 +22,9 @@ export default class CreateNewStoreService {
     storeName,
     storeOwner,
     storeDescription,
+    storeCoin,
   }: CreateNewStoreServiceRequest): Promise<CreateNewStoreServiceResponse> {
-    if (!storeName || !storeOwner) {
+    if (!storeName || !storeOwner || !storeCoin) {
       throw {
         status: 403,
         error: "You must provide all informations. Store name and store owner.",
@@ -52,6 +54,7 @@ export default class CreateNewStoreService {
     const store = await this.storeRepository.create(
       storeOwner,
       storeName,
+      storeCoin,
       storeDescription
     )
 
