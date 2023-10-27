@@ -1,5 +1,5 @@
 import prisma from "../../lib/prisma"
-import { Store, User } from "../@types/types"
+import { Store, User, Wallet } from "../@types/types"
 import { UserRepository } from "../repositories/UserRepository"
 import { randomUUID } from "node:crypto"
 import "dotenv/config"
@@ -8,7 +8,7 @@ export default class PgUser implements UserRepository {
   async insert(email: string, username: string, password: string) {
     const schema = process.env.DATABASE_SCHEMA
 
-    const [newUser] = await prisma.$queryRawUnsafe<User[]>(
+    const [userCreated] = await prisma.$queryRawUnsafe<User[]>(
       `
         INSERT INTO "${schema}".user
         ("id", "email", "username", "password")
@@ -20,6 +20,22 @@ export default class PgUser implements UserRepository {
       username,
       password
     )
+
+    const [newUserWallet] = await prisma.$queryRawUnsafe<Wallet[]>(
+      `
+        INSERT INTO "${schema}".user_wallet
+        ("id", "fkwallet_owner")
+        VALUES ($1, $2)
+        RETURNING *
+       `,
+      randomUUID(),
+      userCreated.id
+    )
+
+    const newUser = {
+      ...userCreated,
+      wallet: newUserWallet,
+    }
 
     return newUser
   }
@@ -35,7 +51,17 @@ export default class PgUser implements UserRepository {
       email
     )
 
-    return user
+    if (!user) return null
+
+    const [userWallet] = await prisma.$queryRawUnsafe<Wallet[]>(
+      `
+      SELECT * FROM "${schema}".user_wallet
+      WHERE fkwallet_owner = $1
+    `,
+      user.id
+    )
+
+    return { ...user, wallet: userWallet }
   }
 
   async update(email: string, newPassword: string) {

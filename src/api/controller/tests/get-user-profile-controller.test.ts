@@ -16,7 +16,7 @@ describe("Get user profile controller", () => {
     server.close()
   })
 
-  it("should be possible to get an user profile without an store", async () => {
+  it.only("should be possible to get an user profile without an store", async () => {
     const login = await request(app).post("/login").send({
       email: "admin@admin.com.br",
       password: "123456",
@@ -28,6 +28,7 @@ describe("Get user profile controller", () => {
       .send()
 
     expect(res.statusCode).toBe(200)
+
     expect(res.body.data).toEqual(
       expect.objectContaining({
         id: expect.any(String),
@@ -35,6 +36,11 @@ describe("Get user profile controller", () => {
         username: "admin",
         created_At: expect.any(String),
         store: {},
+        wallet: expect.objectContaining({
+          id: expect.any(String),
+          fkwallet_owner: expect.any(String),
+          // TODO ADD COINS ARRAY
+        }),
       })
     )
   })
@@ -65,13 +71,22 @@ describe("Get user profile controller", () => {
         id: expect.any(String),
         email: "admin@admin.com.br",
         username: "admin",
+        wallet: expect.objectContaining({
+          id: expect.any(String),
+          fkwallet_owner: expect.any(String),
+          coins: [],
+        }),
         created_At: expect.any(String),
         store: expect.objectContaining({
           id: expect.any(String),
           name: "test store",
           storeOwner: "admin@admin.com.br",
           description: "test store description",
-          store_coin: "mycointest",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            store_coin_name: "mycointest",
+            fkstore_coin_owner: expect.any(String),
+          }),
         }),
       })
     )

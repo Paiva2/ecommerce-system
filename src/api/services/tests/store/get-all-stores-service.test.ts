@@ -38,13 +38,13 @@ describe("Get all stores service", () => {
   })
 
   it("should be possible to get all created stores.", async () => {
-    await createNewStoreService.execute({
+    const { store: storeOne } = await createNewStoreService.execute({
       storeName: "First store",
       storeOwner: "test@test.com",
       storeCoin: "mycointest",
     })
 
-    await createNewStoreService.execute({
+    const { store: storeTwo } = await createNewStoreService.execute({
       storeName: "Second store",
       storeOwner: "test2@test2.com",
       storeCoin: "mycointest2",
@@ -58,13 +58,25 @@ describe("Get all stores service", () => {
         expect.objectContaining({
           name: "First store",
           storeOwner: "test@test.com",
-          store_coin: "mycointest",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            store_coin_name: "mycointest",
+            updated_At: expect.any(Date),
+            created_At: expect.any(Date),
+            fkstore_coin_owner: storeOne.id,
+          }),
         }),
 
         expect.objectContaining({
           name: "Second store",
           storeOwner: "test2@test2.com",
-          store_coin: "mycointest2",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            store_coin_name: "mycointest2",
+            updated_At: expect.any(Date),
+            created_At: expect.any(Date),
+            fkstore_coin_owner: storeTwo.id,
+          }),
         }),
       ])
     )

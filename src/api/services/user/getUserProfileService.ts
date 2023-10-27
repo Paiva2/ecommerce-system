@@ -1,4 +1,5 @@
 import { Store, User } from "../../@types/types"
+import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import { UserRepository } from "../../repositories/UserRepository"
 
@@ -13,7 +14,8 @@ interface GetUserProfileServiceResponse {
 export default class GetUserProfileService {
   constructor(
     private userRepository: UserRepository,
-    private storeRepository: StoreRepository
+    private storeRepository: StoreRepository,
+    private storeCoinRepository: StoreCoinRepository
   ) {}
 
   async execute({

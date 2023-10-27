@@ -4,6 +4,7 @@ export interface User {
   password?: string
   email: string
   store?: Store
+  wallet?: Wallet
 }
 
 export interface ErrorService {
@@ -19,7 +20,15 @@ export interface Store {
   created_At?: Date
   fkstore_owner?: string
   description?: string
-  store_coin?: string
+  store_coin?: StoreCoin
+}
+
+interface StoreCoin {
+  id: string
+  store_coin_name: string
+  updated_At?: Date
+  created_At?: Date
+  fkstore_coin_owner: string
 }
 
 export interface JwtSchema {
@@ -28,4 +37,18 @@ export interface JwtSchema {
     email: string
     role: string
   }
+}
+
+interface Wallet {
+  id: string
+  fkwallet_owner: string
+  coins?: UserCoin[]
+}
+
+interface UserCoin {
+  id: string
+  coin_name: string
+  updated_at: string
+  fkcoin_owner: string
+  quantity: number
 }

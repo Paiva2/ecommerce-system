@@ -9,6 +9,7 @@ let sut: RegisterNewUserServices
 describe("Register new user service", () => {
   beforeEach(() => {
     inMemoryUser = new InMemoryUser()
+
     sut = new RegisterNewUserServices(inMemoryUser)
   })
 
@@ -25,6 +26,11 @@ describe("Register new user service", () => {
     expect(newUser).toEqual(
       expect.objectContaining({
         id: expect.any(String),
+        wallet: expect.objectContaining({
+          id: expect.any(String),
+          fkwallet_owner: newUser.id,
+          coins: [],
+        }),
       })
     )
   })

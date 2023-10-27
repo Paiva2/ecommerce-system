@@ -37,7 +37,13 @@ describe("Create new store service", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       description: "this is my description",
-      store_coin: "mycointest",
+      store_coin: expect.objectContaining({
+        id: expect.any(String),
+        store_coin_name: "mycointest",
+        updated_At: expect.any(Date),
+        created_At: expect.any(Date),
+        fkstore_coin_owner: store.id,
+      }),
     })
   })
 

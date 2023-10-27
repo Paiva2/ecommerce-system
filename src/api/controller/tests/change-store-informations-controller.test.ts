@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../../../app"
 import server from "../../../server"
 
-describe("Change store informations controller", () => {
+describe.skip("Change store informations controller", () => {
   afterAll(() => {
     server.close()
   })

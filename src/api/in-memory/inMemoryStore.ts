@@ -8,7 +8,7 @@ export default class InMemoryStore implements StoreRepository {
   async create(
     storeOwner: string,
     storeName: string,
-    storeCoin?: string,
+    storeCoin: string,
     storeDescription?: string
   ) {
     const newStore = {
@@ -18,12 +18,24 @@ export default class InMemoryStore implements StoreRepository {
       createdAt: new Date(),
       updatedAt: new Date(),
       description: storeDescription,
-      store_coin: storeCoin,
     }
 
-    this.stores.push(newStore)
+    const newStoreCoin = {
+      id: randomUUID(),
+      store_coin_name: storeCoin,
+      updated_At: new Date(),
+      created_At: new Date(),
+      fkstore_coin_owner: newStore.id,
+    }
 
-    return newStore
+    const formatNewStore = {
+      ...newStore,
+      store_coin: newStoreCoin,
+    }
+
+    this.stores.push(formatNewStore)
+
+    return formatNewStore
   }
 
   async findUserStore(storeOwner: string) {

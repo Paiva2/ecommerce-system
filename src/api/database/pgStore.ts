@@ -1,5 +1,5 @@
 import prisma from "../../lib/prisma"
-import { Store } from "../@types/types"
+import { Store, StoreCoin } from "../@types/types"
 import { StoreRepository } from "../repositories/StoreRepository"
 import { randomUUID } from "node:crypto"
 
@@ -12,21 +12,53 @@ export default class PgStore implements StoreRepository {
     storeCoin: string,
     storeDescription?: string
   ) {
-    const [newStore] = await prisma.$queryRawUnsafe<Store[]>(
-      `
-        INSERT INTO "${this.#schema}".store
-        ("id", "name", "fkstore_owner", "description", "store_coin")
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *
-       `,
-      randomUUID(),
-      storeName,
-      storeOwner,
-      storeDescription,
-      storeCoin
-    )
+    let newStore: Store
+    let newStoreCoin: StoreCoin
 
-    return newStore
+    try {
+      await prisma.$queryRawUnsafe(`BEGIN`)
+
+      const [createdStore] = await prisma.$queryRawUnsafe<Store[]>(
+        `
+      INSERT INTO "${this.#schema}".store
+      ("id", "name", "fkstore_owner", "description")
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+     `,
+        randomUUID(),
+        storeName,
+        storeOwner,
+        storeDescription
+      )
+
+      await prisma.$queryRawUnsafe(`savepoint pre_creation`)
+
+      const [createdStoreCoin] = await prisma.$queryRawUnsafe<StoreCoin[]>(
+        `
+      INSERT INTO "${this.#schema}".store_coin
+      ("id", "store_coin_name", "fkstore_coin_owner")
+      VALUES ($1, $2, $3)
+      RETURNING *
+     `,
+        randomUUID(),
+        storeCoin,
+        createdStore.id
+      )
+
+      newStore = createdStore
+      newStoreCoin = createdStoreCoin
+
+      await prisma.$queryRawUnsafe(`commit`)
+    } catch {
+      await prisma.$queryRawUnsafe(`rollback pre_creation`)
+    }
+
+    const formatNewStore = {
+      ...newStore,
+      storeCoin: newStoreCoin,
+    }
+
+    return formatNewStore
   }
 
   async findUserStore(storeOwner: string) {
@@ -40,11 +72,20 @@ export default class PgStore implements StoreRepository {
 
     if (!store) return null
 
+    const [storeCoin] = await prisma.$queryRawUnsafe<StoreCoin[]>(
+      `
+      SELECT * FROM "${this.#schema}".store_coin
+      WHERE fkstore_coin_owner = $1
+     `,
+      store.id
+    )
+
     delete store.fkstore_owner
 
     return {
       ...store,
       storeOwner,
+      store_coin: storeCoin,
     }
   }
 
