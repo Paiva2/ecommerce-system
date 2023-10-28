@@ -8,11 +8,13 @@ export interface StoreRepository {
     storeDescription?: string
   ): Promise<Store>
 
+  // return all informations
   findUserStore(storeOwner: string): Promise<Store | null>
 
   getAllStores(): Promise<Store[]>
 
-  findUnique(storeId: string): Promise<Store | null>
+  // dont return all informations
+  findUniqueById(storeId: string): Promise<Store | null>
 
   update(storeUpdate: {
     storeId: string

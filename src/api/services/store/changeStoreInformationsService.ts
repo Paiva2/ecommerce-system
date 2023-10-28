@@ -29,7 +29,7 @@ export default class ChangeStoreInformationsService {
       }
     }
 
-    const doesStoreExists = await this.storeRepository.findUnique(
+    const doesStoreExists = await this.storeRepository.findUniqueById(
       storeUpdate.storeId
     )
 

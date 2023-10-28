@@ -39,7 +39,9 @@ export default class InMemoryStore implements StoreRepository {
   }
 
   async findUserStore(storeOwner: string) {
-    const findStore = this.stores.find((store) => store.storeOwner === storeOwner)
+    const findStore = this.stores.find(
+      (store) => store.storeOwner === storeOwner || store.id === storeOwner
+    )
 
     if (!findStore) return null
 
@@ -50,7 +52,7 @@ export default class InMemoryStore implements StoreRepository {
     return this.stores
   }
 
-  async findUnique(storeId: string) {
+  async findUniqueById(storeId: string) {
     const findStore = this.stores.find((store) => store.id === storeId)
 
     if (!findStore) return null

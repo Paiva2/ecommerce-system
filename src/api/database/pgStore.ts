@@ -125,7 +125,7 @@ export default class PgStore implements StoreRepository {
     return formattedStores
   }
 
-  async findUnique(storeId: string) {
+  async findUniqueById(storeId: string) {
     const [store] = await prisma.$queryRawUnsafe<Store[]>(
       `
       SELECT * FROM "${this.#schema}".store
