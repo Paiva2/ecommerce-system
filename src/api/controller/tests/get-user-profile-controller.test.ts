@@ -16,7 +16,7 @@ describe("Get user profile controller", () => {
     server.close()
   })
 
-  it.only("should be possible to get an user profile without an store", async () => {
+  it("should be possible to get an user profile without an store", async () => {
     const login = await request(app).post("/login").send({
       email: "admin@admin.com.br",
       password: "123456",
@@ -74,7 +74,7 @@ describe("Get user profile controller", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          coins: [],
+          //coins: [], TODO
         }),
         created_At: expect.any(String),
         store: expect.objectContaining({

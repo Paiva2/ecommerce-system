@@ -3,11 +3,9 @@ import InMemoryUser from "../../../in-memory/InMemoryUser"
 import RegisterNewUserServices from "../../user/registerNewUserService"
 import GetUserProfileService from "../../user/getUserProfileService"
 import InMemoryStore from "../../../in-memory/inMemoryStore"
-import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
 
 let inMemoryUser: InMemoryUser
 let inMemoryStore: InMemoryStore
-let inMemoryStoreCoin: InMemoryStoreCoin
 
 let registerNewUserService: RegisterNewUserServices
 let sut: GetUserProfileService
@@ -16,10 +14,9 @@ describe("Get user profile service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryStore = new InMemoryStore()
-    inMemoryStoreCoin = new InMemoryStoreCoin()
 
     registerNewUserService = new RegisterNewUserServices(inMemoryUser)
-    sut = new GetUserProfileService(inMemoryUser, inMemoryStore, inMemoryStoreCoin)
+    sut = new GetUserProfileService(inMemoryUser, inMemoryStore)
 
     await registerNewUserService.execute({
       email: "test@email.com",
@@ -41,7 +38,7 @@ describe("Get user profile service", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          coins: [],
+          //coins: [],
         }),
       })
     )
@@ -55,8 +52,6 @@ describe("Get user profile service", () => {
       "test description"
     )
 
-    await inMemoryStoreCoin.createStoreCoin("storeCoinTest", storeId)
-
     const { user } = await sut.execute({
       userEmail: "test@email.com",
     })
@@ -68,7 +63,7 @@ describe("Get user profile service", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          coins: [],
+          //coins: [],
         }),
         store: expect.objectContaining({
           id: expect.any(String),

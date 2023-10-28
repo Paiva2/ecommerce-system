@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../../../app"
 import server from "../../../server"
 
-describe.skip("Get all Stores Controller", () => {
+describe("Get all Stores Controller", () => {
   beforeAll(async () => {
     await request(app).post("/register").send({
       email: "firstacc@firstacc.com.br",
@@ -60,14 +60,22 @@ describe.skip("Get all Stores Controller", () => {
           expect.objectContaining({
             name: "first store",
             storeOwner: "firstacc@firstacc.com.br",
-            store_coin: "mycoinname",
             description: "test",
+            store_coin: expect.objectContaining({
+              id: expect.any(String),
+              store_coin_name: "mycoinname",
+              fkstore_coin_owner: expect.any(String),
+            }),
           }),
           expect.objectContaining({
             name: "second store",
             storeOwner: "secondacc@secondacc.com.br",
-            store_coin: "mycoinname2",
             description: "test",
+            store_coin: expect.objectContaining({
+              id: expect.any(String),
+              store_coin_name: "mycoinname2",
+              fkstore_coin_owner: expect.any(String),
+            }),
           }),
         ]),
       })

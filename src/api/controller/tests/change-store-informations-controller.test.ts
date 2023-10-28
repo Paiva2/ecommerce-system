@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../../../app"
 import server from "../../../server"
 
-describe.skip("Change store informations controller", () => {
+describe("Change store informations controller", () => {
   afterAll(() => {
     server.close()
   })
@@ -57,7 +57,11 @@ describe.skip("Change store informations controller", () => {
           name: "update name",
           description: "update description",
           storeOwner: "admin@admin.com.br",
-          store_coin: "mycoinname",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            store_coin_name: "mycoinname",
+            fkstore_coin_owner: profileBeforeEdit.body.data.store.id,
+          }),
         }),
       })
     )
@@ -111,7 +115,11 @@ describe.skip("Change store informations controller", () => {
           name: "store name update",
           description: "test store description",
           storeOwner: "admin2@admin2.com.br",
-          store_coin: "mycointest",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            fkstore_coin_owner: profileBeforeEdit.body.data.store.id,
+            store_coin_name: "mycointest",
+          }),
         }),
       })
     )
@@ -165,7 +173,11 @@ describe.skip("Change store informations controller", () => {
           name: "test store",
           description: "update store description",
           storeOwner: "admin3@admin3.com.br",
-          store_coin: "mycointestalternative",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            fkstore_coin_owner: profileBeforeEdit.body.data.store.id,
+            store_coin_name: "mycointestalternative",
+          }),
         }),
       })
     )
@@ -218,7 +230,11 @@ describe.skip("Change store informations controller", () => {
           name: "test store",
           description: "test store description",
           storeOwner: "admin4@admin4.com.br",
-          store_coin: "mycoinfortest",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            fkstore_coin_owner: profileBeforeEdit.body.data.store.id,
+            store_coin_name: "mycoinfortest",
+          }),
         }),
       })
     )

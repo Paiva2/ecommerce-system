@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../../../app"
 import server from "../../../server"
 
-describe.skip("Change user profile controller", () => {
+describe("Change user profile controller", () => {
   afterAll(() => {
     server.close()
   })

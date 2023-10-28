@@ -14,8 +14,7 @@ interface GetUserProfileServiceResponse {
 export default class GetUserProfileService {
   constructor(
     private userRepository: UserRepository,
-    private storeRepository: StoreRepository,
-    private storeCoinRepository: StoreCoinRepository
+    private storeRepository: StoreRepository
   ) {}
 
   async execute({

@@ -176,53 +176,7 @@
         },
         "responses": {
           "200": {
-            "description": "User profile informations, an Store will only return if user already has one created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "string"
-                        },
-                        "email": {
-                          "type": "string"
-                        },
-                        "username": {
-                          "type": "string"
-                        },
-                        "created_At": {
-                          "type": "string"
-                        },
-                        "store": {
-                          "type": "object",
-                          "properties": {
-                            "id": {
-                              "type": "string"
-                            },
-                            "name": {
-                              "type": "string"
-                            },
-                            "created_At": {
-                              "type": "string"
-                            },
-                            "updated_at": {
-                              "type": "string"
-                            },
-                            "storeOwner": {
-                              "type": "string"
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "description": "User profile informations, an Store will only return if user already has one created"
           },
           "403": {
             "description": "You must provide user an valid user email. Or you have an Invalid token."

@@ -98,16 +98,28 @@ export default class PgStore implements StoreRepository {
    `
     )
 
+    const storeCoins = await prisma.$queryRawUnsafe<StoreCoin[]>(`
+    SELECT * from "${this.#schema}".store_coin
+    `)
+
     for (let store of stores) {
-      formattedStores.push({
-        id: store.id,
-        name: store.name,
-        storeOwner: store.fkstore_owner,
-        created_At: store.created_At,
-        updated_At: store.updated_At,
-        store_coin: store.store_coin,
-        description: store.description,
-      })
+      for (let coin of storeCoins) {
+        if (store.id === coin.fkstore_coin_owner) {
+          formattedStores.push({
+            id: store.id,
+            name: store.name,
+            storeOwner: store.fkstore_owner,
+            created_At: store.created_At,
+            updated_At: store.updated_At,
+            description: store.description,
+            store_coin: {
+              id: coin.id,
+              fkstore_coin_owner: coin.fkstore_coin_owner,
+              store_coin_name: coin.store_coin_name,
+            },
+          })
+        }
+      }
     }
 
     return formattedStores
