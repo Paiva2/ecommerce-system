@@ -3,15 +3,22 @@ import InMemoryUser from "../../../in-memory/InMemoryUser"
 import RegisterNewUserServices from "../../user/registerNewUserService"
 import ChangePasswordUserService from "../../user/changePasswordUserService"
 import { compare } from "bcryptjs"
+import InMemoryWallet from "../../../in-memory/inMemoryWallet"
 
 let inMemoryUser: InMemoryUser
+let inMemoryWallet: InMemoryWallet
 let registerNewUserService: RegisterNewUserServices
 let sut: ChangePasswordUserService
 
 describe("Change user password service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
-    registerNewUserService = new RegisterNewUserServices(inMemoryUser)
+    inMemoryWallet = new InMemoryWallet()
+
+    registerNewUserService = new RegisterNewUserServices(
+      inMemoryUser,
+      inMemoryWallet
+    )
     sut = new ChangePasswordUserService(inMemoryUser)
 
     await registerNewUserService.execute({

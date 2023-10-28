@@ -4,7 +4,6 @@ export interface StoreRepository {
   create(
     storeOwner: string,
     storeName: string,
-    storeCoin: string,
     storeDescription?: string
   ): Promise<Store>
 

@@ -16,4 +16,10 @@ export default class InMemoryWallet implements WalletRepository {
 
     return newWallet
   }
+
+  async findUserWallet(userId: string) {
+    const wallet = this.#wallets.find((wallet) => wallet.fkwallet_owner === userId)
+
+    return wallet
+  }
 }

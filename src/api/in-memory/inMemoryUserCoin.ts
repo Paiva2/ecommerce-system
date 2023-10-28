@@ -39,4 +39,10 @@ export default class InMemoryUserCoin implements UserCoinRepository {
 
     return updatedUserCoin
   }
+
+  async findUserCoins(walletId: string) {
+    const userCoin = this.userCoins.filter((coin) => coin.fkcoin_owner === walletId)
+
+    return userCoin
+  }
 }

@@ -31,4 +31,16 @@ export default class PgWallet implements WalletRepository {
       }
     }
   }
+
+  async findUserWallet(userId: string) {
+    const [wallet] = await prisma.$queryRawUnsafe<Wallet[]>(
+      `
+     SELECT * FROM "${this.#schema}".user_wallet
+     WHERE fkwallet_owner = $1
+    `,
+      userId
+    )
+
+    return wallet
+  }
 }

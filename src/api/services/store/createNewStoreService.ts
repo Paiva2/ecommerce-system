@@ -1,4 +1,5 @@
 import { Store } from "../../@types/types"
+import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import { UserRepository } from "../../repositories/UserRepository"
 
@@ -15,7 +16,8 @@ interface CreateNewStoreServiceResponse {
 export default class CreateNewStoreService {
   constructor(
     private storeRepository: StoreRepository,
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private storeCoinRepository: StoreCoinRepository
   ) {}
 
   async execute({
@@ -51,12 +53,21 @@ export default class CreateNewStoreService {
       }
     }
 
-    const store = await this.storeRepository.create(
+    const createdStore = await this.storeRepository.create(
       storeOwner,
       storeName,
-      storeCoin,
       storeDescription
     )
+
+    const newStoreCoin = await this.storeCoinRepository.insert(
+      storeCoin,
+      createdStore.id
+    )
+
+    const store = {
+      ...createdStore,
+      store_coin: newStoreCoin,
+    }
 
     return { store }
   }

@@ -15,7 +15,7 @@ export default class InMemoryStoreCoin implements StoreCoinRepository {
     return getStore
   }
 
-  async createStoreCoin(storeCoin: string, storeCoinOwner: string) {
+  async insert(storeCoin: string, storeCoinOwner: string) {
     const newStoreCoin = {
       id: randomUUID(),
       fkstore_coin_owner: storeCoinOwner,
@@ -27,5 +27,9 @@ export default class InMemoryStoreCoin implements StoreCoinRepository {
     this.#storeCoins.push(newStoreCoin)
 
     return newStoreCoin
+  }
+
+  async getAll() {
+    return this.#storeCoins
   }
 }

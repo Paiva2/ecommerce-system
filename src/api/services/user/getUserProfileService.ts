@@ -1,7 +1,9 @@
 import { Store, User } from "../../@types/types"
 import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
+import UserCoinRepository from "../../repositories/UserCoinRepository"
 import { UserRepository } from "../../repositories/UserRepository"
+import WalletRepository from "../../repositories/WalletRepository"
 
 interface GetUserProfileServiceRequest {
   userEmail: string
@@ -14,7 +16,10 @@ interface GetUserProfileServiceResponse {
 export default class GetUserProfileService {
   constructor(
     private userRepository: UserRepository,
-    private storeRepository: StoreRepository
+    private storeRepository: StoreRepository,
+    private storeCoinRepository: StoreCoinRepository,
+    private walletRepository: WalletRepository,
+    private userCoinRepository: UserCoinRepository
   ) {}
 
   async execute({
@@ -40,9 +45,24 @@ export default class GetUserProfileService {
 
     const store = await this.storeRepository.findUserStore(userEmail)
 
+    const storeCoin = await this.storeCoinRepository.findStoreCoin(store?.id)
+
+    const userWallet = await this.walletRepository.findUserWallet(findUser.id)
+
+    const walletCoins = await this.userCoinRepository.findUserCoins(userWallet.id)
+
     const user = {
       ...findUser,
-      store: store ? store : ({} as Store),
+      store: store
+        ? {
+            ...store,
+            store_coin: storeCoin,
+          }
+        : ({} as Store),
+      wallet: {
+        ...userWallet,
+        coins: walletCoins,
+      },
     }
 
     return { user }

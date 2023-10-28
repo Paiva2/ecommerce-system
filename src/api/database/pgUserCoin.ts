@@ -46,4 +46,28 @@ export default class PgUserCoin implements UserCoinRepository {
 
     return updatedUserCoin
   }
+
+  async findUserCoins(walletId: string) {
+    let coins: UserCoin[] = []
+
+    const userCoins = await prisma.$queryRawUnsafe<UserCoin[]>(
+      `
+      SELECT * FROM "${this.#schema}".user_coin
+      WHERE fkcoin_owner = $1
+    `,
+      walletId
+    )
+
+    for (let coin of userCoins) {
+      coins.push({
+        coin_name: coin.coin_name,
+        fkcoin_owner: coin.fkcoin_owner,
+        id: coin.id,
+        quantity: Number(String(coin.quantity)), // serialize big int
+        updated_at: coin.updated_at,
+      })
+    }
+
+    return coins
+  }
 }

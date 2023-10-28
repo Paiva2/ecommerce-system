@@ -7,11 +7,13 @@ export default class GetAllStoresController {
     const { getAllStoresService } = StoreControllerFactory.handle()
 
     try {
-      const { stores } = await getAllStoresService.execute()
+      const { formattedStores } = await getAllStoresService.execute()
 
-      return res.status(200).send({ data: stores })
+      return res.status(200).send({ data: formattedStores })
     } catch (e) {
       const err = e as ErrorService
+
+      console.log(e)
 
       return res.status(err.status).send({ message: err.error })
     }

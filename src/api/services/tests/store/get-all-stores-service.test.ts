@@ -3,19 +3,26 @@ import InMemoryStore from "../../../in-memory/inMemoryStore"
 import CreateNewStoreService from "../../store/createNewStoreService"
 import InMemoryUser from "../../../in-memory/InMemoryUser"
 import GetAllStoresService from "../../store/getAllStoresService"
+import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
 
 let inMemoryStore: InMemoryStore
 let inMemoryUser: InMemoryUser
 let createNewStoreService: CreateNewStoreService
+let inMemoryStoreCoin: InMemoryStoreCoin
 let sut: GetAllStoresService
 
 describe("Get all stores service", () => {
   beforeEach(async () => {
     inMemoryStore = new InMemoryStore()
     inMemoryUser = new InMemoryUser()
+    inMemoryStoreCoin = new InMemoryStoreCoin()
 
-    createNewStoreService = new CreateNewStoreService(inMemoryStore, inMemoryUser)
-    sut = new GetAllStoresService(inMemoryStore)
+    createNewStoreService = new CreateNewStoreService(
+      inMemoryStore,
+      inMemoryUser,
+      inMemoryStoreCoin
+    )
+    sut = new GetAllStoresService(inMemoryStore, inMemoryStoreCoin)
 
     const newUser = {
       email: "test@test.com",
@@ -50,10 +57,10 @@ describe("Get all stores service", () => {
       storeCoin: "mycointest2",
     })
 
-    const { stores } = await sut.execute()
+    const { formattedStores } = await sut.execute()
 
-    expect(stores.length).toEqual(2)
-    expect(stores).toEqual(
+    expect(formattedStores.length).toEqual(2)
+    expect(formattedStores).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           name: "First store",
@@ -61,7 +68,7 @@ describe("Get all stores service", () => {
           store_coin: expect.objectContaining({
             id: expect.any(String),
             store_coin_name: "mycointest",
-            updated_At: expect.any(Date),
+            updated_at: expect.any(Date),
             created_At: expect.any(Date),
             fkstore_coin_owner: storeOne.id,
           }),
@@ -73,7 +80,7 @@ describe("Get all stores service", () => {
           store_coin: expect.objectContaining({
             id: expect.any(String),
             store_coin_name: "mycointest2",
-            updated_At: expect.any(Date),
+            updated_at: expect.any(Date),
             created_At: expect.any(Date),
             fkstore_coin_owner: storeTwo.id,
           }),
@@ -83,9 +90,9 @@ describe("Get all stores service", () => {
   })
 
   it("should be possible to get all created stores even if there are no stores created.", async () => {
-    const { stores } = await sut.execute()
+    const { formattedStores } = await sut.execute()
 
-    expect(stores.length).toEqual(0)
-    expect(stores).toEqual([])
+    expect(formattedStores.length).toEqual(0)
+    expect(formattedStores).toEqual([])
   })
 })

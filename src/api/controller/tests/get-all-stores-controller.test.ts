@@ -59,7 +59,7 @@ describe("Get all Stores Controller", () => {
         data: expect.arrayContaining([
           expect.objectContaining({
             name: "first store",
-            storeOwner: "firstacc@firstacc.com.br",
+            fkstore_owner: "firstacc@firstacc.com.br",
             description: "test",
             store_coin: expect.objectContaining({
               id: expect.any(String),
@@ -69,7 +69,7 @@ describe("Get all Stores Controller", () => {
           }),
           expect.objectContaining({
             name: "second store",
-            storeOwner: "secondacc@secondacc.com.br",
+            fkstore_owner: "secondacc@secondacc.com.br",
             description: "test",
             store_coin: expect.objectContaining({
               id: expect.any(String),

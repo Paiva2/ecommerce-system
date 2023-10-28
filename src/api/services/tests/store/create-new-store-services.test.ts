@@ -1,17 +1,21 @@
-import { describe, it, beforeEach, expect, beforeAll } from "vitest"
+import { describe, it, beforeEach, expect } from "vitest"
 import InMemoryStore from "../../../in-memory/inMemoryStore"
 import CreateNewStoreService from "../../store/createNewStoreService"
 import InMemoryUser from "../../../in-memory/InMemoryUser"
+import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
 
 let inMemoryStore: InMemoryStore
 let inMemoryUser: InMemoryUser
+let inMemoryStoreCoin: InMemoryStoreCoin
 let sut: CreateNewStoreService
 
 describe("Create new store service", () => {
   beforeEach(async () => {
     inMemoryStore = new InMemoryStore()
     inMemoryUser = new InMemoryUser()
-    sut = new CreateNewStoreService(inMemoryStore, inMemoryUser)
+    inMemoryStoreCoin = new InMemoryStoreCoin()
+
+    sut = new CreateNewStoreService(inMemoryStore, inMemoryUser, inMemoryStoreCoin)
 
     const newUser = {
       email: "test@test.com",
@@ -40,7 +44,7 @@ describe("Create new store service", () => {
       store_coin: expect.objectContaining({
         id: expect.any(String),
         store_coin_name: "mycointest",
-        updated_At: expect.any(Date),
+        updated_at: expect.any(Date),
         created_At: expect.any(Date),
         fkstore_coin_owner: store.id,
       }),

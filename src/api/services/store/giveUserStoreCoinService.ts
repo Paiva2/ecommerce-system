@@ -1,7 +1,9 @@
 import { UserCoin } from "../../@types/types"
+import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import UserCoinRepository from "../../repositories/UserCoinRepository"
 import { UserRepository } from "../../repositories/UserRepository"
+import WalletRepository from "../../repositories/WalletRepository"
 
 interface GiveUserStoreCoinServiceRequest {
   storeId: string
@@ -13,7 +15,9 @@ export default class GiveUserStoreCoinService {
   constructor(
     private storeRepository: StoreRepository,
     private userRepository: UserRepository,
-    private userCoinRepository: UserCoinRepository
+    private userCoinRepository: UserCoinRepository,
+    private walletRepository: WalletRepository,
+    private storeCoinRepository: StoreCoinRepository
   ) {}
 
   async execute({
@@ -42,6 +46,12 @@ export default class GiveUserStoreCoinService {
       }
     }
 
+    const getUserWallet = await this.walletRepository.findUserWallet(getUser.id)
+
+    const getUserCoins = await this.userCoinRepository.findUserCoins(
+      getUserWallet.id
+    )
+
     const getStore = await this.storeRepository.findUserStore(storeId)
 
     if (!getStore) {
@@ -51,10 +61,10 @@ export default class GiveUserStoreCoinService {
       }
     }
 
-    console.log(getUser)
+    const getStoreCoin = await this.storeCoinRepository.findStoreCoin(getStore.id)
 
-    const userAlreadyHasThisCoin = getUser.wallet.coins.some(
-      (coin) => coin.coin_name === getStore.store_coin.store_coin_name
+    const userAlreadyHasThisCoin = getUserCoins.some(
+      (coin) => coin.coin_name === getStoreCoin.store_coin_name
     )
 
     let storeCoin = {} as UserCoin
@@ -63,8 +73,8 @@ export default class GiveUserStoreCoinService {
       case false:
         storeCoin = await this.userCoinRepository.insert(
           valueToGive,
-          getStore.store_coin.store_coin_name,
-          getUser.wallet.id
+          getStoreCoin.store_coin_name,
+          getUserWallet.id
         )
 
         break
@@ -72,8 +82,8 @@ export default class GiveUserStoreCoinService {
       case true:
         storeCoin = await this.userCoinRepository.addition(
           valueToGive,
-          getStore.store_coin.store_coin_name,
-          getUser.wallet.id
+          getStoreCoin.store_coin_name,
+          getUserWallet.id
         )
 
         break
@@ -84,8 +94,6 @@ export default class GiveUserStoreCoinService {
           error: "Operation error.",
         }
     }
-
-    console.log(getUser.wallet.coins, storeCoin)
 
     return storeCoin
   }

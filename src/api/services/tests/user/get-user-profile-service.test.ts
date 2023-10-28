@@ -3,20 +3,38 @@ import InMemoryUser from "../../../in-memory/InMemoryUser"
 import RegisterNewUserServices from "../../user/registerNewUserService"
 import GetUserProfileService from "../../user/getUserProfileService"
 import InMemoryStore from "../../../in-memory/inMemoryStore"
+import InMemoryWallet from "../../../in-memory/inMemoryWallet"
+import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
+import InMemoryUserCoin from "../../../in-memory/inMemoryUserCoin"
 
 let inMemoryUser: InMemoryUser
 let inMemoryStore: InMemoryStore
+let inMemoryWallet: InMemoryWallet
+let inMemoryStoreCoin: InMemoryStoreCoin
+let inMemoryUserCoin: InMemoryUserCoin
 
 let registerNewUserService: RegisterNewUserServices
 let sut: GetUserProfileService
 
-describe("Get user profile service", () => {
+describe.only("Get user profile service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryStore = new InMemoryStore()
+    inMemoryWallet = new InMemoryWallet()
+    inMemoryStoreCoin = new InMemoryStoreCoin()
+    inMemoryUserCoin = new InMemoryUserCoin()
 
-    registerNewUserService = new RegisterNewUserServices(inMemoryUser)
-    sut = new GetUserProfileService(inMemoryUser, inMemoryStore)
+    registerNewUserService = new RegisterNewUserServices(
+      inMemoryUser,
+      inMemoryWallet
+    )
+    sut = new GetUserProfileService(
+      inMemoryUser,
+      inMemoryStore,
+      inMemoryStoreCoin,
+      inMemoryWallet,
+      inMemoryUserCoin
+    )
 
     await registerNewUserService.execute({
       email: "test@email.com",
@@ -38,7 +56,7 @@ describe("Get user profile service", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          //coins: [],
+          coins: [],
         }),
       })
     )
@@ -48,9 +66,10 @@ describe("Get user profile service", () => {
     const { id: storeId } = await inMemoryStore.create(
       "test@email.com",
       "storeTest",
-      "storeCoinTest",
       "test description"
     )
+
+    await inMemoryStoreCoin.insert("storecoin", storeId)
 
     const { user } = await sut.execute({
       userEmail: "test@email.com",
@@ -63,7 +82,7 @@ describe("Get user profile service", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          //coins: [],
+          coins: [],
         }),
         store: expect.objectContaining({
           id: expect.any(String),
@@ -72,7 +91,7 @@ describe("Get user profile service", () => {
           description: "test description",
           store_coin: expect.objectContaining({
             id: expect.any(String),
-            store_coin_name: "storeCoinTest",
+            store_coin_name: "storecoin",
             fkstore_coin_owner: storeId,
           }),
         }),
