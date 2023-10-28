@@ -31,7 +31,7 @@ export default class PgStore implements StoreRepository {
         storeDescription
       )
 
-      await prisma.$queryRawUnsafe(`savepoint pre_creation`)
+      await prisma.$queryRawUnsafe(`savepoint pre_creation_store`)
 
       const [createdStoreCoin] = await prisma.$queryRawUnsafe<StoreCoin[]>(
         `
@@ -50,7 +50,12 @@ export default class PgStore implements StoreRepository {
 
       await prisma.$queryRawUnsafe(`commit`)
     } catch {
-      await prisma.$queryRawUnsafe(`rollback pre_creation`)
+      await prisma.$queryRawUnsafe(`rollback to pre_creation_store`)
+
+      throw {
+        status: 500,
+        error: "Unable to create new store. Server error.",
+      }
     }
 
     const formatNewStore = {

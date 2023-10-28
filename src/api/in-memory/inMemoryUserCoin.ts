@@ -3,7 +3,7 @@ import UserCoinRepository from "../repositories/UserCoinRepository"
 import { randomUUID } from "node:crypto"
 
 export default class InMemoryUserCoin implements UserCoinRepository {
-  #userCoin: UserCoin[] = []
+  private userCoins: UserCoin[] = []
 
   async insert(quantity: number, coinName: string, coinOwner: string) {
     const newUserCoin = {
@@ -14,8 +14,29 @@ export default class InMemoryUserCoin implements UserCoinRepository {
       updated_at: new Date().toString(),
     }
 
-    this.#userCoin.push(newUserCoin)
+    this.userCoins.push(newUserCoin)
 
     return newUserCoin
+  }
+
+  async addition(quantity: number, coinName: string, coinOwner: string) {
+    let updatedUserCoin = {} as UserCoin
+
+    const updatedValue = this.userCoins.map((coins) => {
+      if (coins.fkcoin_owner === coinOwner && coins.coin_name === coinName) {
+        coins = {
+          ...coins,
+          quantity: coins.quantity + quantity,
+        }
+
+        updatedUserCoin = coins
+      }
+
+      return coins
+    })
+
+    this.userCoins = updatedValue
+
+    return updatedUserCoin
   }
 }

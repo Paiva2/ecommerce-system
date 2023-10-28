@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../../../app"
 import server from "../../../server"
 
-describe("Register new user controller", () => {
+describe.only("Register new user controller", () => {
   afterAll(() => {
     server.close()
   })

@@ -12,20 +12,9 @@ export default class InMemoryUser implements UserRepository {
       password,
     }
 
-    const newUserWallet = {
-      id: randomUUID(),
-      fkwallet_owner: newUser.id,
-      coins: [],
-    }
+    this.users.push(newUser)
 
-    const formatUser = {
-      ...newUser,
-      wallet: newUserWallet,
-    }
-
-    this.users.push(formatUser)
-
-    return formatUser
+    return newUser
   }
 
   async update(email: string, newPassword: string) {

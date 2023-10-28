@@ -1,6 +1,7 @@
 import { User } from "../../@types/types"
 import { UserRepository } from "../../repositories/UserRepository"
 import { hash } from "bcryptjs"
+import WalletRepository from "../../repositories/WalletRepository"
 
 interface RegisterNewUserServiceRequest {
   username: string
@@ -13,7 +14,10 @@ interface RegisterNewUserServiceResponse {
 }
 
 export default class RegisterNewUserServices {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private walletRepository: WalletRepository
+  ) {}
 
   async execute({
     email,
@@ -43,7 +47,18 @@ export default class RegisterNewUserServices {
 
     const hashedPassword = await hash(password, 6)
 
-    const newUser = await this.userRepository.insert(email, username, hashedPassword)
+    const userCreated = await this.userRepository.insert(
+      email,
+      username,
+      hashedPassword
+    )
+
+    const newUserWallet = await this.walletRepository.create(userCreated.id)
+
+    const newUser = {
+      ...userCreated,
+      wallet: newUserWallet,
+    }
 
     return { newUser }
   }

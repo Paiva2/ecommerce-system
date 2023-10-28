@@ -2,15 +2,18 @@ import { describe, it, expect, beforeEach } from "vitest"
 import InMemoryUser from "../../../in-memory/InMemoryUser"
 import RegisterNewUserServices from "../../user/registerNewUserService"
 import { compare } from "bcryptjs"
+import InMemoryWallet from "../../../in-memory/inMemoryWallet"
 
 let inMemoryUser: InMemoryUser
+let inMemoryWallet: InMemoryWallet
 let sut: RegisterNewUserServices
 
 describe("Register new user service", () => {
   beforeEach(() => {
     inMemoryUser = new InMemoryUser()
+    inMemoryWallet = new InMemoryWallet()
 
-    sut = new RegisterNewUserServices(inMemoryUser)
+    sut = new RegisterNewUserServices(inMemoryUser, inMemoryWallet)
   })
 
   it("should be possible to register a new user.", async () => {

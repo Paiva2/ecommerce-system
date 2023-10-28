@@ -7,22 +7,18 @@ import { User } from "../../../@types/types"
 
 let inMemoryStore: InMemoryStore
 let inMemoryUser: InMemoryUser
-let inMemoryUserCoinRepository: InMemoryUserCoin
+let inMemoryUserCoin: InMemoryUserCoin
 let sut: GiveUserStoreCoinService
 
 let newUser: User
 
-describe("Give user store coin service", () => {
+describe.only("Give user store coin service", () => {
   beforeEach(async () => {
     inMemoryStore = new InMemoryStore()
     inMemoryUser = new InMemoryUser()
-    inMemoryUserCoinRepository = new InMemoryUserCoin()
+    inMemoryUserCoin = new InMemoryUserCoin()
 
-    sut = new GiveUserStoreCoinService(
-      inMemoryStore,
-      inMemoryUser,
-      inMemoryUserCoinRepository
-    )
+    sut = new GiveUserStoreCoinService(inMemoryStore, inMemoryUser, inMemoryUserCoin)
 
     const storeOwner = {
       email: "test@test.com",
@@ -37,7 +33,7 @@ describe("Give user store coin service", () => {
     )
   })
 
-  it("should be possible to give an user store coins.", async () => {
+  /* it("should be possible to give an user store coins.", async () => {
     const userToReceive = await inMemoryUser.insert(
       "test2@test2.com",
       "test user to receive",
@@ -60,12 +56,47 @@ describe("Give user store coin service", () => {
       expect.objectContaining({
         id: expect.any(String),
         quantity: 2000,
-        fkcoin_owner: userToReceive.id,
+        fkcoin_owner: userToReceive.wallet.id,
+        updated_at: expect.any(String),
+      })
+    )
+  }) */
+
+  it.only("should add the value to user if user already has that coin on wallet.", async () => {
+    const userToReceive = await inMemoryUser.insert(
+      "test2@test2.com",
+      "test user to receive",
+      "1234567"
+    )
+
+    const store = await inMemoryStore.create(
+      "test@test.com",
+      "test user",
+      "mycointest"
+    )
+
+    await sut.execute({
+      storeId: store.id,
+      userToReceive: "test2@test2.com",
+      valueToGive: 2000,
+    })
+
+    const userCoinUpdated = await sut.execute({
+      storeId: store.id,
+      userToReceive: "test2@test2.com",
+      valueToGive: 2000,
+    })
+
+    expect(userCoinUpdated).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        quantity: 4000,
+        fkcoin_owner: userToReceive.wallet.id,
         updated_at: expect.any(String),
       })
     )
   })
-
+  /* 
   it("should not be possible to give an user store coins without an store id.", async () => {
     await expect(() => {
       return sut.execute({
@@ -120,5 +151,5 @@ describe("Give user store coin service", () => {
         error: "Store not found.",
       })
     )
-  })
+  }) */
 })

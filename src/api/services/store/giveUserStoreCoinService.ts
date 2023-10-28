@@ -1,3 +1,4 @@
+import { UserCoin } from "../../@types/types"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import UserCoinRepository from "../../repositories/UserCoinRepository"
 import { UserRepository } from "../../repositories/UserRepository"
@@ -32,9 +33,9 @@ export default class GiveUserStoreCoinService {
       }
     }
 
-    const doesUserExists = await this.userRepository.findByEmail(userToReceive)
+    const getUser = await this.userRepository.findByEmail(userToReceive)
 
-    if (!doesUserExists) {
+    if (!getUser) {
       throw {
         status: 404,
         error: "User not found.",
@@ -50,13 +51,41 @@ export default class GiveUserStoreCoinService {
       }
     }
 
-    console.log(getStore)
+    console.log(getUser)
 
-    const storeCoin = await this.userCoinRepository.insert(
-      valueToGive,
-      getStore.store_coin.store_coin_name,
-      doesUserExists.wallet.id
+    const userAlreadyHasThisCoin = getUser.wallet.coins.some(
+      (coin) => coin.coin_name === getStore.store_coin.store_coin_name
     )
+
+    let storeCoin = {} as UserCoin
+
+    switch (userAlreadyHasThisCoin) {
+      case false:
+        storeCoin = await this.userCoinRepository.insert(
+          valueToGive,
+          getStore.store_coin.store_coin_name,
+          getUser.wallet.id
+        )
+
+        break
+
+      case true:
+        storeCoin = await this.userCoinRepository.addition(
+          valueToGive,
+          getStore.store_coin.store_coin_name,
+          getUser.wallet.id
+        )
+
+        break
+
+      default:
+        throw {
+          status: 500,
+          error: "Operation error.",
+        }
+    }
+
+    console.log(getUser.wallet.coins, storeCoin)
 
     return storeCoin
   }

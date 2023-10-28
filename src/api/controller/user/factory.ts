@@ -1,5 +1,6 @@
 import PgStore from "../../database/pgStore"
 import PgUser from "../../database/pgUser"
+import PgWallet from "../../database/pgWallet"
 import AuthenticateUserService from "../../services/user/authenticateUserService"
 import ChangePasswordUserService from "../../services/user/changePasswordUserService"
 import ChangeUserProfileService from "../../services/user/changeUserProfileService"
@@ -10,6 +11,7 @@ export default class UserControllerFactory {
   public static handle() {
     const userRepository = new PgUser()
     const storeRepository = new PgStore()
+    const walletRepository = new PgWallet()
 
     const changeUserProfileService = new ChangeUserProfileService(userRepository)
 
@@ -18,7 +20,10 @@ export default class UserControllerFactory {
       storeRepository
     )
 
-    const registerNewUserService = new RegisterNewUserServices(userRepository)
+    const registerNewUserService = new RegisterNewUserServices(
+      userRepository,
+      walletRepository
+    )
 
     const changePasswordUserService = new ChangePasswordUserService(userRepository)
 

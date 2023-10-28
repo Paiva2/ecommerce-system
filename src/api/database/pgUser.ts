@@ -1,5 +1,5 @@
 import prisma from "../../lib/prisma"
-import { Store, User, UserCoin, Wallet } from "../@types/types"
+import { User, UserCoin, Wallet } from "../@types/types"
 import { UserRepository } from "../repositories/UserRepository"
 import { randomUUID } from "node:crypto"
 import "dotenv/config"
@@ -8,36 +8,24 @@ export default class PgUser implements UserRepository {
   #schema = process.env.DATABASE_SCHEMA
 
   async insert(email: string, username: string, password: string) {
+    await prisma.$queryRawUnsafe(`BEGIN`)
+
     const [userCreated] = await prisma.$queryRawUnsafe<User[]>(
       `
         INSERT INTO "${this.#schema}".user
         ("id", "email", "username", "password")
         VALUES ($1, $2, $3, $4)
         RETURNING *
-       `,
+      `,
       randomUUID(),
       email,
       username,
       password
     )
 
-    const [newUserWallet] = await prisma.$queryRawUnsafe<Wallet[]>(
-      `
-        INSERT INTO "${this.#schema}".user_wallet
-        ("id", "fkwallet_owner")
-        VALUES ($1, $2)
-        RETURNING *
-       `,
-      randomUUID(),
-      userCreated.id
-    )
+    await prisma.$queryRawUnsafe(`savepoint pre_creation_user`)
 
-    const newUser = {
-      ...userCreated,
-      wallet: newUserWallet,
-    }
-
-    return newUser
+    return userCreated
   }
 
   async findByEmail(email: string) {

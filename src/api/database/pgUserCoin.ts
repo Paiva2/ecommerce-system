@@ -11,7 +11,7 @@ export default class PgUserCoin implements UserCoinRepository {
       `
         INSERT INTO "${this.#schema}".user_coin
         ("id", "coin_name", "fkcoin_owner", "quantity")
-        VALUES ($1, $2, $3, $4) ON CONFLICT()
+        VALUES ($1, $2, $3, $4)
         RETURNING *
        `,
       randomUUID(),
@@ -21,5 +21,29 @@ export default class PgUserCoin implements UserCoinRepository {
     )
 
     return newUserCoin
+  }
+
+  async addition(quantity: number, coinName: string, coinOwner: string) {
+    const [updatedUserCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
+      `
+      WITH current AS (
+        SELECT * FROM "${this.#schema}".user_coin
+        WHERE fkcoin_owner = $2 AND coin_name = $3
+      ),
+      updated AS (
+        UPDATE "${this.#schema}".user_coin
+        SET "quantity" = $1 + (SELECT quantity FROM current)
+        WHERE fkcoin_owner = $2 AND coin_name = $3
+        RETURNING *
+      )
+
+      SELECT * FROM updated;
+       `,
+      quantity,
+      coinOwner,
+      coinName
+    )
+
+    return updatedUserCoin
   }
 }
