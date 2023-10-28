@@ -4,9 +4,7 @@ import { ErrorService } from "../../@types/types"
 
 export default class GetAllStoresController {
   async handle(_: Request, res: Response) {
-    const factory = new StoreControllerFactory()
-
-    const { getAllStoresService } = factory.handle()
+    const { getAllStoresService } = StoreControllerFactory.handle()
 
     try {
       const { stores } = await getAllStoresService.execute()

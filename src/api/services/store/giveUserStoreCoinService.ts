@@ -50,10 +50,12 @@ export default class GiveUserStoreCoinService {
       }
     }
 
+    console.log(getStore)
+
     const storeCoin = await this.userCoinRepository.insert(
       valueToGive,
       getStore.store_coin.store_coin_name,
-      doesUserExists.id
+      doesUserExists.wallet.id
     )
 
     return storeCoin

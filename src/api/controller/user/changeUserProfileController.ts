@@ -10,8 +10,7 @@ export default class ChangeUserProfileController {
 
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema
 
-    const factory = new UserControllerFactory()
-    const { changeUserProfileService } = factory.handle()
+    const { changeUserProfileService } = UserControllerFactory.handle()
 
     try {
       await changeUserProfileService.execute({

@@ -6,8 +6,7 @@ export default class RegisterNewUserController {
   async handle(request: Request, response: Response) {
     const { username, password, email } = request.body
 
-    const factory = new UserControllerFactory()
-    const { registerNewUserService } = factory.handle()
+    const { registerNewUserService } = UserControllerFactory.handle()
 
     try {
       await registerNewUserService.execute({

@@ -8,8 +8,7 @@ export default class AuthenticateUserController {
   async handle(req: Request, res: Response) {
     const { email, password } = req.body
 
-    const factory = new UserControllerFactory()
-    const { authenticateUserService } = factory.handle()
+    const { authenticateUserService } = UserControllerFactory.handle()
 
     try {
       const { isThisUserRegistered: userAuth } =

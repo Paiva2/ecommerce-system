@@ -10,8 +10,7 @@ export default class CreateNewStoreController {
     const token = req.cookies["voucher-token"]
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema
 
-    const factory = new StoreControllerFactory()
-    const { createNewStoreService } = factory.handle()
+    const { createNewStoreService } = StoreControllerFactory.handle()
 
     try {
       await createNewStoreService.execute({

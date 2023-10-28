@@ -31,9 +31,9 @@ model UserWallet {
 
 model UserCoin {
   id           String    @id @default(uuid())
-  coin_name    String    @unique @db.VarChar(50)
+  coin_name    String    @db.VarChar(50)
   updated_at   DateTime? @default(now())
-  fkcoin_owner String    @unique @db.VarChar(50)
+  fkcoin_owner String    @db.VarChar(50)
   quantity     BigInt    @default(0)
 
   wallet UserWallet @relation(fields: [fkcoin_owner], references: [id], onDelete: Cascade)

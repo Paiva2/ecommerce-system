@@ -1,16 +1,16 @@
 import prisma from "../../lib/prisma"
-import { Store, User, Wallet } from "../@types/types"
+import { Store, User, UserCoin, Wallet } from "../@types/types"
 import { UserRepository } from "../repositories/UserRepository"
 import { randomUUID } from "node:crypto"
 import "dotenv/config"
 
 export default class PgUser implements UserRepository {
-  async insert(email: string, username: string, password: string) {
-    const schema = process.env.DATABASE_SCHEMA
+  #schema = process.env.DATABASE_SCHEMA
 
+  async insert(email: string, username: string, password: string) {
     const [userCreated] = await prisma.$queryRawUnsafe<User[]>(
       `
-        INSERT INTO "${schema}".user
+        INSERT INTO "${this.#schema}".user
         ("id", "email", "username", "password")
         VALUES ($1, $2, $3, $4)
         RETURNING *
@@ -23,7 +23,7 @@ export default class PgUser implements UserRepository {
 
     const [newUserWallet] = await prisma.$queryRawUnsafe<Wallet[]>(
       `
-        INSERT INTO "${schema}".user_wallet
+        INSERT INTO "${this.#schema}".user_wallet
         ("id", "fkwallet_owner")
         VALUES ($1, $2)
         RETURNING *
@@ -41,11 +41,11 @@ export default class PgUser implements UserRepository {
   }
 
   async findByEmail(email: string) {
-    const schema = process.env.DATABASE_SCHEMA
+    let coins: UserCoin[] = []
 
     const [user] = await prisma.$queryRawUnsafe<User[]>(
       `
-      SELECT * FROM "${schema}".user
+      SELECT * FROM "${this.#schema}".user
       WHERE email = $1
     `,
       email
@@ -55,21 +55,45 @@ export default class PgUser implements UserRepository {
 
     const [userWallet] = await prisma.$queryRawUnsafe<Wallet[]>(
       `
-      SELECT * FROM "${schema}".user_wallet
+      SELECT * FROM "${this.#schema}".user_wallet
       WHERE fkwallet_owner = $1
     `,
       user.id
     )
 
-    return { ...user, wallet: userWallet }
+    const userCoins = await prisma.$queryRawUnsafe<UserCoin[]>(
+      `
+      SELECT * FROM "${this.#schema}".user_coin
+      WHERE fkcoin_owner = $1
+    `,
+      userWallet.id
+    )
+
+    for (let coin of userCoins) {
+      coins.push({
+        coin_name: coin.coin_name,
+        fkcoin_owner: coin.fkcoin_owner,
+        id: coin.id,
+        quantity: Number(String(coin.quantity)), // serialize big int
+        updated_at: coin.updated_at,
+      })
+    }
+
+    const formatUser = {
+      ...user,
+      wallet: {
+        ...userWallet,
+        coins,
+      },
+    }
+
+    return formatUser
   }
 
   async update(email: string, newPassword: string) {
-    const schema = process.env.DATABASE_SCHEMA
-
     const [updatedUser] = await prisma.$queryRawUnsafe<User[]>(
       `
-      UPDATE "${schema}".user
+      UPDATE "${this.#schema}".user
       SET password = $1
       WHERE email = $2
     `,
@@ -85,8 +109,6 @@ export default class PgUser implements UserRepository {
     email: string,
     infosToUpdate: { username?: string; password?: string }
   ) {
-    const schema = process.env.DATABASE_SCHEMA
-
     const queryFields = [] as string[]
     let newValues = []
 
@@ -103,7 +125,7 @@ export default class PgUser implements UserRepository {
     }
 
     const query = `
-    UPDATE "${schema}".user
+    UPDATE "${this.#schema}".user
     SET ${queryFields.toString()}
     WHERE email = $1 AND id = $2
     RETURNING *

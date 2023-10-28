@@ -6,8 +6,7 @@ export default class ChangePasswordUserController {
   async handle(request: Request, response: Response) {
     const { email, newPassword } = request.body
 
-    const factory = new UserControllerFactory()
-    const { changePasswordUserService } = factory.handle()
+    const { changePasswordUserService } = UserControllerFactory.handle()
 
     try {
       await changePasswordUserService.execute({
