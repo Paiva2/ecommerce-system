@@ -73,7 +73,7 @@ describe("Give user store coin service", () => {
     await inMemoryStoreCoin.insert("mycointest", store.id)
 
     const userCoinCreated = await sut.execute({
-      storeId: store.id, // store giving
+      storeOwnerEmail: "test@test.com", // store giving
       userToReceive: "test2@test2.com",
       valueToGive: 2000,
     })
@@ -98,13 +98,13 @@ describe("Give user store coin service", () => {
     await inMemoryStoreCoin.insert("mycointest", store.id)
 
     await sut.execute({
-      storeId: store.id, // store giving
+      storeOwnerEmail: "test@test.com", // store giving
       userToReceive: "test2@test2.com",
       valueToGive: 2000,
     })
 
     const userCoinUpdated = await sut.execute({
-      storeId: store.id,
+      storeOwnerEmail: "test@test.com",
       userToReceive: "test2@test2.com",
       valueToGive: 2000,
     })
@@ -122,7 +122,7 @@ describe("Give user store coin service", () => {
   it("should not be possible to give an user store coins without an store id.", async () => {
     await expect(() => {
       return sut.execute({
-        storeId: null,
+        storeOwnerEmail: null,
         userToReceive: "test2@test2.com",
         valueToGive: 2000,
       })
@@ -136,7 +136,7 @@ describe("Give user store coin service", () => {
   it("should not be possible to give an user store coins without an valid value.", async () => {
     await expect(() => {
       return sut.execute({
-        storeId: "valid store id test",
+        storeOwnerEmail: "valid store id test",
         userToReceive: "test2@test2.com",
         valueToGive: 0,
       })
@@ -150,7 +150,7 @@ describe("Give user store coin service", () => {
   it("should not be possible to give an user store coins if user doesnt exists.", async () => {
     await expect(() => {
       return sut.execute({
-        storeId: "valid store id test",
+        storeOwnerEmail: "valid store id test",
         userToReceive: "inexistent@inexist.com",
         valueToGive: 1000,
       })
@@ -164,7 +164,7 @@ describe("Give user store coin service", () => {
   it("should not be possible to give an user store coins if store doesnt exists.", async () => {
     await expect(() => {
       return sut.execute({
-        storeId: "invalid store id test",
+        storeOwnerEmail: "invalid store id test",
         userToReceive: newUser.email,
         valueToGive: 1000,
       })

@@ -6,7 +6,7 @@ import { UserRepository } from "../../repositories/UserRepository"
 import WalletRepository from "../../repositories/WalletRepository"
 
 interface UpdateUserStoreCoinServiceRequest {
-  storeId: string
+  storeOwnerEmail: string
   newValue: number
   userToUpdate: string
 }
@@ -26,17 +26,17 @@ export default class UpdateUserStoreCoinService {
 
   async execute({
     newValue,
-    storeId,
+    storeOwnerEmail,
     userToUpdate,
   }: UpdateUserStoreCoinServiceRequest): Promise<UpdateUserStoreCoinServiceResponse> {
-    if (!storeId) {
+    if (!storeOwnerEmail) {
       throw {
         status: 403,
         error: "You must provide an valid store id.",
       }
     }
 
-    const getStore = await this.storeRepository.findUniqueById(storeId)
+    const getStore = await this.storeRepository.findUserStore(storeOwnerEmail)
 
     const getUser = await this.userRepository.findByEmail(userToUpdate)
 
@@ -56,6 +56,19 @@ export default class UpdateUserStoreCoinService {
       await this.storeCoinRepository.findStoreCoin(getStore.id)
 
     const wallet = await this.walletRepository.findUserWallet(getUser.id)
+
+    const getUserCoins = await this.userCoinRepository.findUserCoins(wallet.id)
+
+    const checkIfUserHasThisCoin = getUserCoins.some(
+      (coin) => coin.coin_name === storeCoinName && coin.fkcoin_owner === wallet.id
+    )
+
+    if (!checkIfUserHasThisCoin) {
+      throw {
+        status: 404,
+        error: "User hasn't this coin, insert some value before update.",
+      }
+    }
 
     const userCoinUpdated = await this.userCoinRepository.updateFullValue(
       newValue,

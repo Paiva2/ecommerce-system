@@ -6,7 +6,7 @@ import { UserRepository } from "../../repositories/UserRepository"
 import WalletRepository from "../../repositories/WalletRepository"
 
 interface GiveUserStoreCoinServiceRequest {
-  storeId: string
+  storeOwnerEmail: string
   valueToGive: number
   userToReceive: string
 }
@@ -21,11 +21,11 @@ export default class GiveUserStoreCoinService {
   ) {}
 
   async execute({
-    storeId,
+    storeOwnerEmail,
     userToReceive,
     valueToGive,
   }: GiveUserStoreCoinServiceRequest) {
-    if (!storeId) {
+    if (!storeOwnerEmail) {
       throw {
         status: 403,
         error: "You must provide an valid store id.",
@@ -52,7 +52,7 @@ export default class GiveUserStoreCoinService {
       getUserWallet.id
     )
 
-    const getStore = await this.storeRepository.findUserStore(storeId)
+    const getStore = await this.storeRepository.findUserStore(storeOwnerEmail)
 
     if (!getStore) {
       throw {

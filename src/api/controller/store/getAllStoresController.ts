@@ -13,8 +13,6 @@ export default class GetAllStoresController {
     } catch (e) {
       const err = e as ErrorService
 
-      console.log(e)
-
       return res.status(err.status).send({ message: err.error })
     }
   }

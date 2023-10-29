@@ -1,22 +1,23 @@
 import { Request, Response } from "express"
 import StoreControllerFactory from "./factory"
-import { ErrorService, JwtSchema } from "../../@types/types"
 import retrieveJwt from "../../../utils/retrieveJwt"
+import { ErrorService, JwtSchema } from "../../@types/types"
 
-export default class GiveUserStoreCoinController {
+export default class UpdateUserStoreCoinController {
   async handle(req: Request, res: Response) {
-    const { userToReceive, valueToGive } = req.body
+    const { userToUpdate, newValue } = req.body
+
     const token = req.cookies["voucher-token"]
 
     const parseToken = retrieveJwt(token) as JwtSchema
 
-    const { giveUserStoreCoinService } = StoreControllerFactory.handle()
+    const { updateUserStoreCoinService } = StoreControllerFactory.handle()
 
     try {
-      await giveUserStoreCoinService.execute({
+      await updateUserStoreCoinService.execute({
+        newValue,
         storeOwnerEmail: parseToken.data.email,
-        userToReceive,
-        valueToGive,
+        userToUpdate,
       })
 
       return res.status(204).send()

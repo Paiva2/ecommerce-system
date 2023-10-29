@@ -78,7 +78,7 @@ describe("Update user store coin service", () => {
 
     const { userCoinUpdated } = await sut.execute({
       newValue: 0,
-      storeId: store.id,
+      storeOwnerEmail: "test@test.com",
       userToUpdate: userToReceive.email,
     })
 
@@ -92,11 +92,27 @@ describe("Update user store coin service", () => {
     )
   })
 
-  it("should not be possible to update an user store coins without an store id.", async () => {
+  it("should not be possible to update an user store coins if user hasnt that coin to update.", async () => {
+    await inMemoryStoreCoin.insert("mycointest", store.id)
+
+    await expect(() => {
+      return sut.execute({
+        newValue: 100.3,
+        storeOwnerEmail: "test@test.com",
+        userToUpdate: userToReceive.email,
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "User hasn't this coin, insert some value before update.",
+      })
+    )
+  })
+
+  it("should not be possible to update an user store coins without an store owner email.", async () => {
     await expect(() => {
       return sut.execute({
         newValue: 0,
-        storeId: null,
+        storeOwnerEmail: null,
         userToUpdate: userToReceive.email,
       })
     }).rejects.toEqual(
@@ -110,7 +126,7 @@ describe("Update user store coin service", () => {
     await expect(() => {
       return sut.execute({
         newValue: 100,
-        storeId: store.id,
+        storeOwnerEmail: "test@test.com",
         userToUpdate: "inexistent@email.com",
       })
     }).rejects.toEqual(
@@ -124,7 +140,7 @@ describe("Update user store coin service", () => {
     await expect(() => {
       return sut.execute({
         newValue: 200,
-        storeId: "inexistent",
+        storeOwnerEmail: "inexistent@email.com",
         userToUpdate: userToReceive.email,
       })
     }).rejects.toEqual(

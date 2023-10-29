@@ -74,6 +74,18 @@ export default class PgUserCoin implements UserCoinRepository {
   }
 
   async updateFullValue(newValue: number, walletId: string, storeCoinName: string) {
-    return null
+    const [userCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
+      `
+      UPDATE "${this.#schema}".user_coin
+      SET quantity = $1 
+      WHERE coin_name = $2 AND fkcoin_owner = $3
+      RETURNING *
+    `,
+      newValue,
+      storeCoinName,
+      walletId
+    )
+
+    return userCoin
   }
 }

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "user_coin" ALTER COLUMN "quantity" SET DEFAULT 0,
+ALTER COLUMN "quantity" SET DATA TYPE DECIMAL(65,30);
