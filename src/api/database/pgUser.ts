@@ -1,5 +1,5 @@
 import prisma from "../../lib/prisma"
-import { User, UserCoin, Wallet } from "../@types/types"
+import { User } from "../@types/types"
 import { UserRepository } from "../repositories/UserRepository"
 import { randomUUID } from "node:crypto"
 import "dotenv/config"
@@ -29,8 +29,6 @@ export default class PgUser implements UserRepository {
   }
 
   async findByEmail(email: string) {
-    let coins: UserCoin[] = []
-
     const [user] = await prisma.$queryRawUnsafe<User[]>(
       `
       SELECT * FROM "${this.#schema}".user
@@ -41,41 +39,7 @@ export default class PgUser implements UserRepository {
 
     if (!user) return null
 
-    const [userWallet] = await prisma.$queryRawUnsafe<Wallet[]>(
-      `
-      SELECT * FROM "${this.#schema}".user_wallet
-      WHERE fkwallet_owner = $1
-    `,
-      user.id
-    )
-
-    const userCoins = await prisma.$queryRawUnsafe<UserCoin[]>(
-      `
-      SELECT * FROM "${this.#schema}".user_coin
-      WHERE fkcoin_owner = $1
-    `,
-      userWallet.id
-    )
-
-    for (let coin of userCoins) {
-      coins.push({
-        coin_name: coin.coin_name,
-        fkcoin_owner: coin.fkcoin_owner,
-        id: coin.id,
-        quantity: Number(String(coin.quantity)), // serialize big int
-        updated_at: coin.updated_at,
-      })
-    }
-
-    const formatUser = {
-      ...user,
-      wallet: {
-        ...userWallet,
-        coins,
-      },
-    }
-
-    return formatUser
+    return user
   }
 
   async update(email: string, newPassword: string) {

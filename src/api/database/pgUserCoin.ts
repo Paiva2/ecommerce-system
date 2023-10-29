@@ -58,12 +58,14 @@ export default class PgUserCoin implements UserCoinRepository {
       walletId
     )
 
+    // serialize big int from quantity
+
     for (let coin of userCoins) {
       coins.push({
         coin_name: coin.coin_name,
         fkcoin_owner: coin.fkcoin_owner,
         id: coin.id,
-        quantity: Number(String(coin.quantity)), // serialize big int
+        quantity: Number(String(coin.quantity)),
         updated_at: coin.updated_at,
       })
     }
