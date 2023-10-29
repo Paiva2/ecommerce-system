@@ -18,11 +18,11 @@ const dtoValidation = (SchemaToValidate: any) => {
 
     if (errorsArr.length > 0) {
       const formatErrors = errorsArr.reduce((initObj, errorMsg) => {
-        const getFieldWithError = errorMsg.split(" ")[0]
+        const [getFieldWithError, getFieldMessage] = errorMsg.split(";")
 
         return {
           ...initObj,
-          [getFieldWithError]: errorMsg,
+          [getFieldWithError]: getFieldMessage.trim(),
         }
       }, {})
 

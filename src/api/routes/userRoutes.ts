@@ -6,7 +6,12 @@ import GetUserProfileController from "../controller/user/getUserProfileControlle
 import jwtCheck from "../middleware/jwtCheck"
 import ChangeUserProfileController from "../controller/user/changeUserProfileController"
 import dtoValidation from "../middleware/dtoValidation"
-import { RegisterNewUserDTO } from "../dto/user/userDTO"
+import {
+  AuthenticateUserControllerDTO,
+  ChangeUserPasswordDTO,
+  ChangeUserProfileDTO,
+  RegisterNewUserDTO,
+} from "../dto/user/userDTO"
 
 const registerNewUserController = new RegisterNewUserController()
 const changePasswordUserController = new ChangePasswordUserController()
@@ -21,11 +26,23 @@ export default function userRoutes(app: Express) {
     registerNewUserController.handle
   )
 
-  app.patch("/new-password", changePasswordUserController.handle)
+  app.patch(
+    "/new-password",
+    [dtoValidation(ChangeUserPasswordDTO)],
+    changePasswordUserController.handle
+  )
 
-  app.post("/login", authenticateUserController.handle)
+  app.post(
+    "/login",
+    [dtoValidation(AuthenticateUserControllerDTO)],
+    authenticateUserController.handle
+  )
 
   app.get("/profile", [jwtCheck], getUserProfileController.handle)
 
-  app.patch("/profile", [jwtCheck], changeUserProfileController.handle)
+  app.patch(
+    "/profile",
+    [jwtCheck, dtoValidation(ChangeUserProfileDTO)],
+    changeUserProfileController.handle
+  )
 }
