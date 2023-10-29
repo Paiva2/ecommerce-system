@@ -25,9 +25,14 @@ describe.only("Register new user controller", () => {
       username: "admin",
     })
 
-    expect(newUser.statusCode).toEqual(409)
-    expect(newUser.body.message).toEqual(
-      "You must provide all informations. Username, email and password."
+    expect(newUser.statusCode).toEqual(422)
+    expect(newUser.body).toEqual(
+      expect.objectContaining({
+        validationErrors: true,
+        errors: {
+          email: "Invalid e-mail format. Example: email@domain.com",
+        },
+      })
     )
   })
 
@@ -38,8 +43,15 @@ describe.only("Register new user controller", () => {
       username: "admin",
     })
 
-    expect(newUser.statusCode).toEqual(403)
-    expect(newUser.body.message).toEqual("Password must have at least 6 characters.")
+    expect(newUser.statusCode).toEqual(422)
+    expect(newUser.body).toEqual(
+      expect.objectContaining({
+        validationErrors: true,
+        errors: {
+          password: "Must have at least 6 characters.",
+        },
+      })
+    )
   })
 
   it("should not be possible to register a new user if user already exists.", async () => {

@@ -34,9 +34,14 @@ describe("Authenticate user controller", () => {
       password: "",
     })
 
-    expect(authUser.statusCode).toEqual(409)
-    expect(authUser.body.message).toEqual(
-      "You must provide all user informations. E-mail and Password."
+    expect(authUser.statusCode).toEqual(422)
+    expect(authUser.body).toEqual(
+      expect.objectContaining({
+        validationErrors: true,
+        errors: {
+          password: "Must have at least 6 characters.",
+        },
+      })
     )
   })
 

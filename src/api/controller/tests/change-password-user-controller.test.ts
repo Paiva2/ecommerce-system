@@ -31,9 +31,14 @@ describe("Change user password controller", () => {
       newPassword: "",
     })
 
-    expect(updatePassword.statusCode).toEqual(409)
-    expect(updatePassword.body.message).toEqual(
-      "You must provide all informations. Email and password."
+    expect(updatePassword.statusCode).toEqual(422)
+    expect(updatePassword.body).toEqual(
+      expect.objectContaining({
+        validationErrors: true,
+        errors: {
+          newPassword: "Must have at least 6 characters.",
+        },
+      })
     )
   })
 
@@ -43,9 +48,14 @@ describe("Change user password controller", () => {
       newPassword: "12345",
     })
 
-    expect(updatePassword.statusCode).toEqual(403)
-    expect(updatePassword.body.message).toEqual(
-      "Password must have at least 6 characters."
+    expect(updatePassword.statusCode).toEqual(422)
+    expect(updatePassword.body).toEqual(
+      expect.objectContaining({
+        validationErrors: true,
+        errors: {
+          newPassword: "Must have at least 6 characters.",
+        },
+      })
     )
   })
 
