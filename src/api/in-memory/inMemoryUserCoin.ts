@@ -45,4 +45,25 @@ export default class InMemoryUserCoin implements UserCoinRepository {
 
     return userCoin
   }
+
+  async updateFullValue(newValue: number, walletId: string, storeCoinName: string) {
+    let updatedUserCoin = {} as UserCoin
+
+    const updatedUserCoins = this.userCoins.map((coin) => {
+      if (coin.fkcoin_owner === walletId && coin.coin_name === storeCoinName) {
+        coin = {
+          ...coin,
+          quantity: newValue,
+        }
+
+        updatedUserCoin = coin
+      }
+
+      return coin
+    })
+
+    this.userCoins = updatedUserCoins
+
+    return updatedUserCoin
+  }
 }

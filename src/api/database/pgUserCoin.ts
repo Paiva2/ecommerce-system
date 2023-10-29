@@ -72,4 +72,8 @@ export default class PgUserCoin implements UserCoinRepository {
 
     return coins
   }
+
+  async updateFullValue(newValue: number, walletId: string, storeCoinName: string) {
+    return null
+  }
 }
