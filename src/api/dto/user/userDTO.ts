@@ -1,4 +1,5 @@
 import { Length, IsEmail, IsDefined, IsString, ValidateIf } from "class-validator"
+import "reflect-metadata"
 
 export class RegisterNewUserDTO {
   @IsDefined({ message: "username; Can't be empty." })

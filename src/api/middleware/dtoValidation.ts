@@ -11,14 +11,33 @@ const dtoValidation = (SchemaToValidate: any) => {
     const errors = await validate(formatSchemaAndDto)
 
     for (let err of errors) {
-      for (let key of Object.keys(err?.constraints)) {
-        errorsArr.push(err.constraints[key])
+      if (err?.constraints) {
+        for (let key of Object.keys(err?.constraints)) {
+          errorsArr.push(err.constraints[key])
+        }
+      } else if (err.children) {
+        for (let key of Object.keys(err?.children)) {
+          errorsArr.push(err.children[key])
+        }
       }
     }
 
     if (errorsArr.length > 0) {
       const formatErrors = errorsArr.reduce((initObj, errorMsg) => {
-        const [getFieldWithError, getFieldMessage] = errorMsg.split(";")
+        let getFieldWithError = ""
+        let getFieldMessage = ""
+
+        if (errorMsg.constraints) {
+          for (let err of Object.values(errorMsg.constraints)) {
+            const error = err as string
+
+            getFieldWithError = error.split(";")[0]
+            getFieldMessage = error.split(";")[1]
+          }
+        } else {
+          getFieldWithError = errorMsg.split(";")[0]
+          getFieldMessage = errorMsg.split(";")[1]
+        }
 
         return {
           ...initObj,
