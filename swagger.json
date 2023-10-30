@@ -376,6 +376,51 @@
             "description": "Operation error."
           }
         }
+      },
+
+      "patch": {
+        "tags": ["Store"],
+        "summary": "Update user store coin full value.",
+        "description": "Update user store coins value (you need to be logged in as an store before).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userToUpdate": {
+                    "description": "Email of user that will receive the update of store coins.",
+                    "type": "string",
+                    "example": "usertoupdate@example.com"
+                  },
+                  "newValue": {
+                    "description": "Value that this user will update store coin value.",
+                    "type": "string",
+                    "example": "2000"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Operation success."
+          },
+          "404": {
+            "description": "Store or user to receive not found, or user hasnt this coin on wallet to update"
+          },
+          "409": {
+            "description": "You must provide an valid value, greater than 0."
+          },
+          "403": {
+            "description": "You must provide an valid store id (not empty on body)."
+          },
+          "500": {
+            "description": "Operation error."
+          }
+        }
       }
     }
   }

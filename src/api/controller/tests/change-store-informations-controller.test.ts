@@ -38,11 +38,9 @@ describe("Change store informations controller", () => {
       .patch("/store")
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
-        storeUpdate: {
-          storeId: profileBeforeEdit.body.data.store.id,
-          name: "update name",
-          description: "update description",
-        },
+        storeId: profileBeforeEdit.body.data.store.id,
+        name: "update name",
+        description: "update description",
       })
 
     const profileAfterEdit = await request(app)
@@ -97,10 +95,8 @@ describe("Change store informations controller", () => {
       .patch("/store")
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
-        storeUpdate: {
-          storeId: profileBeforeEdit.body.data.store.id,
-          name: "store name update",
-        },
+        storeId: profileBeforeEdit.body.data.store.id,
+        name: "store name update",
       })
 
     const profileAfterEdit = await request(app)
@@ -155,10 +151,8 @@ describe("Change store informations controller", () => {
       .patch("/store")
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
-        storeUpdate: {
-          storeId: profileBeforeEdit.body.data.store.id,
-          description: "update store description",
-        },
+        storeId: profileBeforeEdit.body.data.store.id,
+        description: "update store description",
       })
 
     const profileAfterEdit = await request(app)
@@ -213,9 +207,7 @@ describe("Change store informations controller", () => {
       .patch("/store")
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
-        storeUpdate: {
-          storeId: profileBeforeEdit.body.data.store.id,
-        },
+        storeId: profileBeforeEdit.body.data.store.id,
       })
 
     const profileAfterEdit = await request(app)
@@ -241,13 +233,9 @@ describe("Change store informations controller", () => {
   })
 
   it("should not be possible to update store informations without an valid auth token.", async () => {
-    const update = await request(app)
-      .patch("/store")
-      .send({
-        storeUpdate: {
-          storeId: "",
-        },
-      })
+    const update = await request(app).patch("/store").send({
+      storeId: "",
+    })
 
     expect(update.statusCode).toBe(403)
     expect(update.body.message).toEqual("Invalid token.")
@@ -269,9 +257,7 @@ describe("Change store informations controller", () => {
       .patch("/store")
       .set("Cookie", login.headers["set-cookie"][0])
       .send({
-        storeUpdate: {
-          storeId: "inexistent",
-        },
+        storeId: "inexistent",
       })
 
     expect(update.statusCode).toBe(404)

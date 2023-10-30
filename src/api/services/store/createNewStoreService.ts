@@ -59,6 +59,7 @@ export default class CreateNewStoreService {
       storeDescription
     )
 
+    // TODO, ADD STORE COIN NAME CHECK BEFORE CREATION TO SEE IF EXISTS
     const newStoreCoin = await this.storeCoinRepository.insert(
       storeCoin,
       createdStore.id

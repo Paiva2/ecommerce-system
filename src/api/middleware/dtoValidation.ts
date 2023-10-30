@@ -11,7 +11,7 @@ const dtoValidation = (SchemaToValidate: any) => {
     const errors = await validate(formatSchemaAndDto)
 
     for (let err of errors) {
-      for (let key of Object.keys(err.constraints)) {
+      for (let key of Object.keys(err?.constraints)) {
         errorsArr.push(err.constraints[key])
       }
     }

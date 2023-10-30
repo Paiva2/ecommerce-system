@@ -91,4 +91,30 @@ describe("Create new store controller", () => {
     expect(storeCreation.statusCode).toBe(403)
     expect(storeCreation.body.message).toBe("User already has an store.")
   })
+
+  it("should not be possible to create a new store for an user if store coin or store name are not provided.", async () => {
+    const login = await request(app).post("/login").send({
+      email: "admin@admin.com.br",
+      password: "123456",
+    })
+
+    const storeCreation = await request(app)
+      .post("/store")
+      .set("Cookie", login.headers["set-cookie"][0])
+      .send({
+        storeName: "",
+        storeCoin: "",
+      })
+
+    expect(storeCreation.statusCode).toBe(422)
+    expect(storeCreation.body).toEqual(
+      expect.objectContaining({
+        validationErrors: true,
+        errors: {
+          storeName: "Can't be empty.",
+          storeCoin: "Can't be empty.",
+        },
+      })
+    )
+  })
 })

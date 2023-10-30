@@ -5,7 +5,7 @@ import retrieveJwt from "../../../utils/retrieveJwt"
 
 export default class ChangeStoreInformationsController {
   async handle(req: Request, res: Response) {
-    const { storeUpdate } = req.body
+    const storeUpdate = req.body
     const token = req.cookies["voucher-token"]
 
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema

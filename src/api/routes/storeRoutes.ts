@@ -5,6 +5,13 @@ import GetAllStoresController from "../controller/store/getAllStoresController"
 import ChangeStoreInformationsController from "../controller/store/changeStoreInformationsController"
 import GiveUserStoreCoinController from "../controller/store/giveUserStoreCoinController"
 import UpdateUserStoreCoinController from "../controller/store/updateUserStoreCoinController"
+import dtoValidation from "../middleware/dtoValidation"
+import {
+  ChangeStoreInformationsDTO,
+  CreateNewStoreDTO,
+  GiveUserStoreCoinDTO,
+  UpdateUserStoreCoinDTO,
+} from "../dto/store/storeDTO"
 
 const createNewStoreController = new CreateNewStoreController()
 const getAllStoresController = new GetAllStoresController()
@@ -13,13 +20,29 @@ const giveUserStoreCoinController = new GiveUserStoreCoinController()
 const updateUserStoreCoinController = new UpdateUserStoreCoinController()
 
 export default function storeRoutes(app: Express) {
-  app.post("/store", [jwtCheck], createNewStoreController.handle)
+  app.post(
+    "/store",
+    [jwtCheck, dtoValidation(CreateNewStoreDTO)],
+    createNewStoreController.handle
+  )
 
   app.get("/store", getAllStoresController.handle)
 
-  app.patch("/store", [jwtCheck], changeStoreInformationsController.handle)
+  app.patch(
+    "/store",
+    [jwtCheck, dtoValidation(ChangeStoreInformationsDTO)],
+    changeStoreInformationsController.handle
+  )
 
-  app.post("/store-coin", [jwtCheck], giveUserStoreCoinController.handle)
+  app.post(
+    "/store-coin",
+    [jwtCheck, dtoValidation(GiveUserStoreCoinDTO)],
+    giveUserStoreCoinController.handle
+  )
 
-  app.patch("/store-coin", [jwtCheck], updateUserStoreCoinController.handle)
+  app.patch(
+    "/store-coin",
+    [jwtCheck, dtoValidation(UpdateUserStoreCoinDTO)],
+    updateUserStoreCoinController.handle
+  )
 }
