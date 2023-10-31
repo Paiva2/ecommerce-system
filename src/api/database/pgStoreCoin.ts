@@ -20,7 +20,9 @@ export default class PgStoreCoin implements StoreCoinRepository {
 
   async insert(storeCoinName: string, storeCoinOwner: string) {
     try {
-      const [createdStoreCoin] = await prisma.$queryRawUnsafe<StoreCoin[]>(
+      const [createdStoreCoin] = await prisma.$queryRawUnsafe<
+        StoreCoin[]
+      >(
         `
         INSERT INTO "${this.#schema}".store_coin
         ("id", "store_coin_name", "fkstore_coin_owner")
@@ -51,6 +53,20 @@ export default class PgStoreCoin implements StoreCoinRepository {
       SELECT * from "${this.#schema}".store_coin
      `
     )
+
+    return storeCoin
+  }
+
+  async findStoreCoinByName(storeCoinName: string) {
+    const [storeCoin] = await prisma.$queryRawUnsafe<StoreCoin[]>(
+      `
+    SELECT * from "${this.#schema}".store_coin
+    WHERE store_coin_name = $1
+   `,
+      storeCoinName
+    )
+
+    if (!storeCoin) return null
 
     return storeCoin
   }

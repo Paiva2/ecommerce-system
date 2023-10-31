@@ -15,7 +15,11 @@ describe("Create new store service", () => {
     inMemoryUser = new InMemoryUser()
     inMemoryStoreCoin = new InMemoryStoreCoin()
 
-    sut = new CreateNewStoreService(inMemoryStore, inMemoryUser, inMemoryStoreCoin)
+    sut = new CreateNewStoreService(
+      inMemoryStore,
+      inMemoryUser,
+      inMemoryStoreCoin
+    )
 
     const newUser = {
       email: "test@test.com",
@@ -23,7 +27,11 @@ describe("Create new store service", () => {
       password: "1234567",
     }
 
-    await inMemoryUser.insert(newUser.email, newUser.username, newUser.password)
+    await inMemoryUser.insert(
+      newUser.email,
+      newUser.username,
+      newUser.password
+    )
   })
 
   it("should be possible to create a new store.", async () => {
@@ -51,6 +59,40 @@ describe("Create new store service", () => {
     })
   })
 
+  it("should not be possible to create a new store if store coin name already exists.", async () => {
+    const secondUser = {
+      email: "test2@test2.com",
+      username: "test user 2",
+      password: "1234567",
+    }
+
+    await inMemoryUser.insert(
+      secondUser.email,
+      secondUser.username,
+      secondUser.password
+    )
+
+    await sut.execute({
+      storeName: "test user 2",
+      storeOwner: "test2@test2.com",
+      storeCoin: "storecointest",
+      storeDescription: "this is my description",
+    })
+
+    await expect(() => {
+      return sut.execute({
+        storeName: "test user",
+        storeOwner: "test@test.com",
+        storeCoin: "storecointest",
+        storeDescription: "this is my description",
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "An store coin with this name is already registered.",
+      })
+    )
+  })
+
   it("should not be possible to create a new store if name and owner name are not provided.", async () => {
     await expect(() => {
       return sut.execute({
@@ -60,7 +102,8 @@ describe("Create new store service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        error: "You must provide all informations. Store name and store owner.",
+        error:
+          "You must provide all informations. Store name and store owner.",
       })
     )
   })

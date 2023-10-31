@@ -29,11 +29,14 @@ export default class CreateNewStoreService {
     if (!storeName || !storeOwner || !storeCoin) {
       throw {
         status: 403,
-        error: "You must provide all informations. Store name and store owner.",
+        error:
+          "You must provide all informations. Store name and store owner.",
       }
     }
 
-    const checkIfUserExists = await this.userRepository.findByEmail(storeOwner)
+    const checkIfUserExists = await this.userRepository.findByEmail(
+      storeOwner
+    )
 
     if (!checkIfUserExists) {
       throw {
@@ -42,14 +45,23 @@ export default class CreateNewStoreService {
       }
     }
 
-    const doesUserAlreadyHasAnStore = await this.storeRepository.findUserStore(
-      storeOwner
-    )
+    const doesUserAlreadyHasAnStore =
+      await this.storeRepository.findUserStore(storeOwner)
 
     if (doesUserAlreadyHasAnStore) {
       throw {
         status: 403,
         error: "User already has an store.",
+      }
+    }
+
+    const doesThisStoreCoinNameAlreadyExists =
+      await this.storeCoinRepository.findStoreCoinByName(storeCoin)
+
+    if (doesThisStoreCoinNameAlreadyExists) {
+      throw {
+        status: 409,
+        error: "An store coin with this name is already registered.",
       }
     }
 
@@ -59,7 +71,6 @@ export default class CreateNewStoreService {
       storeDescription
     )
 
-    // TODO, ADD STORE COIN NAME CHECK BEFORE CREATION TO SEE IF EXISTS
     const newStoreCoin = await this.storeCoinRepository.insert(
       storeCoin,
       createdStore.id

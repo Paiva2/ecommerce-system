@@ -57,6 +57,47 @@ describe("Create new store controller", () => {
     )
   })
 
+  it("should not be possible to create a new store for an user if store coin already exists.", async () => {
+    const login = await request(app).post("/login").send({
+      email: "admin@admin.com.br",
+      password: "123456",
+    })
+
+    await request(app) // first store creation
+      .post("/store")
+      .set("Cookie", login.headers["set-cookie"][0])
+      .send({
+        storeName: "test store",
+        storeDescription: "test store description",
+        storeCoin: "mycoinname",
+      })
+
+    await request(app).post("/register").send({
+      email: "secondstoreuser@test.com.br",
+      password: "123456",
+      username: "test",
+    })
+
+    const loginOnSecondAcc = await request(app).post("/login").send({
+      email: "secondstoreuser@test.com.br",
+      password: "123456",
+    })
+
+    const secondStoreCreation = await request(app) // second store creation
+      .post("/store")
+      .set("Cookie", loginOnSecondAcc.headers["set-cookie"][0])
+      .send({
+        storeName: "test store",
+        storeDescription: "test store description",
+        storeCoin: "mycoinname",
+      })
+
+    expect(secondStoreCreation.statusCode).toEqual(409)
+    expect(secondStoreCreation.body.message).toEqual(
+      "An store coin with this name is already registered."
+    )
+  })
+
   it("should not be possible to create a new store for a user without auth token", async () => {
     const res = await request(app).post("/store").send({
       storeName: "test store",
@@ -89,7 +130,9 @@ describe("Create new store controller", () => {
       })
 
     expect(storeCreation.statusCode).toBe(403)
-    expect(storeCreation.body.message).toBe("User already has an store.")
+    expect(storeCreation.body.message).toBe(
+      "User already has an store."
+    )
   })
 
   it("should not be possible to create a new store for an user if store coin or store name are not provided.", async () => {

@@ -2,7 +2,9 @@ import { StoreCoinRepository } from "../repositories/StoreCoinRepository"
 import { randomUUID } from "node:crypto"
 import { StoreCoin } from "../@types/types"
 
-export default class InMemoryStoreCoin implements StoreCoinRepository {
+export default class InMemoryStoreCoin
+  implements StoreCoinRepository
+{
   #storeCoins: StoreCoin[] = []
 
   async findStoreCoin(storeId: string) {
@@ -31,5 +33,15 @@ export default class InMemoryStoreCoin implements StoreCoinRepository {
 
   async getAll() {
     return this.#storeCoins
+  }
+
+  async findStoreCoinByName(storeCoinName: string) {
+    const doesStoreCoinNameAlreadyExists = this.#storeCoins.find(
+      (storeCoin) => storeCoin.store_coin_name === storeCoinName
+    )
+
+    if (!doesStoreCoinNameAlreadyExists) return null
+
+    return doesStoreCoinNameAlreadyExists
   }
 }
