@@ -3,7 +3,7 @@ import { ErrorService } from "../../@types/types"
 import UserControllerFactory from "./factory"
 
 export default class ChangePasswordUserController {
-  async handle(request: Request, response: Response) {
+  static async handle(request: Request, response: Response) {
     const { email, newPassword } = request.body
 
     const { changePasswordUserService } = UserControllerFactory.handle()

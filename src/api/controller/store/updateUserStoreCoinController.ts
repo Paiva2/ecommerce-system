@@ -4,7 +4,7 @@ import retrieveJwt from "../../../utils/retrieveJwt"
 import { ErrorService, JwtSchema } from "../../@types/types"
 
 export default class UpdateUserStoreCoinController {
-  async handle(req: Request, res: Response) {
+  static async handle(req: Request, res: Response) {
     const { userToUpdate, newValue } = req.body
 
     const token = req.cookies["voucher-token"]

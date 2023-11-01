@@ -3,7 +3,7 @@ import StoreControllerFactory from "./factory"
 import { ErrorService } from "../../@types/types"
 
 export default class GetAllStoresController {
-  async handle(_: Request, res: Response) {
+  static async handle(_: Request, res: Response) {
     const { getAllStoresService } = StoreControllerFactory.handle()
 
     try {

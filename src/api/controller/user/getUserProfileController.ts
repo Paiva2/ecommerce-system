@@ -4,7 +4,7 @@ import retrieveJwt from "../../../utils/retrieveJwt"
 import UserControllerFactory from "./factory"
 
 export default class GetUserProfileController {
-  async handle(req: Request, res: Response) {
+  static async handle(req: Request, res: Response) {
     const token = req.cookies["voucher-token"]
 
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema

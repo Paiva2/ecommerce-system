@@ -12,37 +12,38 @@ import {
   GiveUserStoreCoinDTO,
   UpdateUserStoreCoinDTO,
 } from "../dto/store/storeDTO"
+import AddNewItemToStoreListController from "../controller/store/addNewItemToStoreListController"
 
-const createNewStoreController = new CreateNewStoreController()
-const getAllStoresController = new GetAllStoresController()
-const changeStoreInformationsController = new ChangeStoreInformationsController()
-const giveUserStoreCoinController = new GiveUserStoreCoinController()
-const updateUserStoreCoinController = new UpdateUserStoreCoinController()
+import multer from "multer"
+
+const upload = multer({ dest: "uploads/" })
 
 export default function storeRoutes(app: Express) {
   app.post(
     "/store",
     [jwtCheck, dtoValidation(CreateNewStoreDTO)],
-    createNewStoreController.handle
+    CreateNewStoreController.handle
   )
 
-  app.get("/store", getAllStoresController.handle)
+  app.get("/store", GetAllStoresController.handle)
 
   app.patch(
     "/store",
     [jwtCheck, dtoValidation(ChangeStoreInformationsDTO)],
-    changeStoreInformationsController.handle
+    ChangeStoreInformationsController.handle
   )
 
   app.post(
     "/store-coin",
     [jwtCheck, dtoValidation(GiveUserStoreCoinDTO)],
-    giveUserStoreCoinController.handle
+    GiveUserStoreCoinController.handle
   )
 
   app.patch(
     "/store-coin",
     [jwtCheck, dtoValidation(UpdateUserStoreCoinDTO)],
-    updateUserStoreCoinController.handle
+    UpdateUserStoreCoinController.handle
   )
+
+  app.post("/store-item", [jwtCheck], AddNewItemToStoreListController.handle)
 }

@@ -4,7 +4,7 @@ import { ErrorService, JwtSchema } from "../../@types/types"
 import StoreControllerFactory from "./factory"
 
 export default class CreateNewStoreController {
-  async handle(req: Request, res: Response) {
+  static async handle(req: Request, res: Response) {
     const { storeName, storeDescription, storeCoin } = req.body
 
     const token = req.cookies["voucher-token"]

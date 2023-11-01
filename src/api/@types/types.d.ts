@@ -52,3 +52,47 @@ interface UserCoin {
   fkcoin_owner: string
   quantity: number
 }
+
+interface StoreItem {
+  id: string
+  item_name: string
+  value: number
+  quantity: number
+  description: string
+  fkstore_id: string
+  fkstore_coin: string
+  colors: string
+  sizes: string
+  item_image?: string
+  created_at?: Date
+  updated_at?: Date
+  promotion?: boolean
+  promotional_value?: number
+}
+
+export interface StoreItemInsert {
+  storeId: string
+  itemName: string
+  value: number
+  quantity: number
+  description: string
+  colors: string
+  sizes: string
+  storeCoin: string
+  updatedAt?: string
+  promotion?: boolean
+  promotionalValue?: number
+  itemImage?: string
+}
+
+export interface StoreItemRequestPayload {
+  itemName: string
+  value: number
+  quantity: number
+  description: string
+  promotion: boolean
+  promotionalValue: number
+  itemImage: string
+  colors: string
+  sizes: string
+}

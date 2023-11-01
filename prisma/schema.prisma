@@ -63,26 +63,30 @@ model StoreCoin {
   updated_at         DateTime? @default(now())
   fkstore_coin_owner String    @unique @db.VarChar(50)
 
-  store Store @relation(fields: [fkstore_coin_owner], references: [id], onDelete: Cascade)
+  store     Store       @relation(fields: [fkstore_coin_owner], references: [id], onDelete: Cascade)
+  StoreItem StoreItem[]
 
   @@map("store_coin")
 }
 
 model StoreItem {
-  id          String    @id @default(uuid())
-  item_name   String
-  value       Int       @default(0)
-  quantity    Int       @default(1)
-  item_image  String?
-  description String?   @db.VarChar(500)
-  fkstore_id  String
-  created_At  DateTime? @default(now())
-  updated_at  DateTime? @default(now())
-  fkitem_coin String    @db.VarChar(50)
-  storeId     String?
-  promotion   String?   @db.VarChar(50)
+  id                String    @id @default(uuid())
+  item_name         String
+  value             Int
+  quantity          Int       @default(1)
+  colors            String    @db.VarChar(50)
+  sizes             String    @db.VarChar(50)
+  item_image        String?
+  description       String?   @db.VarChar(500)
+  created_at        DateTime? @default(now())
+  updated_at        DateTime? @default(now())
+  promotion         Boolean?  @default(false)
+  promotional_value Int?
+  fkstore_id        String
+  fkstore_coin      String
 
-  store Store? @relation(fields: [storeId], references: [id])
+  store     Store?     @relation(fields: [fkstore_id], references: [id], onDelete: Cascade)
+  storeCoin StoreCoin? @relation(fields: [fkstore_coin], references: [store_coin_name], onDelete: Cascade)
 
   @@map("store_item")
 }

@@ -1,9 +1,11 @@
 import PgStore from "../../database/pgStore"
 import PgStoreCoin from "../../database/pgStoreCoin"
+import PgStoreItem from "../../database/pgStoreItem"
 import PgUser from "../../database/pgUser"
 import PgUserCoin from "../../database/pgUserCoin"
 import PgWallet from "../../database/pgWallet"
 import { UserRepository } from "../../repositories/UserRepository"
+import AddNewItemToStoreListService from "../../services/store/addNewItemToStoreListService"
 import ChangeStoreInformationsService from "../../services/store/changeStoreInformationsService"
 import CreateNewStoreService from "../../services/store/createNewStoreService"
 import GetAllStoresService from "../../services/store/getAllStoresService"
@@ -17,6 +19,13 @@ export default class StoreControllerFactory {
     const userCoinRepository = new PgUserCoin()
     const storeCoinRepository = new PgStoreCoin()
     const walletRepository = new PgWallet()
+    const storeItemRepository = new PgStoreItem()
+
+    const addNewItemToStoreListService = new AddNewItemToStoreListService(
+      storeRepository,
+      storeItemRepository,
+      storeCoinRepository
+    )
 
     const updateUserStoreCoinService = new UpdateUserStoreCoinService(
       storeRepository,
@@ -52,6 +61,7 @@ export default class StoreControllerFactory {
     return {
       createNewStoreService,
       getAllStoresService,
+      addNewItemToStoreListService,
       changeStoreInformationsService,
       giveUserStoreCoinService,
       updateUserStoreCoinService,

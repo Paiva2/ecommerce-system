@@ -3,7 +3,7 @@ import { ErrorService } from "../../@types/types"
 import UserControllerFactory from "./factory"
 
 export default class RegisterNewUserController {
-  async handle(request: Request, response: Response) {
+  static async handle(request: Request, response: Response) {
     const { username, password, email } = request.body
 
     const { registerNewUserService } = UserControllerFactory.handle()

@@ -13,36 +13,30 @@ import {
   RegisterNewUserDTO,
 } from "../dto/user/userDTO"
 
-const registerNewUserController = new RegisterNewUserController()
-const changePasswordUserController = new ChangePasswordUserController()
-const authenticateUserController = new AuthenticateUserController()
-const getUserProfileController = new GetUserProfileController()
-const changeUserProfileController = new ChangeUserProfileController()
-
 export default function userRoutes(app: Express) {
   app.post(
     "/register",
     [dtoValidation(RegisterNewUserDTO)],
-    registerNewUserController.handle
+    RegisterNewUserController.handle
   )
 
   app.patch(
     "/new-password",
     [dtoValidation(ChangeUserPasswordDTO)],
-    changePasswordUserController.handle
+    ChangePasswordUserController.handle
   )
 
   app.post(
     "/login",
     [dtoValidation(AuthenticateUserControllerDTO)],
-    authenticateUserController.handle
+    AuthenticateUserController.handle
   )
 
-  app.get("/profile", [jwtCheck], getUserProfileController.handle)
+  app.get("/profile", [jwtCheck], GetUserProfileController.handle)
 
   app.patch(
     "/profile",
     [jwtCheck, dtoValidation(ChangeUserProfileDTO)],
-    changeUserProfileController.handle
+    ChangeUserProfileController.handle
   )
 }

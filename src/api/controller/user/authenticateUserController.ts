@@ -5,7 +5,7 @@ import "dotenv/config"
 import UserControllerFactory from "./factory"
 
 export default class AuthenticateUserController {
-  async handle(req: Request, res: Response) {
+  static async handle(req: Request, res: Response) {
     const { email, password } = req.body
 
     const { authenticateUserService } = UserControllerFactory.handle()
