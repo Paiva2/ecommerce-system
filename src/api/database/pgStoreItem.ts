@@ -37,4 +37,17 @@ export default class PgStoreItem implements StoreItemRepository {
 
     return itemList
   }
+
+  async findStoreItems(storeId: string, storeCoinName: string) {
+    const itemList = await prisma.$queryRawUnsafe<StoreItem[]>(
+      `
+        SELECT * FROM "${this.schema}".store_item
+        WHERE fkstore_id = $1 AND fkstore_coin = $2
+    `,
+      storeId,
+      storeCoinName
+    )
+
+    return itemList
+  }
 }

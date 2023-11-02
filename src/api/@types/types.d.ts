@@ -21,6 +21,7 @@ export interface Store {
   fkstore_owner?: string
   description?: string
   store_coin?: StoreCoin
+  store_item?: StoreItem[]
 }
 
 interface StoreCoin {

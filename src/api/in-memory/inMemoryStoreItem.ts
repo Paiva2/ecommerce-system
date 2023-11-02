@@ -2,10 +2,8 @@ import { StoreItem, StoreItemInsert } from "../@types/types"
 import { StoreItemRepository } from "../repositories/StoreItemRepository"
 import { randomUUID } from "node:crypto"
 
-export default class InMemoryStoreItem
-  implements StoreItemRepository
-{
-  private storeItens = [] as StoreItem[]
+export default class InMemoryStoreItem implements StoreItemRepository {
+  private storeItems = [] as StoreItem[]
 
   async insert(newItemList: StoreItemInsert[]) {
     const newItemListFormatted = []
@@ -21,19 +19,29 @@ export default class InMemoryStoreItem
         created_at: new Date(),
         updated_at: new Date(),
         promotion: item.promotion ?? false,
-        promotional_value: item.promotion
-          ? item.promotionalValue
-          : null,
+        promotional_value: item.promotion ? item.promotionalValue : null,
         fkstore_id: item.storeId,
         fkstore_coin: item.storeCoin,
         colors: item.colors,
         sizes: item.sizes,
       }
 
-      this.storeItens.push(itemToInsert)
+      this.storeItems.push(itemToInsert)
       newItemListFormatted.push(itemToInsert)
     }
 
     return newItemListFormatted
+  }
+
+  async findStoreItems(storeId: string, storeCoinName: string) {
+    let storeItems = [] as StoreItem[]
+
+    for (let item of this.storeItems) {
+      if (item.fkstore_id === storeId && item.fkstore_coin === storeCoinName) {
+        storeItems.push(item)
+      }
+    }
+
+    return storeItems
   }
 }

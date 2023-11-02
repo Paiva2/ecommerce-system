@@ -15,6 +15,7 @@ import {
 import AddNewItemToStoreListController from "../controller/store/addNewItemToStoreListController"
 
 import multer from "multer"
+import GetSingleStoreController from "../controller/store/getSingleStoreController"
 
 const upload = multer({ dest: "uploads/" })
 
@@ -46,4 +47,6 @@ export default function storeRoutes(app: Express) {
   )
 
   app.post("/store-item", [jwtCheck], AddNewItemToStoreListController.handle)
+
+  app.get("/store/:storeId", GetSingleStoreController.handle)
 }
