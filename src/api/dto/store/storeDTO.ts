@@ -6,8 +6,14 @@ import {
   IsNumber,
   Min,
   MinLength,
+  ValidateNested,
+  IsArray,
+  Length,
+  IsBoolean,
+  ValidateIf,
+  ArrayMinSize,
 } from "class-validator"
-import { Expose } from "class-transformer"
+import { Expose, Type } from "class-transformer"
 import "reflect-metadata"
 
 export class CreateNewStoreDTO {
@@ -74,4 +80,62 @@ export class UpdateUserStoreCoinDTO {
     { message: "userToUpdate; Invalid e-mail format. Example: email@domain.com." }
   )
   userToUpdate: string
+}
+
+export class AddNewItemToStoreLIstSchema {
+  @IsDefined({ message: "itemName; Can't be empty." })
+  @IsString({ message: "itemName; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "itemName;  Must have at least 1 character.",
+  })
+  itemName: string
+
+  @IsDefined({ message: "value; Can't be empty." })
+  @IsNumber({}, { message: "value; Must be an number type." })
+  @Min(1, { message: "value; Can't be less than 1." })
+  value: number
+
+  @IsDefined({ message: "quantity; Can't be empty." })
+  @IsNumber({}, { message: "quantity; Must be an number type." })
+  @Min(1, { message: "quantity; Can't be less than 1." })
+  quantity: number
+
+  @IsDefined({ message: "description; Can't be empty." })
+  @IsString({ message: "description; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "description; Must have at least 1 character.",
+  })
+  description: string
+
+  @IsDefined({ message: "promotion; Can't be empty." })
+  @IsBoolean({ message: "promotion; Must be an true/false (Boolean)." })
+  promotion: boolean
+
+  @ValidateIf((props) => props.promotion === true)
+  @IsDefined({ message: "promotionalValue; Can't be empty." })
+  @IsNumber({}, { message: "promotionalValue; Must be an number type." })
+  @Min(0, { message: "promotionalValue; Can't be less than 0." })
+  promotionalValue: number
+
+  @IsString({ message: "itemImage; Must be an string type." })
+  @IsOptional()
+  itemImage: string
+
+  @IsDefined({ message: "colors; Can't be empty." })
+  @IsString({ message: "colors; Must be an string type." })
+  colors: string
+
+  @IsDefined({ message: "sizes; Can't be empty." })
+  @IsString({ message: "sizes; Must be an string type." })
+  sizes: string
+}
+
+export class AddNewItemToStoreListDTO {
+  @IsOptional()
+  @Expose()
+  @IsArray({ message: "itemList; Should be an array of objecs." })
+  @ValidateNested({ each: true, message: "itemList; Invalid item list schema." })
+  @ArrayMinSize(1, { message: "itemList; Can't be empty." })
+  @Type(() => AddNewItemToStoreLIstSchema)
+  itemList: AddNewItemToStoreLIstSchema
 }

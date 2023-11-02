@@ -7,6 +7,7 @@ import GiveUserStoreCoinController from "../controller/store/giveUserStoreCoinCo
 import UpdateUserStoreCoinController from "../controller/store/updateUserStoreCoinController"
 import dtoValidation from "../middleware/dtoValidation"
 import {
+  AddNewItemToStoreListDTO,
   ChangeStoreInformationsDTO,
   CreateNewStoreDTO,
   GiveUserStoreCoinDTO,
@@ -44,7 +45,11 @@ export default function storeRoutes(app: Express) {
     UpdateUserStoreCoinController.handle
   )
 
-  app.post("/store-item", [jwtCheck], AddNewItemToStoreListController.handle)
+  app.post(
+    "/store-item",
+    [jwtCheck, dtoValidation(AddNewItemToStoreListDTO)],
+    AddNewItemToStoreListController.handle
+  )
 
   app.get("/store/:storeId", GetSingleStoreController.handle)
 

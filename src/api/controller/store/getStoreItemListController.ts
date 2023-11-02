@@ -11,7 +11,7 @@ export default class GetStoreItemListController {
 
     try {
       const { storeItemList } = await getStoreItemListService.execute({
-        page: Number(storeListParamsPage.page),
+        page: storeListParamsPage.page ? Number(storeListParamsPage.page) : 1,
         storeId: storeListParams.storeId,
       })
 

@@ -67,7 +67,7 @@ describe("Get store item list controller", () => {
     expect(getStoreItemList.body.items.length).toBe(3)
   })
 
-  it("should be possible to get an store item list  by store id.", async () => {
+  it("should not be possible to get an store item list  if store id are inexistent.", async () => {
     const getStoreItemList = await request(app).get(`/list/""?page=3`).send()
 
     expect(getStoreItemList.statusCode).toEqual(404)

@@ -27,27 +27,31 @@ function readCsv(path: string) {
             reject(new Error("Error while reading CSV file."))
           }
 
-          for (let row of rows) {
-            csvRows.push({
-              itemName: row.name,
-              colors: row.colors,
-              description: row.description,
-              quantity: Number(row.quantity),
-              sizes: row.sizes,
-              value: Number(row.value),
-              itemImage: row.itemImage ?? null,
-              promotion: Boolean(row.promotion) ?? false,
-              promotionalValue: Number(row.promotionalValue) ?? 0,
+          try {
+            for (let row of rows) {
+              csvRows.push({
+                itemName: row.name,
+                colors: row.colors,
+                description: row.description,
+                quantity: Number(row.quantity),
+                sizes: row.sizes,
+                value: Number(row.value),
+                itemImage: row.itemImage ?? null,
+                promotion: Boolean(row.promotion) ?? false,
+                promotionalValue: Number(row.promotionalValue) ?? 0,
+              })
+            }
+
+            resolve(csvRows)
+          } catch {
+            throw new Error("Error while reading CSV file.")
+          } finally {
+            fs.unlink(path, (errorDeleting) => {
+              if (errorDeleting) {
+                throw new Error("Error while removing csv file.")
+              }
             })
           }
-
-          fs.unlink(path, (errorDeleting) => {
-            if (errorDeleting) {
-              throw new Error("Error while removing csv file.")
-            }
-          })
-
-          resolve(csvRows)
         }
       )
     })

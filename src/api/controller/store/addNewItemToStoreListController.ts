@@ -3,6 +3,7 @@ import { ErrorService, JwtSchema, StoreItemRequestPayload } from "../../@types/t
 import retrieveJwt from "../../../utils/retrieveJwt"
 import StoreControllerFactory from "./factory"
 import readCsv from "../../../utils/readCsv"
+import fs from "fs"
 
 export default class AddNewItemToStoreListController {
   static async handle(req: Request, res: Response) {
@@ -26,11 +27,9 @@ export default class AddNewItemToStoreListController {
         itemList,
       })
 
-      return res.status(204).send()
+      return res.status(201).send()
     } catch (e) {
       const err = e as ErrorService
-
-      console.log(e)
 
       return res.status(err.status).send({ message: err.error })
     }

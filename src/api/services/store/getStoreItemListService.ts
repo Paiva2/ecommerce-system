@@ -22,7 +22,7 @@ export default class GetStoreItemListService {
 
   async execute({
     storeId,
-    page,
+    page = 1,
   }: GetStoreItemListServiceRequest): Promise<GetStoreItemListServiceResponse> {
     if (!storeId) {
       throw {

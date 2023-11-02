@@ -255,6 +255,11 @@
                     "description": "New store description (optional)",
                     "type": "string",
                     "example": "My random description"
+                  },
+                  "storeCoin": {
+                    "description": "New store coin name",
+                    "type": "string",
+                    "example": "mystorecoin"
                   }
                 }
               }
@@ -280,7 +285,9 @@
         "summary": "Get all stores.",
         "description": "Get all created stores.",
         "responses": {
-          "200": {},
+          "200": {
+            "description": "Operation success."
+          },
           "500": {
             "description": "Internal server error."
           }
@@ -327,6 +334,42 @@
           },
           "404": {
             "description": "Store id not found."
+          }
+        }
+      }
+    },
+
+    "/store/{storeId}": {
+      "get": {
+        "tags": ["Store"],
+        "summary": "Get a single store by its id.",
+        "description": "Insert store id on URL parameter to get a single store.",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "schema": {
+              "storeId": {
+                "type": "string",
+                "example": "Existent store id",
+                "description": "Get a single store by its id.",
+                "required": true
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation success."
+          },
+          "403": {
+            "description": "Invalid store id."
+          },
+          "404": {
+            "description": "Store not found."
+          },
+          "500": {
+            "description": "Internal server error."
           }
         }
       }
@@ -419,6 +462,128 @@
           },
           "500": {
             "description": "Operation error."
+          }
+        }
+      }
+    },
+    "/store-item": {
+      "post": {
+        "tags": ["Store"],
+        "summary": "Insert a new item or a list of new itens on a store.",
+        "description": "Insert itens on your store (you need to be logged before).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "itemList": {
+                    "description": "List of items to insert.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "itemName": {
+                          "type": "string",
+                          "example": "Brown shoe"
+                        },
+                        "value": {
+                          "type": "number",
+                          "example": 200
+                        },
+                        "quantity": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "A beautiful brown shoe."
+                        },
+                        "promotion": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "promotionalValue": {
+                          "type": "number",
+                          "example": 130
+                        },
+                        "itemImage": {
+                          "type": "string",
+                          "example": "Your item image URL"
+                        },
+                        "colors": {
+                          "type": "string",
+                          "example": "red;green;blue"
+                        },
+                        "sizes": {
+                          "type": "string",
+                          "example": "xl;m"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Operation success."
+          },
+          "403": {
+            "description": "Invalid user e-mail."
+          },
+          "404": {
+            "description": "Store not found."
+          }
+        }
+      }
+    },
+
+    "/list/{storeId}": {
+      "get": {
+        "tags": ["Store"],
+        "summary": "List items of an store with store id.",
+        "description": "Insert store id on URL parameter to get store item list.",
+        "parameters": [
+          {
+            "name": "storeId",
+            "in": "path",
+            "schema": {
+              "storeId": {
+                "type": "string",
+                "example": "Existent store id",
+                "required": true
+              }
+            }
+          },
+
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "page": {
+                "type": "number",
+                "example": "1",
+                "required": true
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation success."
+          },
+          "403": {
+            "description": "Invalid store id."
+          },
+          "404": {
+            "description": "Store not found."
+          },
+          "500": {
+            "description": "Internal server error."
           }
         }
       }
