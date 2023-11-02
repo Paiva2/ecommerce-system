@@ -11,7 +11,7 @@ import "dotenv/config"
 
 const app: Express = express()
 
-const upload = multer({ dest: "uploads/" })
+const upload = multer({ dest: "temp/" })
 
 app.use(cookieParser())
 app.use(cors())

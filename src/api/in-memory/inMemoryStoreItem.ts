@@ -33,13 +33,17 @@ export default class InMemoryStoreItem implements StoreItemRepository {
     return newItemListFormatted
   }
 
-  async findStoreItems(storeId: string, storeCoinName: string) {
+  async findStoreItems(storeId: string, storeCoinName: string, page = null) {
     let storeItems = [] as StoreItem[]
 
     for (let item of this.storeItems) {
       if (item.fkstore_id === storeId && item.fkstore_coin === storeCoinName) {
         storeItems.push(item)
       }
+    }
+
+    if (page) {
+      return storeItems.splice((page - 1) * 10, page * 10)
     }
 
     return storeItems
