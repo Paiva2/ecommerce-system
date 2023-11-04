@@ -48,4 +48,14 @@ export default class InMemoryStoreItem implements StoreItemRepository {
 
     return storeItems
   }
+
+  async findStoreItem(storeId: string, itemId: string) {
+    const storeItem = this.storeItems.find(
+      (item) => item.id === itemId && item.fkstore_id === storeId
+    )
+
+    if (!storeItem) return null
+
+    return storeItem
+  }
 }

@@ -8,4 +8,6 @@ export interface StoreItemRepository {
     storeCoinName: string,
     page?: number
   ): Promise<StoreItem[]>
+
+  findStoreItem(storeId: string, itemId: string): Promise<StoreItem | null>
 }

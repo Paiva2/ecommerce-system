@@ -72,4 +72,8 @@ export default class PgStoreItem implements StoreItemRepository {
 
     return itemList
   }
+
+  async findItemById(itemId: string) {
+    return null
+  }
 }
