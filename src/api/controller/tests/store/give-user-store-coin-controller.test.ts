@@ -1,14 +1,14 @@
 import { afterAll, describe, expect, it } from "vitest"
 import request from "supertest"
-import server from "../../../server"
-import app from "../../../app"
+import server from "../../../../server"
+import app from "../../../../app"
 
-describe("Update user store coin controller", () => {
+describe("Give user store coin controller", () => {
   afterAll(() => {
     server.close()
   })
 
-  it("should be possible to update user store coins full value", async () => {
+  it("should be possible to give an user my store coins", async () => {
     await request(app).post("/register").send({
       email: "store@store.com.br",
       password: "123456",
@@ -26,7 +26,7 @@ describe("Update user store coin controller", () => {
       .send({
         storeName: "store giving",
         storeDescription: "test store description",
-        storeCoin: "cointest",
+        storeCoin: "mycoingived",
       })
 
     await request(app).post("/register").send({
@@ -35,21 +35,12 @@ describe("Update user store coin controller", () => {
       username: "user receiving",
     })
 
-    // inserting coin before update
-    await request(app)
+    const givingCoinAction = await request(app)
       .post("/store-coin")
       .set("Cookie", loginAsStore.headers["set-cookie"][0])
       .send({
         userToReceive: "userToReceive@email.com.br",
         valueToGive: 1000,
-      })
-
-    const updatingCoinValueAction = await request(app)
-      .patch("/store-coin")
-      .set("Cookie", loginAsStore.headers["set-cookie"][0])
-      .send({
-        userToUpdate: "userToReceive@email.com.br",
-        newValue: 100.2,
       })
 
     const loginAsUserThatReceived = await request(app).post("/login").send({
@@ -62,7 +53,7 @@ describe("Update user store coin controller", () => {
       .set("Cookie", loginAsUserThatReceived.headers["set-cookie"][0])
       .send()
 
-    expect(updatingCoinValueAction.statusCode).toBe(204)
+    expect(givingCoinAction.statusCode).toBe(204)
     expect(profileOfUserThatReceived.body.data).toEqual(
       expect.objectContaining({
         id: expect.any(String),
@@ -75,8 +66,8 @@ describe("Update user store coin controller", () => {
           fkwallet_owner: expect.any(String),
           coins: expect.arrayContaining([
             expect.objectContaining({
-              coin_name: "cointest",
-              quantity: 100.2,
+              coin_name: "mycoingived",
+              quantity: 1000,
             }),
           ]),
         }),
@@ -84,7 +75,7 @@ describe("Update user store coin controller", () => {
     )
   })
 
-  it("should only be possible to update user coin values if user already has that coin", async () => {
+  it("should be possible to add an user store coins if user already has that store coins", async () => {
     await request(app).post("/register").send({
       email: "store2@store2.com.br",
       password: "123456",
@@ -100,9 +91,9 @@ describe("Update user store coin controller", () => {
       .post("/store")
       .set("Cookie", loginAsStore.headers["set-cookie"][0])
       .send({
-        storeName: "store giving",
+        storeName: "store giving 2",
         storeDescription: "test store description",
-        storeCoin: "cointest2",
+        storeCoin: "mycoingived2",
       })
 
     await request(app).post("/register").send({
@@ -111,27 +102,61 @@ describe("Update user store coin controller", () => {
       username: "user receiving",
     })
 
-    const updatingCoinValueAction = await request(app)
-      .patch("/store-coin")
+    await request(app)
+      .post("/store-coin")
       .set("Cookie", loginAsStore.headers["set-cookie"][0])
       .send({
-        userToUpdate: "userToReceive2@email.com.br",
-        newValue: 100.2,
+        userToReceive: "userToReceive2@email.com.br",
+        valueToGive: 1000,
       })
 
-    expect(updatingCoinValueAction.statusCode).toBe(404)
-    expect(updatingCoinValueAction.body.message).toEqual(
-      "User hasn't this coin, insert some value before update."
+    const addingCoinAction = await request(app)
+      .post("/store-coin")
+      .set("Cookie", loginAsStore.headers["set-cookie"][0])
+      .send({
+        userToReceive: "userToReceive2@email.com.br",
+        valueToGive: 5000,
+      })
+
+    const loginAsUserThatReceived = await request(app).post("/login").send({
+      email: "userToReceive2@email.com.br",
+      password: "123456",
+    })
+
+    const profileOfUserThatReceived = await request(app)
+      .get("/profile")
+      .set("Cookie", loginAsUserThatReceived.headers["set-cookie"][0])
+      .send()
+
+    expect(addingCoinAction.statusCode).toBe(204)
+    expect(profileOfUserThatReceived.body.data).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        email: "userToReceive2@email.com.br",
+        username: "user receiving",
+        created_At: expect.any(String),
+        store: {},
+        wallet: expect.objectContaining({
+          id: expect.any(String),
+          fkwallet_owner: expect.any(String),
+          coins: expect.arrayContaining([
+            expect.objectContaining({
+              coin_name: "mycoingived2",
+              quantity: 6000,
+            }),
+          ]),
+        }),
+      })
     )
   })
 
-  it("should not be possible to update user coins without auth token", async () => {
-    const storeCoinUpdate = await request(app).patch("/store-coin").send({
-      userToUpdate: "userToReceive2@email.com.br",
-      newValue: 1000,
+  it("should not be possible to give user coins without auth token", async () => {
+    const storeCoinGiving = await request(app).post("/store-coin").send({
+      userToReceive: "userToReceive2@email.com.br",
+      valueToGive: 1000,
     })
 
-    expect(storeCoinUpdate.statusCode).toBe(403)
-    expect(storeCoinUpdate.body.message).toEqual("Invalid token.")
+    expect(storeCoinGiving.statusCode).toBe(403)
+    expect(storeCoinGiving.body.message).toEqual("Invalid token.")
   })
 })

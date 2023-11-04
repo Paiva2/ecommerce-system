@@ -1,7 +1,7 @@
 import { describe, it, expect, afterAll } from "vitest"
 import request from "supertest"
-import app from "../../../app"
-import server from "../../../server"
+import server from "../../../../server"
+import app from "../../../../app"
 
 describe("Change store informations controller", () => {
   afterAll(() => {

@@ -1,7 +1,7 @@
-import { describe, it, expect, afterAll, beforeAll } from "vitest"
 import request from "supertest"
-import app from "../../../app"
-import server from "../../../server"
+import { describe, it, expect, afterAll, beforeAll } from "vitest"
+import server from "../../../../server"
+import app from "../../../../app"
 
 describe("Add new item to store list controller", () => {
   beforeAll(async () => {

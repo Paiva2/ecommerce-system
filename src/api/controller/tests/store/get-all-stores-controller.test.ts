@@ -1,7 +1,7 @@
 import { describe, it, expect, afterAll, beforeAll } from "vitest"
 import request from "supertest"
-import app from "../../../app"
-import server from "../../../server"
+import app from "../../../../app"
+import server from "../../../../server"
 
 describe("Get all Stores Controller", () => {
   beforeAll(async () => {

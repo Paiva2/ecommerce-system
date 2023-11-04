@@ -17,6 +17,7 @@ import AddNewItemToStoreListController from "../controller/store/addNewItemToSto
 
 import GetSingleStoreController from "../controller/store/getSingleStoreController"
 import GetStoreItemListController from "../controller/store/getStoreItemListController"
+import GetStoreItemController from "../controller/store/getStoreItemController"
 
 export default function storeRoutes(app: Express) {
   app.post(
@@ -50,6 +51,8 @@ export default function storeRoutes(app: Express) {
     [jwtCheck, dtoValidation(AddNewItemToStoreListDTO)],
     AddNewItemToStoreListController.handle
   )
+
+  app.get("/item", GetStoreItemController.handle)
 
   app.get("/store/:storeId", GetSingleStoreController.handle)
 
