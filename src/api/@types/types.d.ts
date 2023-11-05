@@ -5,6 +5,7 @@ export interface User {
   email: string
   store?: Store
   wallet?: Wallet
+  userItems?: UserItem[]
 }
 
 export interface ErrorService {
@@ -96,4 +97,15 @@ export interface StoreItemRequestPayload {
   itemImage: string
   colors: string
   sizes: string
+}
+
+export interface UserItem {
+  id: string
+  item_name: string
+  purchase_date?: Date
+  purchased_at: string
+  fkitem_owner: string
+  purchased_with: string
+  quantity: number
+  item_value: number
 }

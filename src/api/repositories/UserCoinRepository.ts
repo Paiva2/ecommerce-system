@@ -12,4 +12,15 @@ export default interface UserCoinRepository {
     walletId: string,
     storeCoinName: string
   ): Promise<UserCoin>
+
+  findUserCoinByCoinName(
+    walletId: string,
+    coinName: string
+  ): Promise<UserCoin | null>
+
+  updateUserCoinsToStoreItemPurchase(
+    walletId: string,
+    coinId: string,
+    valueToSubtract: number
+  ): Promise<UserCoin>
 }

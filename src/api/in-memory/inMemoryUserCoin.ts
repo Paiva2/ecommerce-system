@@ -66,4 +66,39 @@ export default class InMemoryUserCoin implements UserCoinRepository {
 
     return updatedUserCoin
   }
+
+  async findUserCoinByCoinName(walletId: string, coinName: string) {
+    const getCoin = this.userCoins.find((coin) => {
+      return coin.fkcoin_owner === walletId && coin.coin_name === coinName
+    })
+
+    if (!getCoin) return null
+
+    return getCoin
+  }
+
+  async updateUserCoinsToStoreItemPurchase(
+    walletId: string,
+    coinId: string,
+    valueToSubtract: number
+  ) {
+    let updatedCoinsValue = {} as UserCoin
+
+    const storeCoinsUpdated = this.userCoins.map((coin) => {
+      if (coin.fkcoin_owner === walletId && coin.id === coinId) {
+        coin = {
+          ...coin,
+          quantity: coin.quantity - valueToSubtract,
+        }
+
+        updatedCoinsValue = coin
+      }
+
+      return coin
+    })
+
+    this.userCoins = storeCoinsUpdated
+
+    return updatedCoinsValue
+  }
 }

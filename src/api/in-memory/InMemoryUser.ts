@@ -73,4 +73,12 @@ export default class InMemoryUser implements UserRepository {
 
     return getUserUpdated
   }
+
+  async findById(userId: string) {
+    const findUser = this.users.find((user) => user.id === userId)
+
+    if (!findUser) return null
+
+    return findUser
+  }
 }

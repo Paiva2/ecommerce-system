@@ -10,4 +10,10 @@ export interface StoreItemRepository {
   ): Promise<StoreItem[]>
 
   findStoreItem(storeId: string, itemId: string): Promise<StoreItem | null>
+
+  updateItemQuantityToUserPurchase(
+    storeId: string,
+    itemId: string,
+    valueToSubtract: number
+  ): Promise<StoreItem>
 }

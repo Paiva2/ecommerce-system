@@ -58,4 +58,29 @@ export default class InMemoryStoreItem implements StoreItemRepository {
 
     return storeItem
   }
+
+  async updateItemQuantityToUserPurchase(
+    storeId: string,
+    itemId: string,
+    valueToSubtract: number
+  ) {
+    let updatedItem: StoreItem
+
+    const updatedStoreItems = this.storeItems.map((item) => {
+      if (item.fkstore_id === storeId && item.id === itemId) {
+        item = {
+          ...item,
+          quantity: item.quantity - valueToSubtract,
+        }
+
+        updatedItem = item
+      }
+
+      return item
+    })
+
+    this.storeItems = updatedStoreItems
+
+    return updatedItem
+  }
 }
