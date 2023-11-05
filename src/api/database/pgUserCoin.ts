@@ -88,4 +88,57 @@ export default class PgUserCoin implements UserCoinRepository {
 
     return userCoin
   }
+
+  async findUserCoinByCoinName(walletId: string, coinName: string) {
+    const [userCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
+      `
+      SELECT * FROM "${this.#schema}".user_coin
+      WHERE coin_name = $1 AND fkcoin_owner = $2
+    `,
+      coinName,
+      walletId
+    )
+
+    return {
+      ...userCoin,
+      quantity: Number(String(userCoin.quantity)),
+    }
+  }
+
+  async updateUserCoinsToStoreItemPurchase(
+    walletId: string,
+    coinId: string,
+    valueToSubtract: number
+  ) {
+    try {
+      const [userCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
+        `
+        WITH current_value AS(
+        SELECT * FROM "${this.#schema}".user_coin
+        WHERE fkcoin_owner = $1 AND id = $2
+        ), 
+          update_value AS (
+          UPDATE "${this.#schema}".user_coin
+          SET quantity = (SELECT quantity FROM current_value) - CAST($3 AS integer)
+          WHERE fkcoin_owner = $1 AND id = $2
+          RETURNING *
+        )
+  
+          SELECT * FROM update_value
+      `,
+        walletId,
+        coinId,
+        valueToSubtract
+      )
+
+      return userCoin
+    } catch {
+      await prisma.$queryRawUnsafe(`rollback to pre_purchase_store_item`)
+
+      throw {
+        status: 500,
+        error: "Internal Error.",
+      }
+    }
+  }
 }

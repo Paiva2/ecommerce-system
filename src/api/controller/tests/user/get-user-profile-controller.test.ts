@@ -39,7 +39,6 @@ describe("Get user profile controller", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          // TODO ADD COINS ARRAY
         }),
       })
     )
@@ -74,7 +73,6 @@ describe("Get user profile controller", () => {
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
-          //coins: [], TODO
         }),
         created_At: expect.any(String),
         store: expect.objectContaining({

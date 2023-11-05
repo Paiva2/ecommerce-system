@@ -31,10 +31,10 @@ export default class UserPurchaseItemService {
     reqParams: UserPurchaseItemServiceRequest
   ): Promise<UserPurchaseItemServiceResponse> {
     for (let param of Object.keys(reqParams)) {
-      if (!reqParams[param]) {
+      if (!reqParams[param] || reqParams[param] < 1) {
         throw {
           status: param === "quantity" ? 409 : 403,
-          message: `Invalid ${param}.`,
+          error: `Invalid ${param}.`,
         }
       }
     }
@@ -46,14 +46,14 @@ export default class UserPurchaseItemService {
     if (!getUser) {
       throw {
         status: 404,
-        message: "User not found.",
+        error: "User not found.",
       }
     }
 
     if (!getStore) {
       throw {
         status: 404,
-        message: "Store not found.",
+        error: "Store not found.",
       }
     }
 
@@ -65,7 +65,7 @@ export default class UserPurchaseItemService {
     if (!storeItem) {
       throw {
         status: 404,
-        message: "Store item not found.",
+        error: "Store item not found.",
       }
     }
 
@@ -83,14 +83,14 @@ export default class UserPurchaseItemService {
     if (storeItem.quantity < reqParams.quantity) {
       throw {
         status: 409,
-        message: "Item quantity unavailable.",
+        error: "Item quantity unavailable.",
       }
     }
 
     if (getItemValue > getUserCoins.quantity) {
       throw {
         status: 409,
-        message: "Invalid user balance.",
+        error: "Invalid user balance.",
       }
     }
 

@@ -23,8 +23,6 @@ export default class GetStoreItemController {
       return res.status(422).send({ message: "Invalid store id and item id." })
     }
 
-    console.log(storeParameters)
-
     storeId = storeParameters.storeId
     itemId = storeParameters.itemId
 

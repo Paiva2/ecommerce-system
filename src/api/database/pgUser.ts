@@ -91,4 +91,18 @@ export default class PgUser implements UserRepository {
 
     return updatedUserProfile
   }
+
+  async findById(userId: string) {
+    const [user] = await prisma.$queryRawUnsafe<User[]>(
+      `
+    SELECT * FROM "${this.#schema}".user
+    WHERE id = $1
+  `,
+      userId
+    )
+
+    if (!user) return null
+
+    return user
+  }
 }

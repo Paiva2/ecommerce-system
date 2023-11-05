@@ -6,8 +6,8 @@ import InMemoryUserCoin from "../../../in-memory/inMemoryUserCoin"
 import InMemoryStore from "../../../in-memory/inMemoryStore"
 import InMemoryStoreItem from "../../../in-memory/inMemoryStoreItem"
 import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
-import { Store, StoreItem } from "../../../@types/types"
 import UserPurchaseItemService from "../../user/userPurchaseItemService"
+import { Store, StoreItem } from "../../../@types/types"
 
 let inMemoryUser: InMemoryUser
 let inMemoryWallet: InMemoryWallet

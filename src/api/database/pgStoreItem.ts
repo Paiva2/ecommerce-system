@@ -87,4 +87,43 @@ export default class PgStoreItem implements StoreItemRepository {
 
     return storeItem
   }
+
+  async updateItemQuantityToUserPurchase(
+    storeId: string,
+    itemId: string,
+    valueToSubtract: number
+  ) {
+    try {
+      await prisma.$queryRawUnsafe(`BEGIN`)
+
+      await prisma.$queryRawUnsafe(`savepoint pre_purchase_store_item`)
+
+      const [storeItem] = await prisma.$queryRawUnsafe<StoreItem[]>(
+        `
+        WITH current_value AS (
+          SELECT * FROM "${this.schema}".store_item
+          WHERE fkstore_id = $1 AND id = $2
+        ),
+        updated_value AS (
+          UPDATE "${this.schema}".store_item
+          SET quantity = (SELECT quantity FROM current_value) - CAST($3 AS integer)
+          WHERE fkstore_id = $1 AND id = $2
+          RETURNING *
+        )
+          
+          SELECT * FROM updated_value
+        `,
+        storeId,
+        itemId,
+        valueToSubtract
+      )
+
+      return storeItem
+    } catch {
+      throw {
+        status: 500,
+        error: "Internal Error.",
+      }
+    }
+  }
 }
