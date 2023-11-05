@@ -6,14 +6,18 @@ import InMemoryStore from "../../../in-memory/inMemoryStore"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
 import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
 import InMemoryUserCoin from "../../../in-memory/inMemoryUserCoin"
+import InMemoryUserItem from "../../../in-memory/InmemoryUserItem"
+import { User } from "../../../@types/types"
 
 let inMemoryUser: InMemoryUser
 let inMemoryStore: InMemoryStore
 let inMemoryWallet: InMemoryWallet
 let inMemoryStoreCoin: InMemoryStoreCoin
 let inMemoryUserCoin: InMemoryUserCoin
+let inMemoryUserItem: InMemoryUserItem
 
 let registerNewUserService: RegisterNewUserServices
+let userCreated: User
 let sut: GetUserProfileService
 
 describe.only("Get user profile service", () => {
@@ -23,6 +27,7 @@ describe.only("Get user profile service", () => {
     inMemoryWallet = new InMemoryWallet()
     inMemoryStoreCoin = new InMemoryStoreCoin()
     inMemoryUserCoin = new InMemoryUserCoin()
+    inMemoryUserItem = new InMemoryUserItem()
 
     registerNewUserService = new RegisterNewUserServices(
       inMemoryUser,
@@ -33,14 +38,17 @@ describe.only("Get user profile service", () => {
       inMemoryStore,
       inMemoryStoreCoin,
       inMemoryWallet,
-      inMemoryUserCoin
+      inMemoryUserCoin,
+      inMemoryUserItem
     )
 
-    await registerNewUserService.execute({
+    const { newUser } = await registerNewUserService.execute({
       email: "test@email.com",
       username: "test user",
       password: "123456",
     })
+
+    userCreated = newUser
   })
 
   it("should be possible to get an user profile without an store.", async () => {
@@ -58,6 +66,7 @@ describe.only("Get user profile service", () => {
           fkwallet_owner: expect.any(String),
           coins: [],
         }),
+        userItems: [],
       })
     )
   })
@@ -95,6 +104,127 @@ describe.only("Get user profile service", () => {
             fkstore_coin_owner: storeId,
           }),
         }),
+        userItems: [],
+      })
+    )
+  })
+
+  it("should be possible to get an user profile with an store and coins.", async () => {
+    const { id: storeId } = await inMemoryStore.create(
+      "test@email.com",
+      "storeTest",
+      "test description"
+    )
+
+    const walletOwner = await inMemoryWallet.findUserWallet(userCreated.id)
+
+    await inMemoryStoreCoin.insert("storecoin", storeId)
+
+    await inMemoryUserCoin.insert(200, "any coin", walletOwner.id)
+
+    const { user } = await sut.execute({
+      userEmail: "test@email.com",
+    })
+
+    expect(user).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        username: "test user",
+        wallet: expect.objectContaining({
+          id: expect.any(String),
+          fkwallet_owner: expect.any(String),
+          coins: [
+            expect.objectContaining({
+              id: expect.any(String),
+              coin_name: "any coin",
+              updated_at: expect.any(String),
+              fkcoin_owner: walletOwner.id,
+              quantity: 200,
+            }),
+          ],
+        }),
+        store: expect.objectContaining({
+          id: expect.any(String),
+          name: "storeTest",
+          storeOwner: "test@email.com",
+          description: "test description",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            store_coin_name: "storecoin",
+            fkstore_coin_owner: storeId,
+          }),
+        }),
+        userItems: [],
+      })
+    )
+  })
+
+  it("should be possible to get an user profile with an store, coins and user item.", async () => {
+    const { id: storeId } = await inMemoryStore.create(
+      "test@email.com",
+      "storeTest",
+      "test description"
+    )
+
+    const walletOwner = await inMemoryWallet.findUserWallet(userCreated.id)
+
+    await inMemoryStoreCoin.insert("storecoin", storeId)
+
+    await inMemoryUserCoin.insert(200, "any coin", walletOwner.id)
+
+    await inMemoryUserItem.insertUserItemToUserPurchase(
+      userCreated.id,
+      "any coin",
+      "random item",
+      "random shop",
+      1,
+      200
+    )
+
+    const { user } = await sut.execute({
+      userEmail: "test@email.com",
+    })
+
+    expect(user).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        username: "test user",
+        wallet: expect.objectContaining({
+          id: expect.any(String),
+          fkwallet_owner: expect.any(String),
+          coins: [
+            expect.objectContaining({
+              id: expect.any(String),
+              coin_name: "any coin",
+              updated_at: expect.any(String),
+              fkcoin_owner: walletOwner.id,
+              quantity: 200,
+            }),
+          ],
+        }),
+        store: expect.objectContaining({
+          id: expect.any(String),
+          name: "storeTest",
+          storeOwner: "test@email.com",
+          description: "test description",
+          store_coin: expect.objectContaining({
+            id: expect.any(String),
+            store_coin_name: "storecoin",
+            fkstore_coin_owner: storeId,
+          }),
+        }),
+        userItems: [
+          expect.objectContaining({
+            id: expect.any(String),
+            item_name: "random item",
+            purchase_date: expect.any(Date),
+            purchased_at: "random shop",
+            fkitem_owner: userCreated.id,
+            purchased_with: "any coin",
+            quantity: 1,
+            item_value: 200,
+          }),
+        ],
       })
     )
   })

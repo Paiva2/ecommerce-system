@@ -184,7 +184,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Invalid storeId.",
+        error: "Invalid storeId.",
       })
     )
   })
@@ -199,7 +199,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Invalid userId.",
+        error: "Invalid userId.",
       })
     )
   })
@@ -214,7 +214,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Invalid itemId.",
+        error: "Invalid itemId.",
       })
     )
   })
@@ -230,7 +230,7 @@ describe("User purchase item service", () => {
     }).rejects.toEqual(
       expect.objectContaining({
         status: 409,
-        message: "Invalid quantity.",
+        error: "Invalid quantity.",
       })
     )
   })
@@ -245,7 +245,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "User not found.",
+        error: "User not found.",
       })
     )
   })
@@ -262,7 +262,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Store not found.",
+        error: "Store not found.",
       })
     )
   })
@@ -279,7 +279,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Store item not found.",
+        error: "Store item not found.",
       })
     )
   })
@@ -300,7 +300,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Item quantity unavailable.",
+        error: "Item quantity unavailable.",
       })
     )
   })
@@ -321,7 +321,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Invalid user balance.",
+        error: "Invalid user balance.",
       })
     )
   })
@@ -342,7 +342,7 @@ describe("User purchase item service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        message: "Invalid user balance.",
+        error: "Invalid user balance.",
       })
     )
   })

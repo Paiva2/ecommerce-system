@@ -44,4 +44,16 @@ export default class PgUserItem implements UserItemRepository {
       }
     }
   }
+
+  async findUserItems(userId: string) {
+    const userItems = await prisma.$queryRawUnsafe<UserItem[]>(
+      `
+        SELECT * FROM "${this.schema}".user_item
+        WHERE fkitem_owner = $1
+      `,
+      userId
+    )
+
+    return userItems
+  }
 }

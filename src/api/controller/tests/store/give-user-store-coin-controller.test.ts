@@ -67,7 +67,7 @@ describe("Give user store coin controller", () => {
           coins: expect.arrayContaining([
             expect.objectContaining({
               coin_name: "mycoingived",
-              quantity: 1000,
+              quantity: "1000",
             }),
           ]),
         }),
@@ -142,7 +142,7 @@ describe("Give user store coin controller", () => {
           coins: expect.arrayContaining([
             expect.objectContaining({
               coin_name: "mycoingived2",
-              quantity: 6000,
+              quantity: "6000",
             }),
           ]),
         }),

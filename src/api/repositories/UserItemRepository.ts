@@ -9,4 +9,6 @@ export interface UserItemRepository {
     quantity: number,
     value: number
   ): Promise<UserItem>
+
+  findUserItems(userId: string): Promise<UserItem[]>
 }

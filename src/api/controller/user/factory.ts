@@ -2,6 +2,7 @@ import PgStore from "../../database/pgStore"
 import PgStoreCoin from "../../database/pgStoreCoin"
 import PgUser from "../../database/pgUser"
 import PgUserCoin from "../../database/pgUserCoin"
+import PgUserItem from "../../database/pgUserItem"
 import PgWallet from "../../database/pgWallet"
 import AuthenticateUserService from "../../services/user/authenticateUserService"
 import ChangePasswordUserService from "../../services/user/changePasswordUserService"
@@ -16,6 +17,7 @@ export default class UserControllerFactory {
     const walletRepository = new PgWallet()
     const userCoinRepository = new PgUserCoin()
     const storeCoinRepository = new PgStoreCoin()
+    const userItemRepository = new PgUserItem()
 
     const changeUserProfileService = new ChangeUserProfileService(userRepository)
 
@@ -24,7 +26,8 @@ export default class UserControllerFactory {
       storeRepository,
       storeCoinRepository,
       walletRepository,
-      userCoinRepository
+      userCoinRepository,
+      userItemRepository
     )
 
     const registerNewUserService = new RegisterNewUserServices(

@@ -76,7 +76,7 @@ describe("Update user store coin controller", () => {
           coins: expect.arrayContaining([
             expect.objectContaining({
               coin_name: "cointest",
-              quantity: 100.2,
+              quantity: "100.2",
             }),
           ]),
         }),

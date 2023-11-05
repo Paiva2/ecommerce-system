@@ -48,36 +48,23 @@ export default class PgUserCoin implements UserCoinRepository {
   }
 
   async findUserCoins(walletId: string) {
-    let coins: UserCoin[] = []
-
     const userCoins = await prisma.$queryRawUnsafe<UserCoin[]>(
       `
-      SELECT * FROM "${this.#schema}".user_coin
+      SELECT id, coin_name, updated_at, fkcoin_owner, quantity
+      FROM "${this.#schema}".user_coin
       WHERE fkcoin_owner = $1
     `,
       walletId
     )
 
-    // serialize big int from quantity
-
-    for (let coin of userCoins) {
-      coins.push({
-        coin_name: coin.coin_name,
-        fkcoin_owner: coin.fkcoin_owner,
-        id: coin.id,
-        quantity: Number(String(coin.quantity)),
-        updated_at: coin.updated_at,
-      })
-    }
-
-    return coins
+    return userCoins
   }
 
   async updateFullValue(newValue: number, walletId: string, storeCoinName: string) {
     const [userCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
       `
       UPDATE "${this.#schema}".user_coin
-      SET quantity = $1 
+      SET quantity = $1
       WHERE coin_name = $2 AND fkcoin_owner = $3
       RETURNING *
     `,
@@ -94,15 +81,12 @@ export default class PgUserCoin implements UserCoinRepository {
       `
       SELECT * FROM "${this.#schema}".user_coin
       WHERE coin_name = $1 AND fkcoin_owner = $2
-    `,
+      `,
       coinName,
       walletId
     )
 
-    return {
-      ...userCoin,
-      quantity: Number(String(userCoin.quantity)),
-    }
+    return userCoin
   }
 
   async updateUserCoinsToStoreItemPurchase(

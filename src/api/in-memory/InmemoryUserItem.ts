@@ -28,4 +28,12 @@ export default class InMemoryUserItem implements UserItemRepository {
 
     return newItem
   }
+
+  async findUserItems(userId: string) {
+    const getUserItems = this.userItems.filter(
+      (item) => item.fkitem_owner === userId
+    )
+
+    return getUserItems
+  }
 }

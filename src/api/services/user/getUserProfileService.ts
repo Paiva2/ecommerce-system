@@ -2,6 +2,7 @@ import { Store, User } from "../../@types/types"
 import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import UserCoinRepository from "../../repositories/UserCoinRepository"
+import { UserItemRepository } from "../../repositories/UserItemRepository"
 import { UserRepository } from "../../repositories/UserRepository"
 import WalletRepository from "../../repositories/WalletRepository"
 
@@ -19,7 +20,8 @@ export default class GetUserProfileService {
     private storeRepository: StoreRepository,
     private storeCoinRepository: StoreCoinRepository,
     private walletRepository: WalletRepository,
-    private userCoinRepository: UserCoinRepository
+    private userCoinRepository: UserCoinRepository,
+    private userItemRepository: UserItemRepository
   ) {}
 
   async execute({
@@ -51,6 +53,8 @@ export default class GetUserProfileService {
 
     const walletCoins = await this.userCoinRepository.findUserCoins(userWallet.id)
 
+    const userItems = await this.userItemRepository.findUserItems(findUser.id)
+
     const user = {
       ...findUser,
       store: store
@@ -63,6 +67,7 @@ export default class GetUserProfileService {
         ...userWallet,
         coins: walletCoins,
       },
+      userItems: userItems,
     }
 
     return { user }
