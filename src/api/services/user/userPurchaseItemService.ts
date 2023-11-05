@@ -1,4 +1,5 @@
-import { UserItem } from "../../@types/types"
+import { UserItem, UserItemToPurchase } from "../../@types/types"
+import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreItemRepository } from "../../repositories/StoreItemRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import UserCoinRepository from "../../repositories/UserCoinRepository"
@@ -9,12 +10,14 @@ import WalletRepository from "../../repositories/WalletRepository"
 interface UserPurchaseItemServiceRequest {
   userId: string
   storeId: string
-  itemId: string
-  quantity: number
+  items: Array<{
+    itemId: string
+    itemQuantity: number
+  }>
 }
 
 interface UserPurchaseItemServiceResponse {
-  userItem: UserItem
+  userItem: UserItem[]
 }
 
 export default class UserPurchaseItemService {
@@ -24,18 +27,47 @@ export default class UserPurchaseItemService {
     private userItemRepository: UserItemRepository,
     private userCoinRepository: UserCoinRepository,
     private storeRepository: StoreRepository,
-    private storeItemRepository: StoreItemRepository
+    private storeItemRepository: StoreItemRepository,
+    private storeCoinRepository: StoreCoinRepository
   ) {}
 
   async execute(
     reqParams: UserPurchaseItemServiceRequest
   ): Promise<UserPurchaseItemServiceResponse> {
-    for (let param of Object.keys(reqParams)) {
-      if (!reqParams[param] || reqParams[param] < 1) {
-        throw {
-          status: param === "quantity" ? 409 : 403,
-          error: `Invalid ${param}.`,
-        }
+    if (!reqParams.storeId) {
+      throw {
+        status: 403,
+        error: "Invalid storeId.",
+      }
+    } else if (!reqParams.userId) {
+      throw {
+        status: 403,
+        error: "Invalid userId.",
+      }
+    } else if (!reqParams.items.length) {
+      throw {
+        status: 403,
+        error: "Invalid item list.",
+      }
+    }
+
+    const isThereAnyInvalidQuantity = reqParams.items.some(
+      (item) => item.itemQuantity < 1
+    )
+
+    const isThereAnyInvalidItemId = reqParams.items.some((item) => !item.itemId)
+
+    if (isThereAnyInvalidItemId) {
+      throw {
+        status: 409,
+        error: "Item id can't be empty.",
+      }
+    }
+
+    if (isThereAnyInvalidQuantity) {
+      throw {
+        status: 409,
+        error: `Quantity can't be less than 1.`,
       }
     }
 
@@ -57,37 +89,78 @@ export default class UserPurchaseItemService {
       }
     }
 
-    const storeItem = await this.storeItemRepository.findStoreItem(
+    const storeItems = await this.storeItemRepository.findStoreItemList(
       getStore.id,
-      reqParams.itemId
+      reqParams.items
     )
 
-    if (!storeItem) {
+    if (!storeItems.length) {
       throw {
         status: 404,
         error: "Store item not found.",
       }
     }
 
-    const getItemValue = storeItem.promotion
-      ? storeItem.promotional_value
-      : storeItem.value
-
-    const getUserWallet = await this.walletRepository.findUserWallet(getUser.id)
-
-    const getUserCoins = await this.userCoinRepository.findUserCoinByCoinName(
-      getUserWallet.id,
-      storeItem.fkstore_coin
-    )
-
-    if (storeItem.quantity < reqParams.quantity) {
-      throw {
-        status: 409,
-        error: "Item quantity unavailable.",
+    for (let storeItem of storeItems) {
+      for (let desiredItem of reqParams.items) {
+        if (storeItem.id === desiredItem.itemId) {
+          if (
+            storeItem.quantity < desiredItem.itemQuantity ||
+            storeItem.quantity === 0
+          ) {
+            throw {
+              status: 409,
+              error: `Item ${storeItem.item_name} quantity unavailable.`,
+            }
+          }
+        }
       }
     }
 
-    if (getItemValue > getUserCoins.quantity) {
+    const totalPurchaseValue = storeItems.reduce((acc, item) => {
+      for (let reqItems of reqParams.items) {
+        if (item.id === reqItems.itemId) {
+          if (item.promotion) {
+            acc += item.promotional_value * reqItems.itemQuantity
+          } else {
+            acc += item.value * reqItems.itemQuantity
+          }
+        }
+      }
+
+      return acc
+    }, 0)
+
+    const getUserWallet = await this.walletRepository.findUserWallet(getUser.id)
+
+    const getStoreCoin = await this.storeCoinRepository.findStoreCoin(getStore.id)
+
+    const getUserCoins = await this.userCoinRepository.findUserCoinByCoinName(
+      getUserWallet.id,
+      getStoreCoin.store_coin_name
+    )
+
+    const NewUserItemsList = storeItems.reduce((acc: UserItemToPurchase[], item) => {
+      for (let reqItems of reqParams.items) {
+        if (item.id === reqItems.itemId) {
+          acc.push({
+            itemOwner: getUser.id,
+            purchasedWith: item.fkstore_coin,
+            itemName: item.item_name,
+            purchasedAt: getStore.name,
+            quantity: reqItems.itemQuantity,
+            value: item.promotion ? item.promotional_value : item.value,
+            totalValue: item.promotion
+              ? item.promotional_value * reqItems.itemQuantity
+              : item.value * reqItems.itemQuantity,
+          })
+        }
+      }
+
+      return acc
+    }, [])
+
+    if (totalPurchaseValue > Number(getUserCoins.quantity)) {
       throw {
         status: 409,
         error: "Invalid user balance.",
@@ -96,23 +169,17 @@ export default class UserPurchaseItemService {
 
     await this.storeItemRepository.updateItemQuantityToUserPurchase(
       getStore.id,
-      storeItem.id,
-      reqParams.quantity
+      reqParams.items
     )
 
     await this.userCoinRepository.updateUserCoinsToStoreItemPurchase(
       getUserWallet.id,
       getUserCoins.id,
-      getItemValue
+      totalPurchaseValue
     )
 
     const userItem = await this.userItemRepository.insertUserItemToUserPurchase(
-      getUser.id,
-      storeItem.fkstore_coin,
-      storeItem.item_name,
-      getStore.name,
-      reqParams.quantity,
-      getItemValue
+      NewUserItemsList
     )
 
     return { userItem }

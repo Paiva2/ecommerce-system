@@ -66,3 +66,20 @@ export class ChangeUserProfileDTO {
   })
   oldPassword?: string
 }
+
+export class UserPurchaseItemControllerDTO {
+  @IsString({ message: "itemId; Must be an string type." })
+  @IsDefined({ message: "itemId; Can't be empty." })
+  @Length(1, Infinity, { message: "itemId; Can't be empty." })
+  itemId: string
+
+  @IsDefined({ message: "quantity; Can't be empty." })
+  @IsString({ message: "quantity; Must be an string type." })
+  @Length(1, Infinity, { message: "quantity; Can't be empty." })
+  quantity: string
+
+  @IsDefined({ message: "storeId; Can't be empty." })
+  @IsString({ message: "storeId; Must be an string type." })
+  @Length(1, Infinity, { message: "storeId; Can't be empty." })
+  storeId: string
+}

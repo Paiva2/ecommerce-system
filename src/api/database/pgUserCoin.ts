@@ -100,15 +100,18 @@ export default class PgUserCoin implements UserCoinRepository {
         WITH current_value AS(
         SELECT * FROM "${this.#schema}".user_coin
         WHERE fkcoin_owner = $1 AND id = $2
-        ), 
-          update_value AS (
+        ),
+        new_qtt AS (
+          SELECT quantity - CAST($3 AS integer) FROM current_value
+        ),
+        update_value AS (
           UPDATE "${this.#schema}".user_coin
-          SET quantity = (SELECT quantity FROM current_value) - CAST($3 AS integer)
+          SET quantity = (case when (SELECT * FROM new_qtt) < 1 then 0 else (SELECT * FROM new_qtt) end)
           WHERE fkcoin_owner = $1 AND id = $2
           RETURNING *
         )
   
-          SELECT * FROM update_value
+        SELECT * FROM update_value
       `,
         walletId,
         coinId,

@@ -20,7 +20,7 @@ let registerNewUserService: RegisterNewUserServices
 let userCreated: User
 let sut: GetUserProfileService
 
-describe.only("Get user profile service", () => {
+describe("Get user profile service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryStore = new InMemoryStore()
@@ -172,14 +172,17 @@ describe.only("Get user profile service", () => {
 
     await inMemoryUserCoin.insert(200, "any coin", walletOwner.id)
 
-    await inMemoryUserItem.insertUserItemToUserPurchase(
-      userCreated.id,
-      "any coin",
-      "random item",
-      "random shop",
-      1,
-      200
-    )
+    await inMemoryUserItem.insertUserItemToUserPurchase([
+      {
+        itemName: "random item",
+        itemOwner: userCreated.id,
+        purchasedAt: "random shop",
+        purchasedWith: "any coin",
+        quantity: 1,
+        value: 200,
+        totalValue: 200,
+      },
+    ])
 
     const { user } = await sut.execute({
       userEmail: "test@email.com",

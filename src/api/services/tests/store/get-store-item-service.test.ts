@@ -37,7 +37,7 @@ const userTest = {
   password: "1234567",
 }
 
-describe.only("Get store item service", () => {
+describe("Get store item service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryStore = new InMemoryStore()

@@ -108,4 +108,15 @@ export interface UserItem {
   purchased_with: string
   quantity: number
   item_value: number
+  total_value: number
+}
+
+export interface UserItemToPurchase {
+  itemOwner: string
+  purchasedWith: string
+  itemName: string
+  purchasedAt: string
+  quantity: number
+  value: number
+  totalValue: number
 }

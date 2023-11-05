@@ -49,8 +49,9 @@ model UserItem {
   purchased_with String   @db.VarChar(50)
   purchased_at   String   @db.VarChar(50)
   fkitem_owner   String   @db.VarChar(50)
-  quantity       Int      @default(0)
-  item_value     Decimal  @default(0) @db.Decimal(12, 2)
+  quantity       Int
+  item_value     Decimal  @db.Decimal(12, 2)
+  total_value    Decimal  @db.Decimal(12, 2)
 
   user User @relation(fields: [fkitem_owner], references: [id], onDelete: Cascade)
 

@@ -1,14 +1,7 @@
-import { UserItem } from "../@types/types"
+import { UserItem, UserItemToPurchase } from "../@types/types"
 
 export interface UserItemRepository {
-  insertUserItemToUserPurchase(
-    itemOwner: string,
-    purchasedWith: string,
-    itemName: string,
-    purchasedAt: string,
-    quantity: number,
-    value: number
-  ): Promise<UserItem>
+  insertUserItemToUserPurchase(userItems: UserItemToPurchase[]): Promise<UserItem[]>
 
   findUserItems(userId: string): Promise<UserItem[]>
 }

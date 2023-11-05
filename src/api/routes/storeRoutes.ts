@@ -18,7 +18,8 @@ import AddNewItemToStoreListController from "../controller/store/addNewItemToSto
 import GetSingleStoreController from "../controller/store/getSingleStoreController"
 import GetStoreItemListController from "../controller/store/getStoreItemListController"
 import GetStoreItemController from "../controller/store/getStoreItemController"
-import UserPurchaseItemController from "../controller/store/userPurchaseItemController"
+import UserPurchaseItemController from "../controller/user/userPurchaseItemController"
+import { UserPurchaseItemControllerDTO } from "../dto/user/userDTO"
 
 export default function storeRoutes(app: Express) {
   app.post(
@@ -61,7 +62,7 @@ export default function storeRoutes(app: Express) {
 
   app.post(
     "/checkout/store-item",
-    [jwtCheck /* TODO DTO VALIDATION */],
+    [jwtCheck /*  dtoValidation(UserPurchaseItemControllerDTO) */],
     UserPurchaseItemController.handle
   )
 }

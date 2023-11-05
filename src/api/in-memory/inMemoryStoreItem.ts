@@ -61,19 +61,23 @@ export default class InMemoryStoreItem implements StoreItemRepository {
 
   async updateItemQuantityToUserPurchase(
     storeId: string,
-    itemId: string,
-    valueToSubtract: number
+    reqItems: Array<{
+      itemId: string
+      itemQuantity: number
+    }>
   ) {
-    let updatedItem: StoreItem
+    let updatedItem: StoreItem[] = []
 
     const updatedStoreItems = this.storeItems.map((item) => {
-      if (item.fkstore_id === storeId && item.id === itemId) {
-        item = {
-          ...item,
-          quantity: item.quantity - valueToSubtract,
-        }
+      for (let itemToChange of reqItems) {
+        if (item.fkstore_id === storeId && item.id === itemToChange.itemId) {
+          item = {
+            ...item,
+            quantity: item.quantity - itemToChange.itemQuantity,
+          }
 
-        updatedItem = item
+          updatedItem.push(item)
+        }
       }
 
       return item
@@ -82,5 +86,22 @@ export default class InMemoryStoreItem implements StoreItemRepository {
     this.storeItems = updatedStoreItems
 
     return updatedItem
+  }
+
+  async findStoreItemList(
+    storeId: string,
+    itemsId: Array<{ itemId: string; itemQuantity: number }>
+  ) {
+    const items: StoreItem[] = []
+
+    for (let item of this.storeItems) {
+      for (let desiredItem of itemsId) {
+        if (item.id === desiredItem.itemId && item.fkstore_id === storeId) {
+          items.push(item)
+        }
+      }
+    }
+
+    return items
   }
 }

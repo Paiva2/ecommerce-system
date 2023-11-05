@@ -13,7 +13,14 @@ export interface StoreItemRepository {
 
   updateItemQuantityToUserPurchase(
     storeId: string,
-    itemId: string,
-    valueToSubtract: number
-  ): Promise<StoreItem>
+    items: Array<{
+      itemId: string
+      itemQuantity: number
+    }>
+  ): Promise<StoreItem[]>
+
+  findStoreItemList(
+    storeId: string,
+    itemsId: Array<{ itemId: string; itemQuantity: number }>
+  ): Promise<StoreItem[]>
 }

@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../../../../app"
 import server from "../../../../server"
 
-describe.only("Get store item controller", () => {
+describe("Get store item controller", () => {
   beforeAll(async () => {
     await request(app).post("/register").send({
       email: "admin@admin.com.br",

@@ -22,7 +22,7 @@ let sut: UserPurchaseItemService
 const mockNewItem = {
   itemName: "Brown Shoe",
   value: 200,
-  quantity: 1,
+  quantity: 2,
   description: "Fashion brown shoe",
   promotion: false,
   promotionalValue: null,
@@ -47,7 +47,7 @@ let storeCreated: Store
 let storeItemCreated: StoreItem[]
 let promotionalStoreItemCreated: StoreItem[]
 
-describe("User purchase item service", () => {
+describe.only("User purchase item service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryWallet = new InMemoryWallet()
@@ -63,7 +63,8 @@ describe("User purchase item service", () => {
       inMemoryUserItem,
       inMemoryUserCoin,
       inMemoryStore,
-      inMemoryStoreItem
+      inMemoryStoreItem,
+      inMemoryStoreCoin
     )
 
     // Store that will sell
@@ -91,7 +92,7 @@ describe("User purchase item service", () => {
     )
   })
 
-  it("should be possible to an user buy an store item if user has that store balance available on wallet.", async () => {
+  it.only("should be possible to an user buy an store item if user has that store balance available on wallet.", async () => {
     const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
 
     const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
@@ -99,8 +100,12 @@ describe("User purchase item service", () => {
     await inMemoryUserCoin.insert(250, "test coin", userCreatedWallet.id)
 
     const { userItem } = await sut.execute({
-      itemId: storeItemCreated[0].id,
-      quantity: 1,
+      items: [
+        {
+          itemId: storeItemCreated[0].id,
+          itemQuantity: 1,
+        },
+      ],
       storeId: storeCreated.id,
       userId: userCreated.id,
     })
@@ -116,9 +121,9 @@ describe("User purchase item service", () => {
     )
 
     expect(coinBalance.quantity).toBe(50)
-    expect(desiredStoreItem.quantity).toBe(0)
+    expect(desiredStoreItem.quantity).toBe(1)
 
-    expect(userItem).toEqual(
+    expect(userItem).toEqual([
       expect.objectContaining({
         id: expect.any(String),
         item_name: "Brown Shoe",
@@ -128,8 +133,9 @@ describe("User purchase item service", () => {
         purchased_with: "test coin",
         quantity: 1,
         item_value: 200,
-      })
-    )
+        total_value: 200,
+      }),
+    ])
   })
 
   it("should be possible to an user buy an store item ON PROMOTION if user has that store balance available on wallet.", async () => {
@@ -140,8 +146,12 @@ describe("User purchase item service", () => {
     await inMemoryUserCoin.insert(400, "test coin", userCreatedWallet.id)
 
     const { userItem } = await sut.execute({
-      itemId: promotionalStoreItemCreated[0].id,
-      quantity: 1,
+      items: [
+        {
+          itemId: promotionalStoreItemCreated[0].id,
+          itemQuantity: 1,
+        },
+      ],
       storeId: storeCreated.id,
       userId: userCreated.id,
     })
@@ -160,7 +170,7 @@ describe("User purchase item service", () => {
 
     expect(desiredStoreItem.quantity).toBe(1)
 
-    expect(userItem).toEqual(
+    expect(userItem).toEqual([
       expect.objectContaining({
         id: expect.any(String),
         item_name: "Red Shoe",
@@ -170,15 +180,69 @@ describe("User purchase item service", () => {
         purchased_with: "test coin",
         quantity: 1,
         item_value: 200,
-      })
+        total_value: 200,
+      }),
+    ])
+  })
+
+  it("should be possible to an user buy an quantity of store item if user has that store balance available on wallet.", async () => {
+    const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
+
+    const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
+
+    await inMemoryUserCoin.insert(400, "test coin", userCreatedWallet.id)
+
+    const { userItem } = await sut.execute({
+      items: [
+        {
+          itemId: storeItemCreated[0].id,
+          itemQuantity: 2,
+        },
+      ],
+      storeId: storeCreated.id,
+      userId: userCreated.id,
+    })
+
+    const desiredStoreItem = await inMemoryStoreItem.findStoreItem(
+      storeCreated.id,
+      storeItemCreated[0].id
     )
+
+    const coinBalance = await inMemoryUserCoin.findUserCoinByCoinName(
+      userCreatedWallet.id,
+      "test coin"
+    )
+
+    // checking if item quantity changed on store
+    expect(desiredStoreItem.quantity).toBe(0)
+
+    // checking if user balance changed
+    expect(coinBalance.quantity).toBe(0)
+
+    expect(userItem).toEqual([
+      expect.objectContaining({
+        id: expect.any(String),
+        item_name: "Brown Shoe",
+        purchase_date: expect.any(Date),
+        purchased_at: storeCreated.name,
+        fkitem_owner: userCreated.id,
+        purchased_with: "test coin",
+        quantity: 2,
+        item_value: 200,
+        total_value: 400,
+      }),
+    ])
   })
 
   it("should not be possible to an user buy an store item if store id are not provided.", async () => {
     await expect(() => {
       return sut.execute({
-        itemId: storeItemCreated[0].id,
-        quantity: 1,
+        items: [
+          {
+            itemId: null,
+            itemQuantity: 1,
+          },
+        ],
         storeId: null,
         userId: "any user id",
       })
@@ -192,8 +256,12 @@ describe("User purchase item service", () => {
   it("should not be possible to an user buy an store item if user id are not provided.", async () => {
     await expect(() => {
       return sut.execute({
-        itemId: storeItemCreated[0].id,
-        quantity: 1,
+        items: [
+          {
+            itemId: storeItemCreated[0].id,
+            itemQuantity: 1,
+          },
+        ],
         storeId: "any store id",
         userId: null,
       })
@@ -207,14 +275,18 @@ describe("User purchase item service", () => {
   it("should not be possible to an user buy an store item if item id are not provided.", async () => {
     await expect(() => {
       return sut.execute({
-        itemId: null,
-        quantity: 1,
+        items: [
+          {
+            itemId: null,
+            itemQuantity: 1,
+          },
+        ],
         storeId: "any store id",
         userId: "any user id",
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        error: "Invalid itemId.",
+        error: "Item id can't be empty.",
       })
     )
   })
@@ -222,15 +294,18 @@ describe("User purchase item service", () => {
   it("should not be possible to an user buy an store item if desired quantity are less than 1.", async () => {
     await expect(() => {
       return sut.execute({
-        itemId: "any item id",
-        quantity: 0,
+        items: [
+          {
+            itemId: "any item id",
+            itemQuantity: 0,
+          },
+        ],
         storeId: "any store id",
         userId: "any user id",
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        status: 409,
-        error: "Invalid quantity.",
+        error: "Quantity can't be less than 1.",
       })
     )
   })
@@ -239,8 +314,12 @@ describe("User purchase item service", () => {
     await expect(() => {
       return sut.execute({
         userId: "inexistent user id",
-        itemId: "any item id",
-        quantity: 1,
+        items: [
+          {
+            itemId: "any item id",
+            itemQuantity: 1,
+          },
+        ],
         storeId: "any store id",
       })
     }).rejects.toEqual(
@@ -256,8 +335,12 @@ describe("User purchase item service", () => {
     await expect(() => {
       return sut.execute({
         userId: userCreated.id,
-        itemId: "any item id",
-        quantity: 1,
+        items: [
+          {
+            itemId: "any item id",
+            itemQuantity: 1,
+          },
+        ],
         storeId: "inexistent store id",
       })
     }).rejects.toEqual(
@@ -273,8 +356,12 @@ describe("User purchase item service", () => {
     await expect(() => {
       return sut.execute({
         userId: userCreated.id,
-        itemId: "inexistent item id",
-        quantity: 1,
+        items: [
+          {
+            itemId: "inexistent item id",
+            itemQuantity: 1,
+          },
+        ],
         storeId: storeCreated.id,
       })
     }).rejects.toEqual(
@@ -294,13 +381,17 @@ describe("User purchase item service", () => {
     await expect(() => {
       return sut.execute({
         userId: userCreated.id,
-        itemId: storeItemCreated[0].id,
-        quantity: 2,
+        items: [
+          {
+            itemId: storeItemCreated[0].id,
+            itemQuantity: 3,
+          },
+        ],
         storeId: storeCreated.id,
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        error: "Item quantity unavailable.",
+        error: expect.stringContaining("quantity unavailable."),
       })
     )
   })
@@ -315,8 +406,12 @@ describe("User purchase item service", () => {
     await expect(() => {
       return sut.execute({
         userId: userCreated.id,
-        itemId: promotionalStoreItemCreated[0].id,
-        quantity: 1,
+        items: [
+          {
+            itemId: promotionalStoreItemCreated[0].id,
+            itemQuantity: 1,
+          },
+        ],
         storeId: storeCreated.id,
       })
     }).rejects.toEqual(
@@ -336,8 +431,13 @@ describe("User purchase item service", () => {
     await expect(() => {
       return sut.execute({
         userId: userCreated.id,
-        itemId: storeItemCreated[0].id,
-        quantity: 1,
+        items: [
+          {
+            itemId: storeItemCreated[0].id,
+            itemQuantity: 1,
+          },
+        ],
+
         storeId: storeCreated.id,
       })
     }).rejects.toEqual(

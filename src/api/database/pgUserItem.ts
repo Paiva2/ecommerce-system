@@ -13,13 +13,15 @@ export default class PgUserItem implements UserItemRepository {
     itemName: string,
     purchasedAt: string,
     quantity: number,
-    value: number
+    value: number,
+    totalValue: number
   ) {
     try {
       const [userItem] = await prisma.$queryRawUnsafe<UserItem[]>(
         `
           INSERT INTO "${this.schema}".user_item
-          ("id", "item_name", "purchased_with", "purchased_at", "fkitem_owner", "quantity", "item_value")
+          ("id", "item_name", "purchased_with", "purchased_at", 
+          "fkitem_owner", "quantity", "item_value", "total_value")
           VALUES ($1, $2, $3, $4, $5, CAST($6 AS integer), $7)
           RETURNING *
       `,
@@ -29,7 +31,8 @@ export default class PgUserItem implements UserItemRepository {
         purchasedAt,
         itemOwner,
         quantity,
-        value
+        value,
+        totalValue
       )
 
       await prisma.$queryRawUnsafe(`COMMIT`)

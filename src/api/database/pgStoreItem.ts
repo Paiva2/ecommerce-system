@@ -126,4 +126,8 @@ export default class PgStoreItem implements StoreItemRepository {
       }
     }
   }
+
+  async findStoreItemList(storeId: string, itemsId: string[]) {
+    return null
+  }
 }
