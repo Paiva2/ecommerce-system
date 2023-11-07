@@ -1,4 +1,4 @@
-import { StoreItem, StoreItemInsert } from "../@types/types"
+import { StoreItem, StoreItemInsert, UpdateStoreItem } from "../@types/types"
 import { StoreItemRepository } from "../repositories/StoreItemRepository"
 import { randomUUID } from "node:crypto"
 
@@ -103,5 +103,34 @@ export default class InMemoryStoreItem implements StoreItemRepository {
     }
 
     return items
+  }
+
+  async updateItemInformations(
+    itemId: string,
+    storeId: string,
+    infosToUpdate: UpdateStoreItem
+  ) {
+    let itemUpdated: StoreItem
+
+    const fieldsToUpdate = Object.keys(infosToUpdate)
+
+    const getCurrentItem = this.storeItems.find(
+      (item) => item.id === itemId && item.fkstore_id === storeId
+    )
+
+    const getCurrentItemIdx = this.storeItems.indexOf(getCurrentItem)
+
+    fieldsToUpdate.forEach((field) => {
+      itemUpdated = {
+        ...getCurrentItem,
+        ...itemUpdated,
+        updated_at: new Date(),
+        [field]: infosToUpdate[field],
+      }
+    })
+
+    this.storeItems.splice(getCurrentItemIdx, 1, itemUpdated)
+
+    return itemUpdated
   }
 }

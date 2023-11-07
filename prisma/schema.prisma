@@ -59,18 +59,34 @@ model UserItem {
 }
 
 model Store {
-  id            String      @id @default(uuid())
-  name          String      @db.VarChar(50)
-  created_At    DateTime?   @default(now())
-  updated_at    DateTime?   @default(now())
-  description   String?     @db.VarChar(500)
-  fkstore_owner String      @unique @db.VarChar(50)
-  store_items   StoreItem[]
+  id            String        @id @default(uuid())
+  name          String        @db.VarChar(50)
+  created_At    DateTime?     @default(now())
+  updated_at    DateTime?     @default(now())
+  description   String?       @db.VarChar(500)
+  fkstore_owner String        @unique @db.VarChar(50)
   store_coin    StoreCoin?
+  store_items   StoreItem[]
+  store_coupon  StoreCoupon[]
 
   user User @relation(fields: [fkstore_owner], references: [email], onDelete: Cascade)
 
   @@map("store")
+}
+
+model StoreCoupon {
+  id              String    @id @default(uuid())
+  discount        Decimal   @db.Decimal(12, 2)
+  coupon_code     String
+  fkcoupon_owner  String
+  active          Boolean
+  created_At      DateTime? @default(now())
+  updated_at      DateTime? @default(now())
+  validation_date DateTime
+
+  store Store @relation(fields: [fkcoupon_owner], references: [id], onDelete: Cascade)
+
+  @@map("store_coupon")
 }
 
 model StoreCoin {

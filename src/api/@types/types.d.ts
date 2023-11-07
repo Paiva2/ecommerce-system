@@ -6,6 +6,7 @@ export interface User {
   store?: Store
   wallet?: Wallet
   userItems?: UserItem[]
+  storeCoupon?: StoreCoupon[]
 }
 
 export interface ErrorService {
@@ -119,4 +120,27 @@ export interface UserItemToPurchase {
   quantity: number
   value: number
   totalValue: number
+}
+
+export interface StoreCoupon {
+  id?: string
+  discount: number
+  coupon_code: string
+  fkcoupon_owner: string
+  active: boolean
+  created_At?: Date
+  updated_at?: Date
+  validation_date?: Date
+}
+
+interface UpdateStoreItem {
+  item_name?: string
+  value?: number
+  quantity?: number
+  description?: string
+  colors?: string
+  sizes?: string
+  item_image?: string
+  promotion?: boolean
+  promotional_value?: number
 }

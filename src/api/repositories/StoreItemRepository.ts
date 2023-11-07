@@ -1,4 +1,4 @@
-import { StoreItem, StoreItemInsert } from "../@types/types"
+import { StoreItem, StoreItemInsert, UpdateStoreItem } from "../@types/types"
 
 export interface StoreItemRepository {
   insert(newItemList: StoreItemInsert[]): Promise<StoreItem[]>
@@ -23,4 +23,10 @@ export interface StoreItemRepository {
     storeId: string,
     itemsId: Array<{ itemId: string; itemQuantity: number }>
   ): Promise<StoreItem[]>
+
+  updateItemInformations(
+    itemId: string,
+    storeId: string,
+    infosToUpdate: UpdateStoreItem
+  ): Promise<StoreItem>
 }
