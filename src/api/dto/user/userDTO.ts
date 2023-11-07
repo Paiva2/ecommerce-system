@@ -1,4 +1,5 @@
-import { Length, IsEmail, IsDefined, IsString, ValidateIf } from "class-validator"
+import { Expose, Type } from "class-transformer"
+import { Length, IsEmail, IsDefined, IsString, ValidateIf, IsNumber, Min, ValidateNested, IsArray, ArrayMinSize } from "class-validator"
 import "reflect-metadata"
 
 export class RegisterNewUserDTO {
@@ -67,19 +68,28 @@ export class ChangeUserProfileDTO {
   oldPassword?: string
 }
 
-export class UserPurchaseItemControllerDTO {
-  @IsString({ message: "itemId; Must be an string type." })
+class UserPurchaseItemList {
   @IsDefined({ message: "itemId; Can't be empty." })
+  @IsString({ message: "itemId; Must be an string type." })
   @Length(1, Infinity, { message: "itemId; Can't be empty." })
   itemId: string
 
-  @IsDefined({ message: "quantity; Can't be empty." })
-  @IsString({ message: "quantity; Must be an string type." })
-  @Length(1, Infinity, { message: "quantity; Can't be empty." })
-  quantity: string
+  @IsDefined({ message: "itemQuantity; Can't be empty." })
+  @IsNumber({}, { message: "itemQuantity; Must be an number type." })
+  @Min(1, { message: "itemQuantity; Can't be less than 1." })
+  itemQuantity: number
+}
 
+export class UserPurchaseItemControllerDTO {
   @IsDefined({ message: "storeId; Can't be empty." })
   @IsString({ message: "storeId; Must be an string type." })
   @Length(1, Infinity, { message: "storeId; Can't be empty." })
   storeId: string
+
+  @Expose()
+  @IsArray({ message: "items; Should be an array of objecs." })
+  @ValidateNested({ each: true, message: "items; Invalid item list schema." })
+  @ArrayMinSize(1, { message: "items; Can't be empty." })
+  @Type(() => UserPurchaseItemList)
+  items: UserPurchaseItemList
 }

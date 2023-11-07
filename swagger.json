@@ -587,6 +587,62 @@
           }
         }
       }
+    },
+
+    "/checkout/store-item": {
+      "post": {
+        "tags": ["Store"],
+        "summary": "Purchase an item or item list.",
+        "description": "Purchase items from an store.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "storeId": {
+                    "type": "string"
+                  },
+                  "items": {
+                    "description": "List of items to insert.",
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "itemId": {
+                          "type": "string"
+                        },
+                        "itemQuantity": {
+                          "type": "number",
+                          "example": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Operation success."
+          },
+          "403": {
+            "description": "Invalid storeId or Invalid userId or Invalid item list."
+          },
+          "404": {
+            "description": "User not found or Store not found or Store item not found."
+          },
+          "409": {
+            "description": "Item id can't be empty or Quantity can't be less than 1 or Item quantity unavailable or Invalid user balance."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
     }
   }
 }

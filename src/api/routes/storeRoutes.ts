@@ -62,7 +62,7 @@ export default function storeRoutes(app: Express) {
 
   app.post(
     "/checkout/store-item",
-    [jwtCheck /*  dtoValidation(UserPurchaseItemControllerDTO) */],
+    [jwtCheck, dtoValidation(UserPurchaseItemControllerDTO) ],
     UserPurchaseItemController.handle
   )
 }
