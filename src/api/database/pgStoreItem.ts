@@ -90,35 +90,43 @@ export default class PgStoreItem implements StoreItemRepository {
 
   async updateItemQuantityToUserPurchase(
     storeId: string,
-    itemId: string,
-    valueToSubtract: number
+    items: Array<{
+      itemId: string
+      itemQuantity: number
+    }>
   ) {
     try {
       await prisma.$queryRawUnsafe(`BEGIN`)
 
       await prisma.$queryRawUnsafe(`savepoint pre_purchase_store_item`)
 
-      const [storeItem] = await prisma.$queryRawUnsafe<StoreItem[]>(
-        `
-        WITH current_value AS (
-          SELECT * FROM "${this.schema}".store_item
-          WHERE fkstore_id = $1 AND id = $2
-        ),
-        updated_value AS (
-          UPDATE "${this.schema}".store_item
-          SET quantity = (SELECT quantity FROM current_value) - CAST($3 AS integer)
-          WHERE fkstore_id = $1 AND id = $2
-          RETURNING *
-        )
+      let storeItems: StoreItem[] = []
+
+      for await (let item of items) {
+        const [storeItem] = await prisma.$queryRawUnsafe<StoreItem[]>(
+          `
+          WITH current_value AS (
+            SELECT * FROM "${this.schema}".store_item
+            WHERE fkstore_id = $1 AND id = $2
+          ),
+          updated_value AS (
+            UPDATE "${this.schema}".store_item
+            SET quantity = (SELECT quantity FROM current_value) - CAST($3 AS integer)
+            WHERE fkstore_id = $1 AND id = $2
+            RETURNING *
+          )
           
           SELECT * FROM updated_value
         `,
-        storeId,
-        itemId,
-        valueToSubtract
-      )
+          storeId,
+          item.itemId,
+          item.itemQuantity
+        )
 
-      return storeItem
+        storeItems.push(storeItem)
+      }
+
+      return storeItems
     } catch {
       throw {
         status: 500,
@@ -127,7 +135,24 @@ export default class PgStoreItem implements StoreItemRepository {
     }
   }
 
-  async findStoreItemList(storeId: string, itemsId: string[]) {
-    return null
+  async findStoreItemList(
+    storeId: string,
+    itemsId: Array<{ itemId: string; itemQuantity: number }>
+  ) {
+    const queryValues: string[] = []
+
+    for (let item of itemsId) {
+      queryValues.push(`'${item.itemId}'`)
+    }
+
+    const storeItemList = await prisma.$queryRawUnsafe<StoreItem[]>(
+      `
+        SELECT * FROM "${this.schema}".store_item
+        WHERE fkstore_id = $1 AND id in (${queryValues.toString()})
+      `,
+      storeId
+    )
+
+    return storeItemList
   }
 }

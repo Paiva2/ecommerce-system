@@ -213,7 +213,7 @@ describe("Get store item list service", () => {
       })
     }).rejects.toEqual(
       expect.objectContaining({
-        error: "Store id not found.",
+        error: "Store coin id not found.",
       })
     )
   })

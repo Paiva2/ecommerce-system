@@ -1,4 +1,5 @@
 import prisma from "../../lib/prisma"
+import { convertBigNumber } from "../../utils/convertBigNumber"
 import { UserCoin } from "../@types/types"
 import UserCoinRepository from "../repositories/UserCoinRepository"
 import { randomUUID } from "node:crypto"
@@ -9,15 +10,15 @@ export default class PgUserCoin implements UserCoinRepository {
   async insert(quantity: number, coinName: string, coinOwner: string) {
     const [newUserCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
       `
-        INSERT INTO "${this.#schema}".user_coin
-        ("id", "coin_name", "fkcoin_owner", "quantity")
-        VALUES ($1, $2, $3, $4)
-        RETURNING *
-       `,
+      INSERT INTO "${this.#schema}".user_coin
+      ("id", "coin_name", "fkcoin_owner", "quantity")
+      VALUES ($1, $2, $3, cast($4 as numeric))
+      RETURNING *
+      `,
       randomUUID(),
       coinName,
       coinOwner,
-      quantity
+      quantity.toFixed(2)
     )
 
     return newUserCoin
@@ -32,7 +33,7 @@ export default class PgUserCoin implements UserCoinRepository {
       ),
       updated AS (
         UPDATE "${this.#schema}".user_coin
-        SET "quantity" = $1 + (SELECT quantity FROM current)
+        SET quantity = $1 + (SELECT quantity FROM current)
         WHERE fkcoin_owner = $2 AND coin_name = $3
         RETURNING *
       )
@@ -94,6 +95,7 @@ export default class PgUserCoin implements UserCoinRepository {
     coinId: string,
     valueToSubtract: number
   ) {
+
     try {
       const [userCoin] = await prisma.$queryRawUnsafe<UserCoin[]>(
         `
@@ -102,7 +104,7 @@ export default class PgUserCoin implements UserCoinRepository {
         WHERE fkcoin_owner = $1 AND id = $2
         ),
         new_qtt AS (
-          SELECT quantity - CAST($3 AS integer) FROM current_value
+          SELECT quantity - CAST($3 AS numeric) FROM current_value
         ),
         update_value AS (
           UPDATE "${this.#schema}".user_coin

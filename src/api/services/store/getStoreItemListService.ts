@@ -36,7 +36,7 @@ export default class GetStoreItemListService {
     if (!getStoreCoin) {
       throw {
         status: 404,
-        error: "Store id not found.",
+        error: "Store coin id not found.",
       }
     }
 

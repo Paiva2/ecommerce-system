@@ -2,37 +2,33 @@ import prisma from "../../lib/prisma"
 import { UserItemRepository } from "../repositories/UserItemRepository"
 import { randomUUID } from "node:crypto"
 import "dotenv/config"
-import { UserItem } from "../@types/types"
+import { UserItem, UserItemToPurchase } from "../@types/types"
 
 export default class PgUserItem implements UserItemRepository {
   private schema = process.env.DATABASE_SCHEMA
 
-  async insertUserItemToUserPurchase(
-    itemOwner: string,
-    purchasedWith: string,
-    itemName: string,
-    purchasedAt: string,
-    quantity: number,
-    value: number,
-    totalValue: number
-  ) {
+  async insertUserItemToUserPurchase(desiredItems: UserItemToPurchase[]) {
+    let queryValues: string[] = []
+
+    for (let item of desiredItems) {
+      queryValues.push(
+        `
+        ('${randomUUID()}', '${item.itemName}', '${item.purchasedWith}', 
+        '${item.purchasedAt}', '${item.itemOwner}', '${item.quantity}', 
+        CAST(${item.value} AS integer), '${item.totalValue}'
+        )`
+      )
+    }
+
     try {
-      const [userItem] = await prisma.$queryRawUnsafe<UserItem[]>(
+      const userItem = await prisma.$queryRawUnsafe<UserItem[]>(
         `
           INSERT INTO "${this.schema}".user_item
           ("id", "item_name", "purchased_with", "purchased_at", 
-          "fkitem_owner", "quantity", "item_value", "total_value")
-          VALUES ($1, $2, $3, $4, $5, CAST($6 AS integer), $7)
+          "fkitem_owner", "quantity", "item_value", "total_value")VALUES 
+          ${queryValues.toString()}
           RETURNING *
-      `,
-        randomUUID(),
-        itemName,
-        purchasedWith,
-        purchasedAt,
-        itemOwner,
-        quantity,
-        value,
-        totalValue
+      `
       )
 
       await prisma.$queryRawUnsafe(`COMMIT`)

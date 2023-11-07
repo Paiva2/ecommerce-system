@@ -44,7 +44,7 @@ export default class UserPurchaseItemService {
         status: 403,
         error: "Invalid userId.",
       }
-    } else if (!reqParams.items.length) {
+    } else if (!reqParams.items || !reqParams.items.length) {
       throw {
         status: 403,
         error: "Invalid item list.",
@@ -140,6 +140,13 @@ export default class UserPurchaseItemService {
       getStoreCoin.store_coin_name
     )
 
+    if (!getUserCoins) {
+      throw {
+        status: 409,
+        error: "Invalid user balance.",
+      }
+    }
+
     const NewUserItemsList = storeItems.reduce((acc: UserItemToPurchase[], item) => {
       for (let reqItems of reqParams.items) {
         if (item.id === reqItems.itemId) {
@@ -149,7 +156,9 @@ export default class UserPurchaseItemService {
             itemName: item.item_name,
             purchasedAt: getStore.name,
             quantity: reqItems.itemQuantity,
-            value: item.promotion ? item.promotional_value : item.value,
+            value: item.promotion
+              ? item.promotional_value
+              : item.value,
             totalValue: item.promotion
               ? item.promotional_value * reqItems.itemQuantity
               : item.value * reqItems.itemQuantity,
@@ -160,7 +169,10 @@ export default class UserPurchaseItemService {
       return acc
     }, [])
 
-    if (totalPurchaseValue > Number(getUserCoins.quantity)) {
+    if (
+      Number(totalPurchaseValue).toFixed(2) >
+      Number(getUserCoins.quantity).toFixed(2)
+    ) {
       throw {
         status: 409,
         error: "Invalid user balance.",
