@@ -24,6 +24,7 @@ export interface Store {
   description?: string
   store_coin?: StoreCoin
   store_item?: StoreItem[]
+  store_coupon?: StoreCoupon[]
 }
 
 interface StoreCoin {

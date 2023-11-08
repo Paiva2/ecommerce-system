@@ -173,12 +173,13 @@ export default class PgStoreItem implements StoreItemRepository {
     const [storeItemList] = await prisma.$queryRawUnsafe<StoreItem[]>(
       `
         UPDATE "${this.schema}".store_item
-        SET ${queryValues.toString()}
+        SET ${queryValues.toString()}, updated_at = $3
         WHERE id = $1 and fkstore_id = $2
         RETURNING *
       `,
       itemId,
-      storeId
+      storeId,
+      new Date()
     )
 
     return storeItemList
