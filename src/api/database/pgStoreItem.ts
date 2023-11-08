@@ -156,11 +156,31 @@ export default class PgStoreItem implements StoreItemRepository {
     return storeItemList
   }
 
-  updateItemInformations(
+  async updateItemInformations(
     itemId: string,
     storeId: string,
     infosToUpdate: UpdateStoreItem
   ) {
-    return null
+    const fieldsToUpdate = Object.keys(infosToUpdate)
+    const queryValues = []
+
+    for (let field of fieldsToUpdate) {
+      if (infosToUpdate[field] !== null) {
+        queryValues.push(`${field} = '${infosToUpdate[field]}'`)
+      }
+    }
+
+    const [storeItemList] = await prisma.$queryRawUnsafe<StoreItem[]>(
+      `
+        UPDATE "${this.schema}".store_item
+        SET ${queryValues.toString()}
+        WHERE id = $1 and fkstore_id = $2
+        RETURNING *
+      `,
+      itemId,
+      storeId
+    )
+
+    return storeItemList
   }
 }

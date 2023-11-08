@@ -9,6 +9,7 @@ import dtoValidation from "../middleware/dtoValidation"
 import {
   AddNewItemToStoreListDTO,
   ChangeStoreInformationsDTO,
+  ChangeStoreItemInformationsControllerDTO,
   CreateNewStoreDTO,
   GiveUserStoreCoinDTO,
   UpdateUserStoreCoinDTO,
@@ -20,6 +21,7 @@ import GetStoreItemListController from "../controller/store/getStoreItemListCont
 import GetStoreItemController from "../controller/store/getStoreItemController"
 import UserPurchaseItemController from "../controller/user/userPurchaseItemController"
 import { UserPurchaseItemControllerDTO } from "../dto/user/userDTO"
+import ChangeStoreItemInformationsController from "../controller/store/changeStoreItemInformationsController"
 
 export default function storeRoutes(app: Express) {
   app.post(
@@ -54,6 +56,12 @@ export default function storeRoutes(app: Express) {
     AddNewItemToStoreListController.handle
   )
 
+  app.patch(
+    "/store-item",
+    [jwtCheck, dtoValidation(ChangeStoreItemInformationsControllerDTO)],
+    ChangeStoreItemInformationsController.handle
+  )
+
   app.get("/item", GetStoreItemController.handle)
 
   app.get("/store/:storeId", GetSingleStoreController.handle)
@@ -62,7 +70,7 @@ export default function storeRoutes(app: Express) {
 
   app.post(
     "/checkout/store-item",
-    [jwtCheck, dtoValidation(UserPurchaseItemControllerDTO) ],
+    [jwtCheck, dtoValidation(UserPurchaseItemControllerDTO)],
     UserPurchaseItemController.handle
   )
 }

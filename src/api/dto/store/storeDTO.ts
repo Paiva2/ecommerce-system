@@ -12,6 +12,7 @@ import {
   IsBoolean,
   ValidateIf,
   ArrayMinSize,
+  IsObject,
 } from "class-validator"
 import { Expose, Type } from "class-transformer"
 import "reflect-metadata"
@@ -138,4 +139,62 @@ export class AddNewItemToStoreListDTO {
   @ArrayMinSize(1, { message: "itemList; Can't be empty." })
   @Type(() => AddNewItemToStoreLIstSchema)
   itemList: AddNewItemToStoreLIstSchema
+}
+
+class ChangeStoreItemInformationsControllerInformationsToUpdate {
+  @IsOptional()
+  @IsString({ message: "item_name; Must be an string type." })
+  item_name: string
+
+  @IsOptional()
+  @IsNumber({}, { message: "value; Must be an number type." })
+  @Min(1, { message: "value; Can't be less than 1." })
+  value: number
+
+  @IsOptional()
+  @IsNumber({}, { message: "quantity; Must be an number type." })
+  @Min(1, { message: "quantity; Can't be less than 1." })
+  quantity: number
+
+  @IsOptional()
+  @IsString({ message: "description; Must be an string type." })
+  description: string
+
+  @IsOptional()
+  @IsString({ message: "colors; Must be an string type." })
+  colors: string
+
+  @IsOptional()
+  @IsString({ message: "sizes; Must be an string type." })
+  sizes: string
+
+  @IsOptional()
+  @IsString({ message: "item_image; Must be an string type." })
+  item_image: string
+
+  @IsOptional()
+  @IsBoolean({ message: "promotion; Must be an true/false (Boolean)." })
+  promotion: boolean
+
+  @IsOptional()
+  @ValidateIf((props) => props.promotion === true)
+  @IsNumber({}, { message: "promotional_value; Must be an number type." })
+  @Min(1, { message: "promotional_value; Can't be less than 1." })
+  promotional_value: number
+}
+
+export class ChangeStoreItemInformationsControllerDTO {
+  @IsDefined({ message: "itemId; Can't be empty." })
+  @IsString({ message: "itemId; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "itemId;  Must have at least 1 character.",
+  })
+  itemId: string
+
+  @IsDefined({ message: "informationsToUpdate; Can't be empty." })
+  @IsObject({ message: "informationsToUpdate; Should be an object." })
+  @Expose()
+  @ValidateNested()
+  @Type(() => ChangeStoreItemInformationsControllerInformationsToUpdate)
+  informationsToUpdate: ChangeStoreItemInformationsControllerInformationsToUpdate
 }
