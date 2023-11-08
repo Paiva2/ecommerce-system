@@ -1,5 +1,5 @@
 import prisma from "../../lib/prisma"
-import { StoreItemInsert, StoreItem } from "../@types/types"
+import { StoreItemInsert, StoreItem, UpdateStoreItem } from "../@types/types"
 import { StoreItemRepository } from "../repositories/StoreItemRepository"
 import { randomUUID } from "node:crypto"
 
@@ -154,5 +154,13 @@ export default class PgStoreItem implements StoreItemRepository {
     )
 
     return storeItemList
+  }
+
+  updateItemInformations(
+    itemId: string,
+    storeId: string,
+    infosToUpdate: UpdateStoreItem
+  ) {
+    return null
   }
 }

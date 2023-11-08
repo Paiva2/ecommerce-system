@@ -8,10 +8,13 @@ import swaggerUi from "swagger-ui-express"
 import swaggerDocument from "../swagger.json"
 import multer from "multer"
 import "dotenv/config"
+import { serverAdapter } from "./lib/bullMQ/bullDashboardConfig"
 
 const app: Express = express()
 
 const upload = multer({ dest: "temp/" })
+
+app.use("/ui", serverAdapter.getRouter())
 
 app.use(cookieParser())
 app.use(cors())

@@ -1,3 +1,5 @@
+import { queue } from "../../../lib/bullMQ/queueConfig"
+import { transporter } from "../../../lib/nodemailer"
 import { UserItem, UserItemToPurchase } from "../../@types/types"
 import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
 import { StoreItemRepository } from "../../repositories/StoreItemRepository"
@@ -156,9 +158,7 @@ export default class UserPurchaseItemService {
             itemName: item.item_name,
             purchasedAt: getStore.name,
             quantity: reqItems.itemQuantity,
-            value: item.promotion
-              ? item.promotional_value
-              : item.value,
+            value: item.promotion ? item.promotional_value : item.value,
             totalValue: item.promotion
               ? item.promotional_value * reqItems.itemQuantity
               : item.value * reqItems.itemQuantity,
@@ -193,6 +193,31 @@ export default class UserPurchaseItemService {
     const userItem = await this.userItemRepository.insertUserItemToUserPurchase(
       NewUserItemsList
     )
+
+    const mailToBeSent = {
+      from: "shop-system-project@gmail.com",
+      to: getUser.email,
+      subject: "Buy success!",
+      text: `You have purchased successfully the itens: ${userItem
+        .map((item) => item.item_name)
+        .toString()
+        .replaceAll(",", ", ")}
+
+      Check-out my github: https://github.com/Paiva2
+      :)
+      `,
+    }
+
+    if (process.env.NODE_ENV !== "test") {
+      queue.forEach(async (queueName) => {
+        if (queueName.name === "mailQueue") {
+          await queueName.add("nodemailer", mailToBeSent, {
+            removeOnComplete: true,
+            removeOnFail: false,
+          })
+        }
+      })
+    }
 
     return { userItem }
   }

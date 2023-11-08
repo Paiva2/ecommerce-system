@@ -147,7 +147,6 @@ describe("Change Store Item Informations", () => {
       informationsToUpdate: {},
     })
 
-    console.log(storeItemCreation[0])
 
     expect(checkIfItemExists).toEqual(
       expect.objectContaining({
