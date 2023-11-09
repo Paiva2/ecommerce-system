@@ -145,3 +145,10 @@ interface UpdateStoreItem {
   promotion?: boolean
   promotional_value?: number
 }
+
+export interface StoreCouponUpdate {
+  discount?: string
+  coupon_code?: string
+  active?: boolean
+  validation_date?: Date
+}

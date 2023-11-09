@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto"
-import { StoreCoupon } from "../@types/types"
+import { StoreCoupon, StoreCouponUpdate } from "../@types/types"
 import StoreCouponRepository from "../repositories/StoreCouponRepository"
 
 export default class InMemoryStoreCoupon implements StoreCouponRepository {
@@ -39,5 +39,46 @@ export default class InMemoryStoreCoupon implements StoreCouponRepository {
     )
 
     return storeCoupons
+  }
+
+  async findCouponById(storeId: string, couponId: string) {
+    const getStoreCoupon = this.storeCoupons.find(
+      (coupon) => coupon.id === couponId && coupon.fkcoupon_owner === storeId
+    )
+
+    if (!getStoreCoupon) {
+      return null
+    }
+
+    return getStoreCoupon
+  }
+
+  async updateCouponInformations(
+    storeId: string,
+    couponId: string,
+    infosToUpdate: StoreCouponUpdate
+  ) {
+    const fieldsToUpdate = Object.keys(infosToUpdate)
+
+    let storeCouponUpdated: StoreCoupon
+
+    const getCurrentCouponInfos = this.storeCoupons.find((coupon) => {
+      return coupon.id === couponId && coupon.fkcoupon_owner === storeId
+    })
+
+    const getStoreCouponIndex = this.storeCoupons.indexOf(getCurrentCouponInfos)
+
+    fieldsToUpdate.forEach((field) => {
+      storeCouponUpdated = {
+        ...getCurrentCouponInfos,
+        ...storeCouponUpdated,
+        updated_at: new Date(),
+        [field]: infosToUpdate[field],
+      }
+    })
+
+    this.storeCoupons.splice(getStoreCouponIndex, 1, storeCouponUpdated)
+
+    return storeCouponUpdated
   }
 }
