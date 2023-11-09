@@ -13,6 +13,9 @@ import {
   ValidateIf,
   ArrayMinSize,
   IsObject,
+  IsNumberString,
+  Max,
+  IsDateString,
 } from "class-validator"
 import { Expose, Type } from "class-transformer"
 import "reflect-metadata"
@@ -197,4 +200,34 @@ export class ChangeStoreItemInformationsControllerDTO {
   @ValidateNested()
   @Type(() => ChangeStoreItemInformationsControllerInformationsToUpdate)
   informationsToUpdate: ChangeStoreItemInformationsControllerInformationsToUpdate
+}
+
+export class CreateStoreCouponControllerDTO {
+  @IsDefined({ message: "active; Can't be empty." })
+  @IsBoolean({ message: "active; Must be an boolean type." })
+  active: boolean
+
+  @IsDefined({ message: "coupon_code; Can't be empty." })
+  @IsString({ message: "coupon_code; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "coupon_code;  Must have at least 1 character.",
+  })
+  coupon_code: string
+
+  @IsDefined({ message: "discount; Can't be empty." })
+  @IsNumberString(
+    {},
+    { message: "discount; Must be an string with an number type." }
+  )
+  @Length(1, Infinity, {
+    message: "discount;  Must have at least 1 character.",
+  })
+  discount: string
+
+  @IsDefined({ message: "validation_date; Can't be empty." })
+  @IsDateString({}, { message: "validation_date; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "validation_date;  Must have at least 1 character.",
+  })
+  validation_date: Date
 }

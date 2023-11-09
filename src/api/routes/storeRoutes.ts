@@ -11,6 +11,7 @@ import {
   ChangeStoreInformationsDTO,
   ChangeStoreItemInformationsControllerDTO,
   CreateNewStoreDTO,
+  CreateStoreCouponControllerDTO,
   GiveUserStoreCoinDTO,
   UpdateUserStoreCoinDTO,
 } from "../dto/store/storeDTO"
@@ -75,5 +76,9 @@ export default function storeRoutes(app: Express) {
     UserPurchaseItemController.handle
   )
 
-  app.post("/new-coupon", [jwtCheck], CreateStoreCouponController.handle)
+  app.post(
+    "/new-coupon",
+    [jwtCheck, dtoValidation(CreateStoreCouponControllerDTO)],
+    CreateStoreCouponController.handle
+  )
 }

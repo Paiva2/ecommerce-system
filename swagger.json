@@ -539,6 +539,79 @@
             "description": "Store not found."
           }
         }
+      },
+      "patch": {
+        "tags": ["Store"],
+        "summary": "Update an store item informations.",
+        "description": "Update an item from your store. All items parameters are optional but you need to pass at least 1 parameter. (you need to be logged before).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "itemId": {
+                    "type": "string",
+                    "example": "My Store ID"
+                  },
+                  "informationsToUpdate": {
+                    "type": "object",
+                    "properties": {
+                      "itemName": {
+                        "type": "string",
+                        "example": "My item name updated"
+                      },
+                      "value": {
+                        "type": "number",
+                        "example": 100
+                      },
+                      "quantity": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "My item description updated."
+                      },
+                      "promotion": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "promotionalValue": {
+                        "type": "number",
+                        "example": 130
+                      },
+                      "itemImage": {
+                        "type": "string",
+                        "example": "Item image URL updated."
+                      },
+                      "colors": {
+                        "type": "string",
+                        "example": "black;red"
+                      },
+                      "sizes": {
+                        "type": "string",
+                        "example": "xl;m"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Operation success."
+          },
+          "403": {
+            "description": "Invalid user token or invalid e-mail or invalid item id."
+          },
+          "404": {
+            "description": "Store not found or user not found or item not found."
+          }
+        }
       }
     },
 
@@ -637,6 +710,60 @@
           },
           "409": {
             "description": "Item id can't be empty or Quantity can't be less than 1 or Item quantity unavailable or Invalid user balance."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+
+    "/new-coupon": {
+      "post": {
+        "tags": ["Store"],
+        "summary": "Create a new coupon for an store.",
+        "description": "Create a new coupon for your store. You must be logged-in before.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "active": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "coupon_code": {
+                    "type": "string",
+                    "example": "XDSE"
+                  },
+                  "discount": {
+                    "type": "string",
+                    "example": "20",
+                    "description": "Discount must be the integer value discount. Ex: 20 (20%), 50 (50%) etc."
+                  },
+                  "validation_date": {
+                    "type": "string",
+                    "example": "2060-11-09T00:10:18.386Z"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Coupon successfully created."
+          },
+          "403": {
+            "description": "Invalid user id or invalid coupon informations sent on body."
+          },
+          "404": {
+            "description": "User not found or Store not found.."
+          },
+          "409": {
+            "description": "An coupon with that code already exists on this store."
           },
           "500": {
             "description": "Internal server error."
