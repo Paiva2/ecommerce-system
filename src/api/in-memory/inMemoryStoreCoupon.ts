@@ -21,4 +21,23 @@ export default class InMemoryStoreCoupon implements StoreCouponRepository {
 
     return newCoupon
   }
+
+  async findByCouponCode(storeId: string, couponCode: string) {
+    const findStoreCoupon = this.storeCoupons.find(
+      (coupon) =>
+        coupon.fkcoupon_owner === storeId && coupon.coupon_code === couponCode
+    )
+
+    if (!findStoreCoupon) return null
+
+    return findStoreCoupon
+  }
+
+  async findStoreCoupons(storeId: string) {
+    const storeCoupons = this.storeCoupons.filter(
+      (coupon) => coupon.fkcoupon_owner === storeId
+    )
+
+    return storeCoupons
+  }
 }

@@ -16,4 +16,8 @@ export default interface StoreCouponRepository {
     active,
     validation_date,
   }: StoreCouponCreation): Promise<StoreCoupon>
+
+  findByCouponCode(storeId: string, couponCode: string): Promise<StoreCoupon | null>
+
+  findStoreCoupons(storeId: string): Promise<StoreCoupon[]>
 }

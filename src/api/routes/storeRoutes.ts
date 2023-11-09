@@ -22,6 +22,7 @@ import GetStoreItemController from "../controller/store/getStoreItemController"
 import UserPurchaseItemController from "../controller/user/userPurchaseItemController"
 import { UserPurchaseItemControllerDTO } from "../dto/user/userDTO"
 import ChangeStoreItemInformationsController from "../controller/store/changeStoreItemInformationsController"
+import CreateStoreCouponController from "../controller/store/createCouponStoreController"
 
 export default function storeRoutes(app: Express) {
   app.post(
@@ -73,4 +74,6 @@ export default function storeRoutes(app: Express) {
     [jwtCheck, dtoValidation(UserPurchaseItemControllerDTO)],
     UserPurchaseItemController.handle
   )
+
+  app.post("/new-coupon", [jwtCheck], CreateStoreCouponController.handle)
 }

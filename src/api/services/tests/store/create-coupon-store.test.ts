@@ -91,6 +91,30 @@ describe("Create Coupon Store Service", () => {
     )
   })
 
+  it("should be possible to create a new store coupon if store already has an coupon with that code.", async () => {
+    await sut.handle({
+      active: true,
+      coupon_code: "TEST",
+      discount: "20",
+      userId: userCreated.id,
+      validation_date: new Date(),
+    })
+
+    await expect(() => {
+      return sut.handle({
+        active: true,
+        coupon_code: "TEST",
+        discount: "20",
+        userId: userCreated.id,
+        validation_date: new Date(),
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "An coupon with that code already exists on this store.",
+      })
+    )
+  })
+
   it("should not be possible to create a new store coupon without user id.", async () => {
     await expect(() => {
       return sut.handle({

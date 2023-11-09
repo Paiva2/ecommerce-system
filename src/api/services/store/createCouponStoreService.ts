@@ -68,6 +68,16 @@ export default class CreateCouponStoreService {
       validation_date,
     }
 
+    const checkIfStoreHasAnCouponWithThatCode =
+      await this.storeCouponRepository.findByCouponCode(getStore.id, coupon_code)
+
+    if (checkIfStoreHasAnCouponWithThatCode) {
+      throw {
+        status: 409,
+        error: "An coupon with that code already exists on this store.",
+      }
+    }
+
     const newCouponCreated = await this.storeCouponRepository.insert(newCoupon)
 
     return { newCouponCreated }

@@ -80,6 +80,7 @@ describe("Get user profile controller", () => {
           name: "test store",
           storeOwner: "admin@admin.com.br",
           description: "test store description",
+          store_coupon: [],
           store_coin: expect.objectContaining({
             id: expect.any(String),
             store_coin_name: "mycointest",

@@ -1,5 +1,6 @@
 import PgStore from "../../database/pgStore"
 import PgStoreCoin from "../../database/pgStoreCoin"
+import PgStoreCoupon from "../../database/pgStoreCoupon"
 import PgUser from "../../database/pgUser"
 import PgUserCoin from "../../database/pgUserCoin"
 import PgUserItem from "../../database/pgUserItem"
@@ -18,6 +19,7 @@ export default class UserControllerFactory {
     const userCoinRepository = new PgUserCoin()
     const storeCoinRepository = new PgStoreCoin()
     const userItemRepository = new PgUserItem()
+    const storeCouponRepository = new PgStoreCoupon()
 
     const changeUserProfileService = new ChangeUserProfileService(userRepository)
 
@@ -27,7 +29,8 @@ export default class UserControllerFactory {
       storeCoinRepository,
       walletRepository,
       userCoinRepository,
-      userItemRepository
+      userItemRepository,
+      storeCouponRepository
     )
 
     const registerNewUserService = new RegisterNewUserServices(
