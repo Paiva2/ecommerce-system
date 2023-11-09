@@ -5,7 +5,7 @@ import StoreControllerFactory from "../store/factory"
 
 export default class UserPurchaseItemController {
   static async handle(req: Request, res: Response) {
-    const { storeId, items } = req.body
+    const { storeId, items, couponCode } = req.body
 
     const token = req.cookies["voucher-token"]
     const { data: decodedToken } = retrieveJwt(token) as JwtSchema
@@ -17,6 +17,7 @@ export default class UserPurchaseItemController {
         userId: decodedToken.id,
         storeId,
         items,
+        coupon: couponCode,
       })
 
       return res.status(204).send({ message: "Purchase success!" })

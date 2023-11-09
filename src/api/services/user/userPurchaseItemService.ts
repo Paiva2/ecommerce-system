@@ -1,17 +1,19 @@
 import { queue } from "../../../lib/bullMQ/queueConfig"
-import { transporter } from "../../../lib/nodemailer"
 import { UserItem, UserItemToPurchase } from "../../@types/types"
 import { StoreCoinRepository } from "../../repositories/StoreCoinRepository"
+import StoreCouponRepository from "../../repositories/StoreCouponRepository"
 import { StoreItemRepository } from "../../repositories/StoreItemRepository"
 import { StoreRepository } from "../../repositories/StoreRepository"
 import UserCoinRepository from "../../repositories/UserCoinRepository"
 import { UserItemRepository } from "../../repositories/UserItemRepository"
 import { UserRepository } from "../../repositories/UserRepository"
 import WalletRepository from "../../repositories/WalletRepository"
+import isPast from "date-fns/isPast"
 
 interface UserPurchaseItemServiceRequest {
   userId: string
   storeId: string
+  coupon?: string
   items: Array<{
     itemId: string
     itemQuantity: number
@@ -30,7 +32,8 @@ export default class UserPurchaseItemService {
     private userCoinRepository: UserCoinRepository,
     private storeRepository: StoreRepository,
     private storeItemRepository: StoreItemRepository,
-    private storeCoinRepository: StoreCoinRepository
+    private storeCoinRepository: StoreCoinRepository,
+    private storeCouponRepository: StoreCouponRepository
   ) {}
 
   async execute(
@@ -149,6 +152,47 @@ export default class UserPurchaseItemService {
       }
     }
 
+    let purchaseTotal = totalPurchaseValue
+
+    if (reqParams.coupon) {
+      const findCoupon = await this.storeCouponRepository.findByCouponCode(
+        getStore.id,
+        reqParams.coupon
+      )
+
+      if (!findCoupon) {
+        throw {
+          status: 404,
+          error: "Invalid coupon code.",
+        }
+      }
+
+      if (!findCoupon.active) {
+        throw {
+          status: 409,
+          error: "This coupon is not active.",
+        }
+      }
+
+      if (isPast(findCoupon.validation_date)) {
+        throw {
+          status: 409,
+          error: "This coupon has expired.",
+        }
+      }
+
+      const getDiscount = (Number(findCoupon.discount) / 100) * totalPurchaseValue
+
+      purchaseTotal = totalPurchaseValue - getDiscount
+    }
+
+    if (purchaseTotal > getUserCoins.quantity) {
+      throw {
+        status: 409,
+        error: "Invalid user balance.",
+      }
+    }
+
     const NewUserItemsList = storeItems.reduce((acc: UserItemToPurchase[], item) => {
       for (let reqItems of reqParams.items) {
         if (item.id === reqItems.itemId) {
@@ -169,16 +213,6 @@ export default class UserPurchaseItemService {
       return acc
     }, [])
 
-    if (
-      Number(totalPurchaseValue).toFixed(2) >
-      Number(getUserCoins.quantity).toFixed(2)
-    ) {
-      throw {
-        status: 409,
-        error: "Invalid user balance.",
-      }
-    }
-
     await this.storeItemRepository.updateItemQuantityToUserPurchase(
       getStore.id,
       reqParams.items
@@ -187,28 +221,28 @@ export default class UserPurchaseItemService {
     await this.userCoinRepository.updateUserCoinsToStoreItemPurchase(
       getUserWallet.id,
       getUserCoins.id,
-      totalPurchaseValue
+      purchaseTotal
     )
 
     const userItem = await this.userItemRepository.insertUserItemToUserPurchase(
       NewUserItemsList
     )
 
-    const mailToBeSent = {
-      from: "shop-system-project@gmail.com",
-      to: getUser.email,
-      subject: "Buy success!",
-      text: `You have purchased successfully the itens: ${userItem
-        .map((item) => item.item_name)
-        .toString()
-        .replaceAll(",", ", ")}
-
-      Check-out my github: https://github.com/Paiva2
-      :)
-      `,
-    }
-
     if (process.env.NODE_ENV !== "test") {
+      const mailToBeSent = {
+        from: "shop-system-project@gmail.com",
+        to: getUser.email,
+        subject: "Buy success!",
+        text: `You have purchased successfully the itens: ${userItem
+          .map((item) => item.item_name)
+          .toString()
+          .replaceAll(",", ", ")}
+  
+        Check-out my github: https://github.com/Paiva2
+        :)
+        `,
+      }
+
       queue.forEach(async (queueName) => {
         if (queueName.name === "mailQueue") {
           await queueName.add("nodemailer", mailToBeSent, {

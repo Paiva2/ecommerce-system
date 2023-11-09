@@ -3,7 +3,7 @@ import { describe, it, expect, afterAll, beforeAll } from "vitest"
 import server from "../../../../server"
 import app from "../../../../app"
 
-describe.only("User purchase item controller", () => {
+describe("User purchase item controller", () => {
   beforeAll(async () => {
     await request(app).post("/register").send({
       email: "admin@admin.com.br",
@@ -242,6 +242,126 @@ describe.only("User purchase item controller", () => {
           item_name: storeItems.body.items[1].item_name,
           item_value: storeItems.body.items[1].value,
           quantity: 2,
+        }),
+      ])
+    )
+
+    expect(purchase.statusCode).toBe(204)
+  })
+
+  it("should be possible to an user 'buy' an item in a store with this store coin and a valid coupon.", async () => {
+    await request(app).post("/register").send({
+      email: "admin7@admin7.com.br",
+      password: "123456",
+      username: "admin",
+    })
+
+    await request(app).post("/register").send({
+      email: "userToReceive7@email.com.br",
+      password: "123456",
+      username: "user",
+    })
+
+    const storeLogin = await request(app).post("/login").send({
+      email: "admin7@admin7.com.br",
+      password: "123456",
+    })
+
+    await request(app)
+      .post("/store")
+      .set("Cookie", storeLogin.headers["set-cookie"][0])
+      .send({
+        storeName: "test store7",
+        storeDescription: "test store description",
+        storeCoin: "mycoinname7",
+      })
+
+    await request(app)
+      .post("/new-coupon")
+      .set("Cookie", storeLogin.headers["set-cookie"][0])
+      .send({
+        active: true,
+        coupon_code: "TSX",
+        discount: "20",
+        validation_date: new Date(2100, 1, 1, 13),
+      })
+
+    await request(app)
+      .post("/store-item")
+      .set("Cookie", storeLogin.headers["set-cookie"][0])
+      .send({
+        itemList: [
+          {
+            itemName: `item 1`,
+            value: 200,
+            quantity: 5,
+            description: `My item 1`,
+            promotion: false,
+            promotionalValue: 140,
+            itemImage: null,
+            colors: "red;green",
+            sizes: "l",
+          },
+        ],
+      })
+
+    const getStoreId = await request(app)
+      .get("/profile")
+      .set("Cookie", storeLogin.headers["set-cookie"][0])
+      .send()
+
+    const storeItems = await request(app)
+      .get(`/list/${getStoreId.body.data.store.id}`)
+      .send()
+
+    await request(app) // Give user coins
+      .post("/store-coin")
+      .set("Cookie", storeLogin.headers["set-cookie"][0])
+      .send({
+        userToReceive: "userToReceive7@email.com.br",
+        valueToGive: 200,
+      })
+
+    const userLogin = await request(app).post("/login").send({
+      email: "userToReceive7@email.com.br",
+      password: "123456",
+    })
+
+    const purchase = await request(app)
+      .post("/checkout/store-item")
+      .set("Cookie", userLogin.headers["set-cookie"][0])
+      .send({
+        couponCode: "TSX",
+        storeId: getStoreId.body.data.store.id,
+        items: [
+          {
+            itemId: storeItems.body.items[0].id,
+            itemQuantity: 1,
+          },
+        ],
+      })
+
+    const storeItemsAfterPurchase = await request(app)
+      .get(`/list/${getStoreId.body.data.store.id}`)
+      .send()
+
+    const getUserProfileAfterPurchase = await request(app)
+      .get("/profile")
+      .set("Cookie", userLogin.headers["set-cookie"][0])
+      .send()
+
+    expect(storeItemsAfterPurchase.body.items[0].quantity).toBe(4)
+
+    expect(getUserProfileAfterPurchase.body.data.wallet.coins[0].quantity).toEqual(
+      "40"
+    )
+
+    expect(getUserProfileAfterPurchase.body.data.userItems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          item_name: storeItems.body.items[0].item_name,
+          item_value: storeItems.body.items[0].value,
+          quantity: 1,
         }),
       ])
     )

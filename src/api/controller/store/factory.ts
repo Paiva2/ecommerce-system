@@ -57,7 +57,8 @@ export default class StoreControllerFactory {
       userCoinRepository,
       storeRepository,
       storeItemRepository,
-      storeCoinRepository
+      storeCoinRepository,
+      storeCouponRepository
     )
 
     const getStoreItemService = new GetStoreItemService(

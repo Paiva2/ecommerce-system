@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest"
+import { describe, it, expect, beforeEach, vi } from "vitest"
 import InMemoryUser from "../../../in-memory/InMemoryUser"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
 import InMemoryUserItem from "../../../in-memory/InmemoryUserItem"
@@ -8,6 +8,7 @@ import InMemoryStoreItem from "../../../in-memory/inMemoryStoreItem"
 import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
 import UserPurchaseItemService from "../../user/userPurchaseItemService"
 import { Store, StoreItem } from "../../../@types/types"
+import InMemoryStoreCoupon from "../../../in-memory/inMemoryStoreCoupon"
 
 let inMemoryUser: InMemoryUser
 let inMemoryWallet: InMemoryWallet
@@ -16,6 +17,7 @@ let inMemoryUserCoin: InMemoryUserCoin
 let inMemoryStore: InMemoryStore
 let inMemoryStoreItem: InMemoryStoreItem
 let inMemoryStoreCoin: InMemoryStoreCoin
+let inMemoryStoreCoupon: InMemoryStoreCoupon
 
 let sut: UserPurchaseItemService
 
@@ -47,7 +49,7 @@ let storeCreated: Store
 let storeItemCreated: StoreItem[]
 let promotionalStoreItemCreated: StoreItem[]
 
-describe.only("User purchase item service", () => {
+describe("User purchase item service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryWallet = new InMemoryWallet()
@@ -56,6 +58,7 @@ describe.only("User purchase item service", () => {
     inMemoryStore = new InMemoryStore()
     inMemoryStoreItem = new InMemoryStoreItem()
     inMemoryStoreCoin = new InMemoryStoreCoin()
+    inMemoryStoreCoupon = new InMemoryStoreCoupon()
 
     sut = new UserPurchaseItemService(
       inMemoryUser,
@@ -64,7 +67,8 @@ describe.only("User purchase item service", () => {
       inMemoryUserCoin,
       inMemoryStore,
       inMemoryStoreItem,
-      inMemoryStoreCoin
+      inMemoryStoreCoin,
+      inMemoryStoreCoupon
     )
 
     // Store that will sell
@@ -92,7 +96,7 @@ describe.only("User purchase item service", () => {
     )
   })
 
-  it.only("should be possible to an user buy an store item if user has that store balance available on wallet.", async () => {
+  it("should be possible to an user buy an store item if user has that store balance available on wallet.", async () => {
     const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
 
     const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
@@ -136,6 +140,168 @@ describe.only("User purchase item service", () => {
         total_value: 200,
       }),
     ])
+  })
+
+  it("should be possible to an user buy an store item with an valid coupon code.", async () => {
+    const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
+
+    const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
+
+    await inMemoryUserCoin.insert(200, "test coin", userCreatedWallet.id)
+
+    const fakeCouponDate = new Date(2050, 1, 1, 13)
+
+    await inMemoryStoreCoupon.insert({
+      active: true,
+      coupon_code: "TEST",
+      discount: "20", // 20%
+      storeId: storeCreated.id,
+      validation_date: fakeCouponDate,
+    })
+
+    const { userItem } = await sut.execute({
+      items: [
+        {
+          itemId: storeItemCreated[0].id,
+          itemQuantity: 1,
+        },
+      ],
+      storeId: storeCreated.id,
+      userId: userCreated.id,
+      coupon: "TEST",
+    })
+
+    const desiredStoreItem = await inMemoryStoreItem.findStoreItem(
+      storeCreated.id,
+      storeItemCreated[0].id
+    )
+
+    const coinBalance = await inMemoryUserCoin.findUserCoinByCoinName(
+      userCreatedWallet.id,
+      "test coin"
+    )
+
+    expect(coinBalance.quantity).toBe(40)
+    expect(desiredStoreItem.quantity).toBe(1)
+
+    expect(userItem).toEqual([
+      expect.objectContaining({
+        id: expect.any(String),
+        item_name: "Brown Shoe",
+        purchase_date: expect.any(Date),
+        purchased_at: storeCreated.name,
+        fkitem_owner: userCreated.id,
+        purchased_with: "test coin",
+        quantity: 1,
+        item_value: 200,
+        total_value: 200,
+      }),
+    ])
+  })
+
+  it("should not be possible to an user buy an store item with an valid coupon code if coupon code doenst exists.", async () => {
+    const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
+
+    const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
+
+    await inMemoryUserCoin.insert(200, "test coin", userCreatedWallet.id)
+
+    await expect(() => {
+      return sut.execute({
+        items: [
+          {
+            itemId: storeItemCreated[0].id,
+            itemQuantity: 1,
+          },
+        ],
+        storeId: storeCreated.id,
+        userId: userCreated.id,
+        coupon: "INEXISTENT",
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "Invalid coupon code.",
+      })
+    )
+  })
+
+  it("should not be possible to an user buy an store item with an coupon code if coupon isnt active.", async () => {
+    const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
+
+    const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
+
+    await inMemoryUserCoin.insert(200, "test coin", userCreatedWallet.id)
+
+    await inMemoryStoreCoupon.insert({
+      active: false,
+      coupon_code: "TEST",
+      discount: "20",
+      storeId: storeCreated.id,
+      validation_date: new Date(),
+    })
+
+    await expect(() => {
+      return sut.execute({
+        items: [
+          {
+            itemId: storeItemCreated[0].id,
+            itemQuantity: 1,
+          },
+        ],
+        storeId: storeCreated.id,
+        userId: userCreated.id,
+        coupon: "TEST",
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "This coupon is not active.",
+      })
+    )
+  })
+
+  it("should not be possible to an user buy an store item with an coupon code if coupon has expired.", async () => {
+    const userCreated = await inMemoryUser.insert("user@email.com", "user", "123456")
+
+    const userCreatedWallet = await inMemoryWallet.create(userCreated.id)
+
+    await inMemoryUserCoin.insert(200, "test coin", userCreatedWallet.id)
+    vi.useFakeTimers()
+
+    const fakeCouponDate = new Date(2030, 1, 1, 0) // 01/01/2030
+
+    vi.setSystemTime(fakeCouponDate)
+
+    await inMemoryStoreCoupon.insert({
+      active: true,
+      coupon_code: "TEST",
+      discount: "20",
+      storeId: storeCreated.id,
+      validation_date: fakeCouponDate,
+    })
+
+    const fakeBuyDate = new Date(2030, 1, 2, 0) // 02/01/2030
+
+    vi.setSystemTime(fakeBuyDate)
+
+    await expect(() => {
+      return sut.execute({
+        items: [
+          {
+            itemId: storeItemCreated[0].id,
+            itemQuantity: 1,
+          },
+        ],
+        storeId: storeCreated.id,
+        userId: userCreated.id,
+        coupon: "TEST",
+      })
+    }).rejects.toEqual(
+      expect.objectContaining({
+        error: "This coupon has expired.",
+      })
+    )
+
+    vi.useRealTimers()
   })
 
   it("should be possible to an user buy an store item ON PROMOTION if user has that store balance available on wallet.", async () => {
