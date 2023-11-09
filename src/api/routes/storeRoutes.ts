@@ -8,6 +8,7 @@ import UpdateUserStoreCoinController from "../controller/store/updateUserStoreCo
 import dtoValidation from "../middleware/dtoValidation"
 import {
   AddNewItemToStoreListDTO,
+  ChangeCouponInformationsControllerDTO,
   ChangeStoreInformationsDTO,
   ChangeStoreItemInformationsControllerDTO,
   CreateNewStoreDTO,
@@ -24,6 +25,7 @@ import UserPurchaseItemController from "../controller/user/userPurchaseItemContr
 import { UserPurchaseItemControllerDTO } from "../dto/user/userDTO"
 import ChangeStoreItemInformationsController from "../controller/store/changeStoreItemInformationsController"
 import CreateStoreCouponController from "../controller/store/createCouponStoreController"
+import ChangeCouponInformationsController from "../controller/store/changeCouponInformationsController"
 
 export default function storeRoutes(app: Express) {
   app.post(
@@ -80,5 +82,11 @@ export default function storeRoutes(app: Express) {
     "/new-coupon",
     [jwtCheck, dtoValidation(CreateStoreCouponControllerDTO)],
     CreateStoreCouponController.handle
+  )
+
+  app.patch(
+    "/coupon",
+    [jwtCheck, dtoValidation(ChangeCouponInformationsControllerDTO)],
+    ChangeCouponInformationsController.handle
   )
 }

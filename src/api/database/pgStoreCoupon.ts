@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto"
 import prisma from "../../lib/prisma"
-import { StoreCoupon } from "../@types/types"
+import { StoreCoupon, StoreCouponUpdate } from "../@types/types"
 import StoreCouponRepository from "../repositories/StoreCouponRepository"
 
 export default class PgStoreCoupon implements StoreCouponRepository {
@@ -50,5 +50,51 @@ export default class PgStoreCoupon implements StoreCouponRepository {
     )
 
     return storeCoupon
+  }
+
+  async findCouponById(storeId: string, couponId: string) {
+    const [storeCoupon] = await prisma.$queryRawUnsafe<StoreCoupon[]>(
+      `
+      SELECT * FROM "${this.schema}".store_coupon
+      WHERE id = $2 AND fkcoupon_owner = $1
+  `,
+      storeId,
+      couponId
+    )
+
+    return storeCoupon
+  }
+
+  async updateCouponInformations(
+    storeId: string,
+    couponId: string,
+    infosToUpdate: StoreCouponUpdate
+  ) {
+    const fieldsToUpdate = Object.keys(infosToUpdate)
+    const querySets = []
+
+    for (let field of fieldsToUpdate) {
+      if (infosToUpdate[field] !== null) {
+        if (field === "active") {
+          querySets.push(`${field} = CAST('${infosToUpdate[field]}' as boolean)`)
+        } else if (infosToUpdate[field] !== null) {
+          querySets.push(`${field} = '${infosToUpdate[field]}'`)
+        }
+      }
+    }
+
+    const [storeCouponUpdated] = await prisma.$queryRawUnsafe<StoreCoupon[]>(
+      `
+        UPDATE "${this.schema}".store_coupon
+        SET ${querySets.toString()}, updated_at = $3
+        WHERE id = $1 and fkcoupon_owner = $2
+        RETURNING *
+      `,
+      couponId,
+      storeId,
+      new Date()
+    )
+
+    return storeCouponUpdated
   }
 }

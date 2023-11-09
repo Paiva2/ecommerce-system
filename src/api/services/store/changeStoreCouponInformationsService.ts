@@ -61,6 +61,21 @@ export default class ChangeStoreCouponInformationsService {
       }
     }
 
+    const getAllStoreCoupons = await this.storeCouponRepository.findStoreCoupons(
+      getStore.id
+    )
+
+    const checkIfStoreNameAlreadyExists = getAllStoreCoupons.some(
+      (coupon) => coupon.coupon_code === infosToUpdate.coupon_code
+    )
+
+    if (checkIfStoreNameAlreadyExists) {
+      throw {
+        status: 409,
+        error: "An coupon with this name is already registered.",
+      }
+    }
+
     const getStoreCoupon = await this.storeCouponRepository.findCouponById(
       getStore.id,
       couponId

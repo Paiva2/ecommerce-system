@@ -14,7 +14,6 @@ import {
   ArrayMinSize,
   IsObject,
   IsNumberString,
-  Max,
   IsDateString,
 } from "class-validator"
 import { Expose, Type } from "class-transformer"
@@ -230,4 +229,45 @@ export class CreateStoreCouponControllerDTO {
     message: "validation_date;  Must have at least 1 character.",
   })
   validation_date: Date
+}
+
+export class ChangeStoreCouponInformations {
+  @IsOptional()
+  @IsBoolean({ message: "active; Must be an boolean (true/false)." })
+  active: boolean
+
+  @IsOptional()
+  @IsString({ message: "coupon_code; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "coupon_code;  Must have at least 1 character.",
+  })
+  coupon_code: string
+
+  @IsOptional()
+  @IsNumberString({}, { message: "discount; Must be an string with an number." })
+  @IsString({ message: "discount; Must be an string type." })
+  discount: string
+
+  @IsOptional()
+  @IsDateString({}, { message: "validation_date; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "validation_date;  Must have at least 1 character.",
+  })
+  validation_date: Date
+}
+
+export class ChangeCouponInformationsControllerDTO {
+  @IsDefined({ message: "couponId; Can't be empty." })
+  @IsString({ message: "couponId; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "couponId;  Must have at least 1 character.",
+  })
+  couponId: string
+
+  @IsObject()
+  @IsDefined({ message: "infosToUpdate; Can't be empty." })
+  @ValidateNested({ each: true })
+  @Type(() => ChangeStoreCouponInformations)
+  @Expose()
+  infosToUpdate: ChangeStoreCouponInformations
 }

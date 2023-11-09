@@ -7,6 +7,7 @@ import PgUserCoin from "../../database/pgUserCoin"
 import PgUserItem from "../../database/pgUserItem"
 import PgWallet from "../../database/pgWallet"
 import AddNewItemToStoreListService from "../../services/store/addNewItemToStoreListService"
+import ChangeStoreCouponInformationsService from "../../services/store/changeStoreCouponInformationsService"
 import ChangeStoreInformationsService from "../../services/store/changeStoreInformationsService"
 import ChangeStoreItemInformationsService from "../../services/store/changeStoreItemInformationsService"
 import CreateCouponStoreService from "../../services/store/createCouponStoreService"
@@ -29,6 +30,12 @@ export default class StoreControllerFactory {
     const storeItemRepository = new PgStoreItem()
     const userItemRepository = new PgUserItem()
     const storeCouponRepository = new PgStoreCoupon()
+
+    const changeCouponInformationService = new ChangeStoreCouponInformationsService(
+      userRepository,
+      storeRepository,
+      storeCouponRepository
+    )
 
     const createCouponStoreService = new CreateCouponStoreService(
       userRepository,
@@ -107,6 +114,7 @@ export default class StoreControllerFactory {
     )
 
     return {
+      changeCouponInformationService,
       createCouponStoreService,
       changeStoreItemInformationsService,
       userPurchaseItemService,

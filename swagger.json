@@ -770,6 +770,59 @@
           }
         }
       }
+    },
+
+    "/coupon": {
+      "patch": {
+        "tags": ["Store"],
+        "summary": "Update store coupon informations.",
+        "description": "Update an store coupon informations. You must be logged-in before.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "active": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "coupon_code": {
+                    "type": "string",
+                    "example": "NEW CODE"
+                  },
+                  "discount": {
+                    "type": "string",
+                    "example": "10",
+                    "description": "Discount must be the integer value discount. Ex: 20 (20%), 50 (50%) etc."
+                  },
+                  "validation_date": {
+                    "type": "string",
+                    "example": "2060-11-20T00:10:18.386Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Operation success."
+          },
+          "403": {
+            "description": "Invalid user id or invalid store id."
+          },
+          "404": {
+            "description": "User not found or store coupon or Store coupon not found.."
+          },
+          "409": {
+            "description": "An coupon with this name is already registered"
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
     }
   }
 }
