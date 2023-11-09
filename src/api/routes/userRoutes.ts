@@ -12,6 +12,7 @@ import {
   ChangeUserProfileDTO,
   RegisterNewUserDTO,
 } from "../dto/user/userDTO"
+import ListAllUserStoreCouponsController from "../controller/user/listAllUserStoreCouponsController"
 
 export default function userRoutes(app: Express) {
   app.post(
@@ -39,4 +40,6 @@ export default function userRoutes(app: Express) {
     [jwtCheck, dtoValidation(ChangeUserProfileDTO)],
     ChangeUserProfileController.handle
   )
+
+  app.get("/store-coupons", [jwtCheck], ListAllUserStoreCouponsController.handle) //TODO SWAGGER DOCS
 }

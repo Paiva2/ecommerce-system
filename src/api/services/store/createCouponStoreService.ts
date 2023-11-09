@@ -34,7 +34,13 @@ export default class CreateCouponStoreService {
         status: 403,
         error: "Invalid user id.",
       }
-    } else if (!discount || !coupon_code || !active || !validation_date) {
+    } else if (
+      !discount ||
+      !coupon_code ||
+      active === null ||
+      active === undefined ||
+      !validation_date
+    ) {
       throw {
         status: 403,
         error:

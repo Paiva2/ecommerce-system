@@ -9,6 +9,7 @@ import AuthenticateUserService from "../../services/user/authenticateUserService
 import ChangePasswordUserService from "../../services/user/changePasswordUserService"
 import ChangeUserProfileService from "../../services/user/changeUserProfileService"
 import GetUserProfileService from "../../services/user/getUserProfileService"
+import ListAllUserStoreCouponsService from "../../services/user/listAllUserStoreCoupons"
 import RegisterNewUserServices from "../../services/user/registerNewUserService"
 
 export default class UserControllerFactory {
@@ -20,6 +21,12 @@ export default class UserControllerFactory {
     const storeCoinRepository = new PgStoreCoin()
     const userItemRepository = new PgUserItem()
     const storeCouponRepository = new PgStoreCoupon()
+
+    const listAllUserStoreCouponsService = new ListAllUserStoreCouponsService(
+      userRepository,
+      storeRepository,
+      storeCouponRepository
+    )
 
     const changeUserProfileService = new ChangeUserProfileService(userRepository)
 
@@ -43,6 +50,7 @@ export default class UserControllerFactory {
     const authenticateUserService = new AuthenticateUserService(userRepository)
 
     return {
+      listAllUserStoreCouponsService,
       getUserProfileService,
       registerNewUserService,
       changePasswordUserService,
