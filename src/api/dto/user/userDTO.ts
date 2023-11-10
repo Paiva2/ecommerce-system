@@ -1,5 +1,16 @@
 import { Expose, Type } from "class-transformer"
-import { Length, IsEmail, IsDefined, IsString, ValidateIf, IsNumber, Min, ValidateNested, IsArray, ArrayMinSize } from "class-validator"
+import {
+  Length,
+  IsEmail,
+  IsDefined,
+  IsString,
+  ValidateIf,
+  IsNumber,
+  Min,
+  ValidateNested,
+  IsArray,
+  ArrayMinSize,
+} from "class-validator"
 import "reflect-metadata"
 
 export class RegisterNewUserDTO {
@@ -92,4 +103,18 @@ export class UserPurchaseItemControllerDTO {
   @ArrayMinSize(1, { message: "items; Can't be empty." })
   @Type(() => UserPurchaseItemList)
   items: UserPurchaseItemList
+}
+
+export class InsertItemToWishListControllerDTO {
+  @IsDefined({ message: "itemId; Can't be empty." })
+  @IsString({ message: "itemId; Must be an string type." })
+  @Length(1, Infinity, { message: "itemId; Can't be empty." })
+  itemId: string
+}
+
+export class RemoveItemFromWishListControllerDTO {
+  @IsDefined({ message: "itemId; Can't be empty." })
+  @IsString({ message: "itemId; Must be an string type." })
+  @Length(1, Infinity, { message: "itemId; Can't be empty." })
+  itemId: string
 }

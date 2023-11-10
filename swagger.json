@@ -846,6 +846,86 @@
           }
         }
       }
+    },
+
+    "/wish-list": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Insert on user wish list a new item.",
+        "description": "Insert on an user wish list a new item. You must be logged-in before.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "itemId": {
+                    "type": "string",
+                    "example": "Id from an store item id."
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Operation Success."
+          },
+          "403": {
+            "description": "Invalid auth token (invalid user id)."
+          }
+        }
+      },
+
+      "get": {
+        "tags": ["User"],
+        "summary": "Get an user wish list items.",
+        "description": "Get user wish list items. You must be logged-in before.",
+        "requestBody": {
+          "content": {},
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Operation Success."
+          },
+          "403": {
+            "description": "Invalid auth token (invalid user id)."
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["User"],
+        "summary": "Remove an item from user wish list.",
+        "description": "Remove item from user wish list. You must be logged-in before.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "itemId": {
+                    "type": "string",
+                    "example": "Id from an wish list item."
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Operation Success."
+          },
+          "403": {
+            "description": "Invalid auth token (invalid user id)."
+          }
+        }
+      }
     }
   }
 }

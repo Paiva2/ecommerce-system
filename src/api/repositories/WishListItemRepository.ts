@@ -8,4 +8,8 @@ export interface WishListItemRepository {
     itemValue: number,
     itemImage: string
   ): Promise<WishListItem>
+
+  findAll(wishListOwnerId: string): Promise<WishListItem[]>
+
+  removeItem(wishListOwnerId: string, itemId: string): Promise<WishListItem[]>
 }

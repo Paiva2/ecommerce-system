@@ -271,3 +271,12 @@ export class ChangeCouponInformationsControllerDTO {
   @Expose()
   infosToUpdate: ChangeStoreCouponInformations
 }
+
+export class InsertItemToWishListControllerDTO {
+  @IsDefined({ message: "itemId; Can't be empty." })
+  @IsString({ message: "itemId; Must be an string type." })
+  @Length(1, Infinity, {
+    message: "itemId;  Must have at least 1 character.",
+  })
+  itemId: string
+}

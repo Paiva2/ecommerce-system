@@ -16,7 +16,7 @@ describe("Get store item list controller", () => {
     server.close()
   })
 
-  it("should be possible to get an store item list  by store id.", async () => {
+  it("should be possible to get an store item list by store id.", async () => {
     const login = await request(app).post("/login").send({
       email: "admin@admin.com.br",
       password: "123456",

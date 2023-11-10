@@ -10,9 +10,14 @@ import {
   AuthenticateUserControllerDTO,
   ChangeUserPasswordDTO,
   ChangeUserProfileDTO,
+  InsertItemToWishListControllerDTO,
   RegisterNewUserDTO,
+  RemoveItemFromWishListControllerDTO,
 } from "../dto/user/userDTO"
 import ListAllUserStoreCouponsController from "../controller/user/listAllUserStoreCouponsController"
+import InsertItemToWishListController from "../controller/user/insertItemToWishListController"
+import GetUserWishListController from "../controller/user/getUserWishListController"
+import RemoveItemFromWishListController from "../controller/user/removeItemFronWishListController"
 
 export default function userRoutes(app: Express) {
   app.post(
@@ -42,4 +47,18 @@ export default function userRoutes(app: Express) {
   )
 
   app.get("/store-coupons", [jwtCheck], ListAllUserStoreCouponsController.handle)
+
+  app.post(
+    "/wish-list",
+    [jwtCheck, dtoValidation(InsertItemToWishListControllerDTO)],
+    InsertItemToWishListController.handle
+  )
+
+  app.get("/wish-list", [jwtCheck], GetUserWishListController.handle)
+
+  app.delete(
+    "/wish-list",
+    [jwtCheck, dtoValidation(RemoveItemFromWishListControllerDTO)],
+    RemoveItemFromWishListController.handle
+  )
 }

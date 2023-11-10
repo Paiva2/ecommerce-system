@@ -32,14 +32,14 @@ model UserWishList {
 }
 
 model WishListItem {
-  id                     String  @id @default(uuid())
-  fk_wishlist_item_owner String  @db.VarChar(100)
-  name                   String  @db.VarChar(50)
-  item_value             Decimal @db.Decimal(12, 2)
-  item_image             String  @db.VarChar(150)
-  item_id                String  @db.VarChar(150)
+  id                    String  @id @default(uuid())
+  fkwishlist_item_owner String  @db.VarChar(100)
+  name                  String  @db.VarChar(50)
+  item_value            Decimal @db.Decimal(12, 2)
+  item_image            String  @db.VarChar(150)
+  item_id               String  @db.VarChar(150)
 
-  UserWishList UserWishList? @relation(fields: [fk_wishlist_item_owner], references: [id])
+  UserWishList UserWishList? @relation(fields: [fkwishlist_item_owner], references: [id])
 
   @@map("wishlist_item")
 }

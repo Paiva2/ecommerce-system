@@ -1,8 +1,8 @@
 import { WishListItem } from "../../@types/types"
 import { StoreItemRepository } from "../../repositories/StoreItemRepository"
 import { UserRepository } from "../../repositories/UserRepository"
-import UserWishListRepository from "../../repositories/UserWishListRepository"
 import { WishListItemRepository } from "../../repositories/WishListItemRepository"
+import UserWishListRepository from "../../repositories/UserWishListRepository"
 
 interface InsertItemToWishListServiceRequest {
   userId: string

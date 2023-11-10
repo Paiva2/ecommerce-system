@@ -25,4 +25,28 @@ export default class InMemoryWishListItem implements WishListItemRepository {
 
     return newWishListItem
   }
+
+  async findAll(wishListOwnerId: string) {
+    const findAllUserWishListItems = this.wishListItems.filter(
+      (item) => item.fk_wishlist_item_owner === wishListOwnerId
+    )
+
+    return findAllUserWishListItems
+  }
+
+  async removeItem(wishListOwnerId: string, itemId: string) {
+    const findItem = this.wishListItems.find(
+      (item) => item.id === itemId && item.fk_wishlist_item_owner === wishListOwnerId
+    )
+
+    const getItemIndex = this.wishListItems.indexOf(findItem)
+
+    this.wishListItems.splice(getItemIndex, 1)
+
+    const updatedUserWishListItem = this.wishListItems.filter(
+      (item) => item.fk_wishlist_item_owner === wishListOwnerId
+    )
+
+    return updatedUserWishListItem
+  }
 }
