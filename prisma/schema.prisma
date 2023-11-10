@@ -8,16 +8,40 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(uuid())
-  email      String      @unique @db.VarChar(50)
-  username   String?     @db.VarChar(50)
-  password   String?     @db.VarChar(100)
-  created_At DateTime?   @default(now())
-  store      Store?
-  wallet     UserWallet?
-  userItems  UserItem[]
+  id           String        @id @default(uuid())
+  email        String        @unique @db.VarChar(50)
+  username     String?       @db.VarChar(50)
+  password     String?       @db.VarChar(100)
+  created_At   DateTime?     @default(now())
+  store        Store?
+  wallet       UserWallet?
+  userItems    UserItem[]
+  userWishList UserWishList?
 
   @@map("user")
+}
+
+model UserWishList {
+  id               String         @id @default(uuid())
+  fkwishlist_owner String         @unique @db.VarChar(50)
+  items            WishListItem[]
+
+  user User @relation(fields: [fkwishlist_owner], references: [id], onDelete: Cascade)
+
+  @@map("user_wishlist")
+}
+
+model WishListItem {
+  id                     String  @id @default(uuid())
+  fk_wishlist_item_owner String  @db.VarChar(100)
+  name                   String  @db.VarChar(50)
+  item_value             Decimal @db.Decimal(12, 2)
+  item_image             String  @db.VarChar(150)
+  item_id                String  @db.VarChar(150)
+
+  UserWishList UserWishList? @relation(fields: [fk_wishlist_item_owner], references: [id])
+
+  @@map("wishlist_item")
 }
 
 model UserWallet {
@@ -37,7 +61,8 @@ model UserCoin {
   fkcoin_owner String    @db.VarChar(50)
   quantity     Decimal   @default(0) @db.Decimal(12, 2)
 
-  wallet UserWallet @relation(fields: [fkcoin_owner], references: [id], onDelete: Cascade)
+  wallet         UserWallet @relation(fields: [fkcoin_owner], references: [id], onDelete: Cascade)
+  userWishListId String?
 
   @@map("user_coin")
 }

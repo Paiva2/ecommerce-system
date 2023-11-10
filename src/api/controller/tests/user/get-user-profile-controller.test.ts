@@ -36,6 +36,10 @@ describe("Get user profile controller", () => {
         username: "admin",
         created_At: expect.any(String),
         store: {},
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: expect.any(String),
+        },
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
@@ -74,6 +78,10 @@ describe("Get user profile controller", () => {
           id: expect.any(String),
           fkwallet_owner: expect.any(String),
         }),
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: expect.any(String),
+        },
         created_At: expect.any(String),
         store: expect.objectContaining({
           id: expect.any(String),

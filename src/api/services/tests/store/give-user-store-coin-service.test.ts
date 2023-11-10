@@ -7,12 +7,14 @@ import { User } from "../../../@types/types"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
 import InMemoryStoreCoin from "../../../in-memory/inMemoryStoreCoin"
 import RegisterNewUserServices from "../../user/registerNewUserService"
+import InMemoryUserWishList from "../../../in-memory/inMemoryUserWishList"
 
 let inMemoryStore: InMemoryStore
 let inMemoryUser: InMemoryUser
 let inMemoryUserCoin: InMemoryUserCoin
 let inMemoryWallet: InMemoryWallet
 let inMemoryStoreCoin: InMemoryStoreCoin
+let inMemoryUserWishList: InMemoryUserWishList
 
 let registerNewUserService: RegisterNewUserServices
 let sut: GiveUserStoreCoinService
@@ -27,10 +29,12 @@ describe("Give user store coin service", () => {
     inMemoryUserCoin = new InMemoryUserCoin()
     inMemoryWallet = new InMemoryWallet()
     inMemoryStoreCoin = new InMemoryStoreCoin()
+    inMemoryUserWishList = new InMemoryUserWishList()
 
     registerNewUserService = new RegisterNewUserServices(
       inMemoryUser,
-      inMemoryWallet
+      inMemoryWallet,
+      inMemoryUserWishList
     )
 
     sut = new GiveUserStoreCoinService(

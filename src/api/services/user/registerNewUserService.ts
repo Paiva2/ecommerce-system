@@ -2,6 +2,7 @@ import { User } from "../../@types/types"
 import { UserRepository } from "../../repositories/UserRepository"
 import { hash } from "bcryptjs"
 import WalletRepository from "../../repositories/WalletRepository"
+import UserWishListRepository from "../../repositories/UserWishListRepository"
 
 interface RegisterNewUserServiceRequest {
   username: string
@@ -16,7 +17,8 @@ interface RegisterNewUserServiceResponse {
 export default class RegisterNewUserServices {
   constructor(
     private userRepository: UserRepository,
-    private walletRepository: WalletRepository
+    private walletRepository: WalletRepository,
+    private userWishListRepository: UserWishListRepository
   ) {}
 
   async execute({
@@ -55,9 +57,12 @@ export default class RegisterNewUserServices {
 
     const newUserWallet = await this.walletRepository.create(userCreated.id)
 
+    const newUserWishList = await this.userWishListRepository.create(userCreated.id)
+
     const newUser = {
       ...userCreated,
       wallet: newUserWallet,
+      userWishList: newUserWishList,
     }
 
     return { newUser }

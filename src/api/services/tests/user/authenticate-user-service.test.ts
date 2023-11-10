@@ -3,9 +3,12 @@ import InMemoryUser from "../../../in-memory/InMemoryUser"
 import RegisterNewUserServices from "../../user/registerNewUserService"
 import AuthenticateUserService from "../../user/authenticateUserService"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
+import InMemoryUserWishList from "../../../in-memory/inMemoryUserWishList"
 
 let inMemoryUser: InMemoryUser
 let inMemoryWallet: InMemoryWallet
+let inMemoryUserWishList: InMemoryUserWishList
+
 let registerNewUserService: RegisterNewUserServices
 let sut: AuthenticateUserService
 
@@ -13,10 +16,12 @@ describe("Authenticate user service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryWallet = new InMemoryWallet()
+    inMemoryUserWishList = new InMemoryUserWishList()
 
     registerNewUserService = new RegisterNewUserServices(
       inMemoryUser,
-      inMemoryWallet
+      inMemoryWallet,
+      inMemoryUserWishList
     )
     sut = new AuthenticateUserService(inMemoryUser)
 

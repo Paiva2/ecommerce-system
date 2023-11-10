@@ -4,6 +4,7 @@ import PgStoreCoupon from "../../database/pgStoreCoupon"
 import PgUser from "../../database/pgUser"
 import PgUserCoin from "../../database/pgUserCoin"
 import PgUserItem from "../../database/pgUserItem"
+import PgUserWishList from "../../database/pgUserWishList"
 import PgWallet from "../../database/pgWallet"
 import AuthenticateUserService from "../../services/user/authenticateUserService"
 import ChangePasswordUserService from "../../services/user/changePasswordUserService"
@@ -21,6 +22,7 @@ export default class UserControllerFactory {
     const storeCoinRepository = new PgStoreCoin()
     const userItemRepository = new PgUserItem()
     const storeCouponRepository = new PgStoreCoupon()
+    const userWishListRepository = new PgUserWishList()
 
     const listAllUserStoreCouponsService = new ListAllUserStoreCouponsService(
       userRepository,
@@ -37,12 +39,14 @@ export default class UserControllerFactory {
       walletRepository,
       userCoinRepository,
       userItemRepository,
-      storeCouponRepository
+      storeCouponRepository,
+      userWishListRepository
     )
 
     const registerNewUserService = new RegisterNewUserServices(
       userRepository,
-      walletRepository
+      walletRepository,
+      userWishListRepository
     )
 
     const changePasswordUserService = new ChangePasswordUserService(userRepository)

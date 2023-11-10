@@ -4,9 +4,12 @@ import RegisterNewUserServices from "../../user/registerNewUserService"
 import ChangePasswordUserService from "../../user/changePasswordUserService"
 import { compare } from "bcryptjs"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
+import InMemoryUserWishList from "../../../in-memory/inMemoryUserWishList"
 
 let inMemoryUser: InMemoryUser
 let inMemoryWallet: InMemoryWallet
+let inMemoryUserWishList: InMemoryUserWishList
+
 let registerNewUserService: RegisterNewUserServices
 let sut: ChangePasswordUserService
 
@@ -14,10 +17,12 @@ describe("Change user password service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryWallet = new InMemoryWallet()
+    inMemoryUserWishList = new InMemoryUserWishList()
 
     registerNewUserService = new RegisterNewUserServices(
       inMemoryUser,
-      inMemoryWallet
+      inMemoryWallet,
+      inMemoryUserWishList
     )
     sut = new ChangePasswordUserService(inMemoryUser)
 

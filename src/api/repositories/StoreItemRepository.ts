@@ -29,4 +29,6 @@ export interface StoreItemRepository {
     storeId: string,
     infosToUpdate: UpdateStoreItem
   ): Promise<StoreItem>
+
+  findStoreItemById(itemId: string): Promise<StoreItem | null>
 }

@@ -7,6 +7,7 @@ export interface User {
   wallet?: Wallet
   userItems?: UserItem[]
   storeCoupon?: StoreCoupon[]
+  wishList?: UserWishList
 }
 
 export interface ErrorService {
@@ -151,4 +152,19 @@ export interface StoreCouponUpdate {
   coupon_code?: string
   active?: boolean
   validation_date?: Date
+}
+
+export interface UserWishList {
+  id: string
+  fkwishlist_owner: string
+  items?: WishListItem[]
+}
+
+export interface WishListItem {
+  id: string
+  fk_wishlist_item_owner: string
+  name: string
+  item_value: number
+  item_image: string
+  item_id: string
 }

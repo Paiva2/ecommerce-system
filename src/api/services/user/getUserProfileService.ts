@@ -5,6 +5,7 @@ import { StoreRepository } from "../../repositories/StoreRepository"
 import UserCoinRepository from "../../repositories/UserCoinRepository"
 import { UserItemRepository } from "../../repositories/UserItemRepository"
 import { UserRepository } from "../../repositories/UserRepository"
+import UserWishListRepository from "../../repositories/UserWishListRepository"
 import WalletRepository from "../../repositories/WalletRepository"
 
 interface GetUserProfileServiceRequest {
@@ -23,7 +24,8 @@ export default class GetUserProfileService {
     private walletRepository: WalletRepository,
     private userCoinRepository: UserCoinRepository,
     private userItemRepository: UserItemRepository,
-    private storeCouponRepository: StoreCouponRepository
+    private storeCouponRepository: StoreCouponRepository,
+    private userWishListRepository: UserWishListRepository
   ) {}
 
   async execute({
@@ -59,6 +61,10 @@ export default class GetUserProfileService {
 
     const storeCoupon = await this.storeCouponRepository.findStoreCoupons(store?.id)
 
+    const userWishList = await this.userWishListRepository.getUserWishList(
+      findUser.id
+    )
+
     const user = {
       ...findUser,
       store: store
@@ -72,7 +78,8 @@ export default class GetUserProfileService {
         ...userWallet,
         coins: walletCoins,
       },
-      userItems: userItems,
+      userItems,
+      userWishList,
     }
 
     return { user }

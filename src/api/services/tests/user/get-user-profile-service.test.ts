@@ -9,6 +9,7 @@ import InMemoryUserCoin from "../../../in-memory/inMemoryUserCoin"
 import InMemoryUserItem from "../../../in-memory/InmemoryUserItem"
 import { User } from "../../../@types/types"
 import InMemoryStoreCoupon from "../../../in-memory/inMemoryStoreCoupon"
+import InMemoryUserWishList from "../../../in-memory/inMemoryUserWishList"
 
 let inMemoryUser: InMemoryUser
 let inMemoryStore: InMemoryStore
@@ -17,6 +18,7 @@ let inMemoryStoreCoin: InMemoryStoreCoin
 let inMemoryUserCoin: InMemoryUserCoin
 let inMemoryUserItem: InMemoryUserItem
 let inMemoryStoreCoupon: InMemoryStoreCoupon
+let inMemoryUserWishList: InMemoryUserWishList
 
 let registerNewUserService: RegisterNewUserServices
 let userCreated: User
@@ -31,11 +33,14 @@ describe("Get user profile service", () => {
     inMemoryUserCoin = new InMemoryUserCoin()
     inMemoryUserItem = new InMemoryUserItem()
     inMemoryStoreCoupon = new InMemoryStoreCoupon()
+    inMemoryUserWishList = new InMemoryUserWishList()
 
     registerNewUserService = new RegisterNewUserServices(
       inMemoryUser,
-      inMemoryWallet
+      inMemoryWallet,
+      inMemoryUserWishList
     )
+
     sut = new GetUserProfileService(
       inMemoryUser,
       inMemoryStore,
@@ -43,7 +48,8 @@ describe("Get user profile service", () => {
       inMemoryWallet,
       inMemoryUserCoin,
       inMemoryUserItem,
-      inMemoryStoreCoupon
+      inMemoryStoreCoupon,
+      inMemoryUserWishList
     )
 
     const { newUser } = await registerNewUserService.execute({
@@ -71,6 +77,11 @@ describe("Get user profile service", () => {
           coins: [],
         }),
         userItems: [],
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: user.id,
+          items: [],
+        },
       })
     )
   })
@@ -97,6 +108,11 @@ describe("Get user profile service", () => {
           fkwallet_owner: expect.any(String),
           coins: [],
         }),
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: user.id,
+          items: [],
+        },
         store: expect.objectContaining({
           id: expect.any(String),
           name: "storeTest",
@@ -148,6 +164,11 @@ describe("Get user profile service", () => {
             }),
           ],
         }),
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: user.id,
+          items: [],
+        },
         store: expect.objectContaining({
           id: expect.any(String),
           name: "storeTest",
@@ -207,6 +228,11 @@ describe("Get user profile service", () => {
             }),
           ],
         }),
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: user.id,
+          items: [],
+        },
         store: expect.objectContaining({
           id: expect.any(String),
           name: "storeTest",
@@ -281,6 +307,11 @@ describe("Get user profile service", () => {
             }),
           ],
         }),
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: user.id,
+          items: [],
+        },
         store: expect.objectContaining({
           id: expect.any(String),
           name: "storeTest",

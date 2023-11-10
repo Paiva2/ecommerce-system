@@ -5,10 +5,13 @@ import ChangeUserProfileService from "../../user/changeUserProfileService"
 import { User } from "../../../@types/types"
 import { compare } from "bcryptjs"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
+import InMemoryUserWishList from "../../../in-memory/inMemoryUserWishList"
 
 let registeredUser: User
 let inMemoryUser: InMemoryUser
 let inMemoryWallet: InMemoryWallet
+let inMemoryUserWishList: InMemoryUserWishList
+
 let registerNewUserService: RegisterNewUserServices
 let sut: ChangeUserProfileService
 
@@ -16,10 +19,12 @@ describe("Change user profile service", () => {
   beforeEach(async () => {
     inMemoryUser = new InMemoryUser()
     inMemoryWallet = new InMemoryWallet()
+    inMemoryUserWishList = new InMemoryUserWishList()
 
     registerNewUserService = new RegisterNewUserServices(
       inMemoryUser,
-      inMemoryWallet
+      inMemoryWallet,
+      inMemoryUserWishList
     )
     sut = new ChangeUserProfileService(inMemoryUser)
 

@@ -3,17 +3,25 @@ import InMemoryUser from "../../../in-memory/InMemoryUser"
 import RegisterNewUserServices from "../../user/registerNewUserService"
 import { compare } from "bcryptjs"
 import InMemoryWallet from "../../../in-memory/inMemoryWallet"
+import InMemoryUserWishList from "../../../in-memory/inMemoryUserWishList"
 
 let inMemoryUser: InMemoryUser
 let inMemoryWallet: InMemoryWallet
+let inMemoryUserWishList: InMemoryUserWishList
+
 let sut: RegisterNewUserServices
 
 describe("Register new user service", () => {
   beforeEach(() => {
     inMemoryUser = new InMemoryUser()
     inMemoryWallet = new InMemoryWallet()
+    inMemoryUserWishList = new InMemoryUserWishList()
 
-    sut = new RegisterNewUserServices(inMemoryUser, inMemoryWallet)
+    sut = new RegisterNewUserServices(
+      inMemoryUser,
+      inMemoryWallet,
+      inMemoryUserWishList
+    )
   })
 
   it("should be possible to register a new user.", async () => {
@@ -26,9 +34,15 @@ describe("Register new user service", () => {
     const doesPasswordIsCorrectlyHashed = await compare("123456", newUser.password)
 
     expect(doesPasswordIsCorrectlyHashed).toBe(true)
+
     expect(newUser).toEqual(
       expect.objectContaining({
         id: expect.any(String),
+        userWishList: {
+          id: expect.any(String),
+          fkwishlist_owner: newUser.id,
+          items: [],
+        },
         wallet: expect.objectContaining({
           id: expect.any(String),
           fkwallet_owner: newUser.id,

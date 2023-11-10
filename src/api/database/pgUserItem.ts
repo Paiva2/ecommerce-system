@@ -25,7 +25,7 @@ export default class PgUserItem implements UserItemRepository {
         `
           INSERT INTO "${this.schema}".user_item
           ("id", "item_name", "purchased_with", "purchased_at", 
-          "fkitem_owner", "quantity", "item_value", "total_value")VALUES 
+          "fkitem_owner", "quantity", "item_value", "total_value") VALUES 
           ${queryValues.toString()}
           RETURNING *
       `
