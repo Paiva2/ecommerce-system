@@ -823,6 +823,29 @@
           }
         }
       }
+    },
+
+    "/store-coupons": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get an user store coupons.",
+        "description": "Get user store coupons. You must be logged-in before get your store coupons and have an store created.",
+        "requestBody": {
+          "content": {},
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Operation Success."
+          },
+          "403": {
+            "description": "Invalid auth token (invalid user id)."
+          },
+          "404": {
+            "description": "User has no store created."
+          }
+        }
+      }
     }
   }
 }

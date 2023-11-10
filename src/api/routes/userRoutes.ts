@@ -41,5 +41,5 @@ export default function userRoutes(app: Express) {
     ChangeUserProfileController.handle
   )
 
-  app.get("/store-coupons", [jwtCheck], ListAllUserStoreCouponsController.handle) //TODO SWAGGER DOCS
+  app.get("/store-coupons", [jwtCheck], ListAllUserStoreCouponsController.handle)
 }
