@@ -143,4 +143,20 @@ export default class InMemoryStoreItem implements StoreItemRepository {
 
     return findStoreItem
   }
+
+  async removeFromList(storeId: string, itemId: string) {
+    const getItemToremove = this.storeItems.find(
+      (item) => item.id === itemId && item.fkstore_id === storeId
+    )
+
+    const getItemToRemoveIdx = this.storeItems.indexOf(getItemToremove)
+
+    this.storeItems.splice(getItemToRemoveIdx, 1)
+
+    const getStoreUpdatedItemList = this.storeItems.filter(
+      (item) => item.fkstore_id === storeId
+    )
+
+    return getStoreUpdatedItemList
+  }
 }

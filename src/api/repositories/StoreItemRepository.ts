@@ -31,4 +31,6 @@ export interface StoreItemRepository {
   ): Promise<StoreItem>
 
   findStoreItemById(itemId: string): Promise<StoreItem | null>
+
+  removeFromList(storeId: string, itemId: string): Promise<StoreItem[]>
 }

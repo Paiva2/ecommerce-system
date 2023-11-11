@@ -195,4 +195,8 @@ export default class PgStoreItem implements StoreItemRepository {
 
     return storeItemList
   }
+
+  removeFromList(storeId: string, itemId: string) {
+    return null
+  }
 }
