@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.3",
   "info": {
-    "title": "Voucher API",
-    "description": "This is an voucher system API, based on shops. Users can have a little store, and put itens on this store, each item values an voucher, other users can have those vouchers and use them on stores.",
+    "title": "Shop System API",
+    "description": "This is an Shop system API, based on shops. Users can have a little store, and put itens on this store, each store has his own coin, other users can have those coins and use them on stores.",
     "contact": {
       "email": "joaovitor.paiva145@hotmail.com"
     },
@@ -612,6 +612,39 @@
             "description": "Store not found or user not found or item not found."
           }
         }
+      },
+
+      "delete": {
+        "tags": ["User"],
+        "summary": "Remove an store item from my store.",
+        "description": "Remove an item from my store with item id. You must be logged-in before.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "itemId": {
+                    "type": "string",
+                    "example": "Item id from my store to remove."
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Operation Success."
+          },
+          "403": {
+            "description": "Invalid auth token (invalid user id)."
+          },
+          "404": {
+            "description": "User has no store created."
+          }
+        }
       }
     },
 
@@ -675,6 +708,11 @@
                 "properties": {
                   "storeId": {
                     "type": "string"
+                  },
+                  "couponCode": {
+                    "type": "string",
+                    "example": "STORECOUPON",
+                    "required": false
                   },
                   "items": {
                     "description": "List of items to insert.",
@@ -783,22 +821,35 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "active": {
-                    "type": "boolean",
-                    "example": false
-                  },
-                  "coupon_code": {
+                  "couponId": {
                     "type": "string",
-                    "example": "NEW CODE"
+                    "example": "my coupon to update id"
                   },
-                  "discount": {
-                    "type": "string",
-                    "example": "10",
-                    "description": "Discount must be the integer value discount. Ex: 20 (20%), 50 (50%) etc."
-                  },
-                  "validation_date": {
-                    "type": "string",
-                    "example": "2060-11-20T00:10:18.386Z"
+                  "infosToUpdate": {
+                    "type": "object",
+                    "properties": {
+                      "active": {
+                        "type": "boolean",
+                        "example": false,
+                        "required": false
+                      },
+                      "coupon_code": {
+                        "type": "string",
+                        "example": "NEW CODE",
+                        "required": false
+                      },
+                      "discount": {
+                        "type": "string",
+                        "example": "10",
+                        "description": "Discount must be the integer value discount. Ex: 20 (20%), 50 (50%) etc.",
+                        "required": false
+                      },
+                      "validation_date": {
+                        "type": "string",
+                        "example": "2060-11-20T00:10:18.386Z",
+                        "required": false
+                      }
+                    }
                   }
                 }
               }

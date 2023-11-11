@@ -13,9 +13,10 @@ export default class PgStore implements StoreRepository {
       `
       INSERT INTO "${this.#schema}".store
       ("id", "name", "fkstore_owner", "description")
-      VALUES ($1, $2, $3, $4)
+      VALUES ($2, $3, $4, $5)
       RETURNING *
      `,
+      this.#schema,
       randomUUID(),
       storeName,
       storeOwner,
@@ -92,14 +93,12 @@ export default class PgStore implements StoreRepository {
       }
     }
 
-    const query = `
-    UPDATE "${this.#schema}".store
-    SET ${String(querySet)}, updated_at = to_timestamp($1 / 1000.0)
-    WHERE id = $2
-`
-
     const [updatedStore] = await prisma.$queryRawUnsafe<Store[]>(
-      query,
+      `
+      UPDATE "${this.#schema}".store
+      SET ${String(querySet)}, updated_at = to_timestamp($1 / 1000.0)
+      WHERE id = $2
+    `,
       Date.now(),
       storeUpdate.storeId
     )

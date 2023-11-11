@@ -118,3 +118,10 @@ export class RemoveItemFromWishListControllerDTO {
   @Length(1, Infinity, { message: "itemId; Can't be empty." })
   itemId: string
 }
+
+export class RemoveStoreItemFromListControllerDTO {
+  @IsDefined({ message: "itemId; Can't be empty." })
+  @IsString({ message: "itemId; Must be an string type." })
+  @Length(1, Infinity, { message: "itemId; Can't be empty." })
+  itemId: string
+}

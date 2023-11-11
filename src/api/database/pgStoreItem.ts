@@ -188,7 +188,8 @@ export default class PgStoreItem implements StoreItemRepository {
   async findStoreItemById(itemId: string) {
     const [storeItemList] = await prisma.$queryRawUnsafe<StoreItem[]>(
       `
-        SELECT * FROM "${this.schema}".store_item WHERE id = $1
+        SELECT * FROM "${this.schema}".store_item 
+        WHERE id = $1
       `,
       itemId
     )
@@ -196,7 +197,17 @@ export default class PgStoreItem implements StoreItemRepository {
     return storeItemList
   }
 
-  removeFromList(storeId: string, itemId: string) {
-    return null
+  async removeFromList(storeId: string, itemId: string) {
+    const storeItemList = await prisma.$queryRawUnsafe<StoreItem[]>(
+      `
+        DELETE FROM "${this.schema}".store_item 
+        WHERE id = $1 AND fkstore_id = $2
+        RETURNING *
+      `,
+      itemId,
+      storeId
+    )
+
+    return storeItemList
   }
 }

@@ -12,7 +12,6 @@ interface RemoveStoreItemFromListServiceResponse {
   updatedStoreItems: StoreItem[]
 }
 
-// TODO CONTROLLER, E2E TESTS AND DOCS
 export default class RemoveStoreItemFromListService {
   constructor(
     private userRepository: UserRepository,

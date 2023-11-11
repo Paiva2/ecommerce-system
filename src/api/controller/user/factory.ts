@@ -17,6 +17,7 @@ import InsertItemToWishListService from "../../services/user/insertItemToWishLis
 import ListAllUserStoreCouponsService from "../../services/user/listAllUserStoreCoupons"
 import RegisterNewUserServices from "../../services/user/registerNewUserService"
 import RemoveItemFromWishListService from "../../services/user/removeItemFromWishListService"
+import RemoveStoreItemFromListService from "../../services/user/removeStoreItemFromListService"
 
 export default class UserControllerFactory {
   public static handle() {
@@ -30,6 +31,12 @@ export default class UserControllerFactory {
     const userWishListRepository = new PgUserWishList()
     const storeItemRepository = new PgStoreItem()
     const wishListItemRepository = new PgWishListItem()
+
+    const removeStoreItemfromListService = new RemoveStoreItemFromListService(
+      userRepository,
+      storeRepository,
+      storeItemRepository
+    )
 
     const removeItemFromWishListService = new RemoveItemFromWishListService(
       userRepository,
@@ -80,6 +87,7 @@ export default class UserControllerFactory {
     const authenticateUserService = new AuthenticateUserService(userRepository)
 
     return {
+      removeStoreItemfromListService,
       removeItemFromWishListService,
       getUserWishlistService,
       insertItemToWishListService,
