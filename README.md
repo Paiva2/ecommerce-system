@@ -50,11 +50,11 @@ $ npm install
 
 $ docker compose up
 
-$ npm run dev
-
 $ npx prisma migrate dev
 
 $ npx prisma db push
+
+$ npm run dev
 
 ```
 
